@@ -1,11 +1,22 @@
 import java_cup.runtime.ComplexSymbolFactory;
 import org.objectweb.asm.*;
+import semantic.Constants;
 import semantic.syntaxTree.Node;
+import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.VariableDCL;
+import semantic.syntaxTree.declaration.method.Argument;
+import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.declaration.record.Field;
 import semantic.syntaxTree.declaration.record.RecordTypeDCL;
+import semantic.syntaxTree.expression.Expression;
+import semantic.syntaxTree.expression.MethodCall;
 import semantic.syntaxTree.expression.binaryOperation.constValue.IntegerConst;
+import semantic.syntaxTree.identifier.MemberVariable;
+import semantic.syntaxTree.identifier.SimpleVariable;
 import semantic.syntaxTree.identifier.Variable;
+import semantic.syntaxTree.statement.Statement;
+import semantic.syntaxTree.statement.assignment.Assignment;
+import semantic.syntaxTree.statement.assignment.DirectAssignment;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -42,33 +53,33 @@ public class Main implements Opcodes {
         mw.visitMaxs(0, 0);
         mw.visitEnd();
 
-//        List<Argument> args = new ArrayList<>();
-//        args.add(new Argument("t", 0, "int"));
-//        args.add(new Argument("i", 0, "int"));
-//        Block block = new Block();
-//        block.addStatement(new Statement() {
-//            @Override
-//            public void generateCode(ClassVisitor cv, MethodVisitor mv) {
-//                Variable vart = new Variable("t");
-//                Variable vari = new Variable("i");
-//                mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-//                vart.generateCode(cv, mv);
-//                mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
-//                mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-//                vari.generateCode(cv, mv);
-//                mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
-//                vart.generateCode(cv, mv);
-//            }
-//        });
-//        MethodDCL func1 = new MethodDCL("Tester", "testFunc", Constants.INTEGER_DSCP, args, block);
-//        func1.generateCode(cw, mw);
+        List<Argument> args = new ArrayList<>();
+        args.add(new Argument("t", 0, "int"));
+        args.add(new Argument("i", 0, "int"));
+        Block block = new Block();
+        block.addStatement(new Statement() {
+            @Override
+            public void generateCode(ClassVisitor cv, MethodVisitor mv) {
+                SimpleVariable vart = new SimpleVariable("t");
+                SimpleVariable vari = new SimpleVariable("i");
+                mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+                vart.generateCode(cv, mv);
+                mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
+                mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+                vari.generateCode(cv, mv);
+                mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
+                vart.generateCode(cv, mv);
+            }
+        });
+        MethodDCL func1 = new MethodDCL("Tester", "testFunc", Constants.INTEGER_DSCP, args, block);
+        func1.generateCode(cw, mw);
 //
-//        mw = cw.visitMethod(ACC_PUBLIC | ACC_STATIC, "main", "([Ljava/lang/String;)V", null, null);
-//        mw.visitCode();
+        mw = cw.visitMethod(ACC_PUBLIC | ACC_STATIC, "main", "([Ljava/lang/String;)V", null, null);
+        mw.visitCode();
 
 //        Parser.list.get(Parser.list.size() - 1).generateCode(cw, mw);
-//        Variable varx = new Variable("x", new DSCP(Constants.INTEGER_CODE, Constants.INTEGER_SIZE, 2));
-//        Variable vart = new Variable("t", new DSCP(Constants.INTEGER_CODE, Constants.INTEGER_SIZE, 3));
+//        SimpleVariable varx = new SimpleVariable("x", new DSCP(Constants.INTEGER_CODE, Constants.INTEGER_SIZE, 2));
+//        SimpleVariable vart = new SimpleVariable("t", new DSCP(Constants.INTEGER_CODE, Constants.INTEGER_SIZE, 3));
 //        Multiply mult1 = new Multiply(new IntegerConst(5), vart);
 //        Multiply mult2 = new Multiply(new IntegerConst(3), mult1);
 //        Multiply mult3 = new Multiply(varx, new IntegerConst(2));
@@ -78,7 +89,7 @@ public class Main implements Opcodes {
 //        Assignment forAssign = new DirectAssignment(vari, new IntegerConst(1));
 //        VariableDCL variDCL = new VariableDCL("i", "int", false, new IntegerConst(1));
 //        variDCL.generateCode(cw, mw);
-//        Variable vari = new Variable("i");
+//        SimpleVariable vari = new SimpleVariable("i");
 //        Assignment ass1 = new DirectAssignment(vari, new IntegerConst(1));
 //        Less less1 = new Less(vari, new IntegerConst(11));
 //        Assignment ass2 = new PlusAssignment(vari, new IntegerConst(1));
@@ -86,7 +97,7 @@ public class Main implements Opcodes {
 //        Statement st = new Statement() {
 //            @Override
 //            public void generateCode(ClassVisitor cv, MethodVisitor mv) {
-//                Variable vari = new Variable("i");
+//                SimpleVariable vari = new SimpleVariable("i");
 //                mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
 //                vari.generateCode(cv, mv);
 //                mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
@@ -97,7 +108,7 @@ public class Main implements Opcodes {
 //        forLoop.generateCode(cw, mw);
 //        VariableDCL varjDCL = new VariableDCL("j", "int", false, new IntegerConst(1));
 //        varjDCL.generateCode(cw, mw);
-//        vari = new Variable("i");
+//        vari = new SimpleVariable("i");
 //        mw.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
 //        vari.generateCode(cw, mw);
 //        mw.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
@@ -124,7 +135,14 @@ public class Main implements Opcodes {
         VariableDCL vara = new VariableDCL("a", "A", false);
         vara.generateCode(cw, mw);
 
-        
+        Variable variable = new MemberVariable("a", "x");
+        Assignment ass1 = new DirectAssignment(variable, new IntegerConst(10));
+        ass1.generateCode(cw, mw);
+        List<Expression> parameters = new ArrayList<>();
+        parameters.add(new IntegerConst(1));
+        parameters.add(new MemberVariable("a", "x"));
+        MethodCall methodCall = new MethodCall("testFunc", parameters);
+        methodCall.generateCode(cw, mw);
 
         mw.visitInsn(RETURN);
         mw.visitMaxs(0, 0);

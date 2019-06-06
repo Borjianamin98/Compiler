@@ -49,7 +49,7 @@ terminal String             STRING_CONST;
 /* Non terminals */
 non terminal                program;
 non terminal                method_cal, parameters;
-non terminal                variable, array_part;
+non terminal                simpleVariable, array_part;
 non terminal DSCP           type;
 non terminal                assignment, assign_mark;
 non terminal                cond_stmt, loop_stmt, statement;
@@ -190,7 +190,7 @@ statement       ::= assignment SEMICOLON
                     {: System.out.println("continue"); :}
                     ;
 
-assignment      ::= variable assign_mark expr;
+assignment      ::= simpleVariable assign_mark expr;
 
 assign_mark     ::= DIRECT_ASSIGN | SUM_ASSIGN | DIFF_ASSIGN | MULT_ASSIGN | DIVIDE_ASSIGN | MOD_ASSIGN;
 
@@ -290,8 +290,8 @@ expr            ::= expr:e1 PLUS expr:e2
                     LPAREN expr:val RPAREN
                     {: RESULT = val; :}
                     |
-                    variable
-                    {: System.out.println("variable"); :}
+                    simpleVariable
+                    {: System.out.println("simpleVariable"); :}
                     |
                     method_cal
                     {: System.out.println("method call"); :}
@@ -324,19 +324,19 @@ type            ::= INT
                     | IDENTIFIER:name
                     ;
 
-variable        ::= IDENTIFIER
+simpleVariable        ::= IDENTIFIER
                     |
                     IDENTIFIER array_part
                     |
-                    variable DOT IDENTIFIER
+                    simpleVariable DOT IDENTIFIER
                     |
-                    MINUSMINUS variable
+                    MINUSMINUS simpleVariable
                     |
-                    PLUSPLUS variable
+                    PLUSPLUS simpleVariable
                     |
-                    variable MINUSMINUS %prec MINUSMINUS_POSTFIX
+                    simpleVariable MINUSMINUS %prec MINUSMINUS_POSTFIX
                     |
-                    variable PLUSPLUS %prec PLUSPLUS_POSTFIX
+                    simpleVariable PLUSPLUS %prec PLUSPLUS_POSTFIX
                     ;
 
 array_part      ::= LBRACKET expr RBRACKET

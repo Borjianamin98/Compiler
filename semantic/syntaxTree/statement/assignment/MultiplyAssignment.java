@@ -5,6 +5,7 @@ import org.objectweb.asm.MethodVisitor;
 import semantic.exception.ConstantModificationException;
 import semantic.symbolTable.Utility;
 import semantic.syntaxTree.expression.Expression;
+import semantic.syntaxTree.identifier.SimpleVariable;
 import semantic.syntaxTree.identifier.Variable;
 
 public class MultiplyAssignment extends Assignment {

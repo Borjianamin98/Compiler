@@ -15,4 +15,20 @@ public class RecordTypeDSCP extends TypeDSCP {
     public List<Field> getFields() {
         return fields;
     }
+
+    public boolean containsField(String name) {
+        for (Field field : fields) {
+            if (field.getName().equals(name))
+                return true;
+        }
+        return false;
+    }
+
+    public Field getField(String name) {
+        for (Field field : fields) {
+            if (field.getName().equals(name))
+                return field;
+        }
+        return null;
+    }
 }
