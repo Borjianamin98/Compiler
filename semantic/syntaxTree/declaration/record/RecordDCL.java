@@ -13,11 +13,11 @@ import java.util.List;
 
 public class RecordDCL extends Node {
     private String name;
-    private List<VariableDCL> variableDCLS;
+    private List<Field> fields;
 
-    public RecordDCL(String name, List<VariableDCL> variableDCLS) {
+    public RecordDCL(String name, List<Field> fields) {
         this.name = name;
-        this.variableDCLS = variableDCLS;
+        this.fields = fields;
     }
 
     @Override
@@ -25,19 +25,26 @@ public class RecordDCL extends Node {
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
         classWriter.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC | Opcodes.ACC_SUPER, name, null, "java/lang/Object", null);
+
+        for (Field field : fields) {
+            classWriter.visitField(Opcodes.ACC_PUBLIC,  field.getName(), field.getDescriptor(), null, null).visitEnd();
+        }
+
         MethodVisitor methodVisitor = classWriter.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
         methodVisitor.visitCode();
         methodVisitor.visitVarInsn(Opcodes.ALOAD, 0);
         methodVisitor.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
+        for (Field field : fields) {
+            if (field.getDefaultValue() != null) {
+                methodVisitor.visitVarInsn(Opcodes.ALOAD, 0); // load "this"
+                field.getDefaultValue().generateCode(classWriter, methodVisitor);
+                methodVisitor.visitFieldInsn(Opcodes.PUTFIELD, name, field.getName(), field.getDescriptor());
+            }
+        }
         methodVisitor.visitInsn(Opcodes.RETURN);
         methodVisitor.visitMaxs(0, 0);
         methodVisitor.visitEnd();
 
-
-        // Fieldssssssssssssssssss
-        for (VariableDCL variableDCL : variableDCLS) {
-            variableDCL.generateCode(classWriter, methodVisitor);
-        }
         classWriter.visitEnd();
 
         try (FileOutputStream fos = new FileOutputStream(Node.outputPath + name + ".class")) {

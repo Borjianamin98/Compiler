@@ -39,7 +39,7 @@ public class Argument {
         if (typeDSCP.isPrimitive()) {
             desc.append(Utility.getPrimitiveTypeDescriptor(typeDSCP.getTypeCode()));
         } else {
-            desc.append('L').append(type);
+            desc.append('L').append(type).append(";");
         }
         return desc.toString();
     }
