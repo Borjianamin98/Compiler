@@ -20,6 +20,10 @@ public class VariableDCL extends Declaration {
         super(name, type, isConstant, defaultValue);
     }
 
+    public VariableDCL(String name, String type, boolean isConstant) {
+        super(name, type, isConstant, null);
+    }
+
     @Override
     public void generateCode(ClassVisitor cv, MethodVisitor mv) {
         // Only check current block table

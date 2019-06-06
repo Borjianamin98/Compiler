@@ -1,16 +1,10 @@
 import java_cup.runtime.ComplexSymbolFactory;
 import org.objectweb.asm.*;
-import semantic.Constants;
-import semantic.symbolTable.Display;
-import semantic.syntaxTree.block.Block;
-import semantic.syntaxTree.declaration.method.Argument;
-import semantic.syntaxTree.declaration.method.MethodDCL;
+import semantic.syntaxTree.Node;
+import semantic.syntaxTree.declaration.VariableDCL;
 import semantic.syntaxTree.declaration.record.Field;
-import semantic.syntaxTree.declaration.record.RecordDCL;
-import semantic.syntaxTree.expression.Expression;
-import semantic.syntaxTree.expression.MethodCall;
+import semantic.syntaxTree.declaration.record.RecordTypeDCL;
 import semantic.syntaxTree.expression.binaryOperation.constValue.IntegerConst;
-import semantic.syntaxTree.statement.Statement;
 import semantic.syntaxTree.identifier.Variable;
 
 import java.io.FileOutputStream;
@@ -124,15 +118,20 @@ public class Main implements Opcodes {
         fields.add(new Field("y", 0, "int"));
         fields.add(new Field("z", 0, "int"));
         fields.add(new Field("t", 0, "string"));
-        RecordDCL recordDCL = new RecordDCL("record1", fields);
-        recordDCL.generateCode(cw, mw);
+        RecordTypeDCL recordTypeDCL = new RecordTypeDCL("A", fields);
+        recordTypeDCL.generateCode(cw, mw);
+
+        VariableDCL vara = new VariableDCL("a", "A", false);
+        vara.generateCode(cw, mw);
+
+        
 
         mw.visitInsn(RETURN);
         mw.visitMaxs(0, 0);
         mw.visitEnd();
         cw.visitEnd();
 
-        FileOutputStream fos = new FileOutputStream("Tester.class");
+        FileOutputStream fos = new FileOutputStream(Node.outputPath + "Tester.class");
         fos.write(cw.toByteArray());
         fos.close();
     }

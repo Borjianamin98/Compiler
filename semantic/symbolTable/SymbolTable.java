@@ -1,17 +1,15 @@
 package semantic.symbolTable;
 
-import semantic.Constants;
 import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.TypeDSCP;
 import semantic.symbolTable.descriptor.VariableDSCP;
-import semantic.syntaxTree.identifier.Variable;
 
 import java.util.HashMap;
 
 public class SymbolTable {
     public static SymbolTable symbolTable = new SymbolTable();
-    public static int freeType = 8;
+    private static int freeType;
 
     private HashMap<String, DSCP> symbols;
     private int freeAddress;
@@ -29,8 +27,16 @@ public class SymbolTable {
     }
 
     public void addSymbol(String name, DSCP descriptor) {
+        if (descriptor instanceof TypeDSCP)
+            throw new RuntimeException("TypeDSCP must add through addType to SymbolTable");
         if (descriptor instanceof VariableDSCP)
             freeAddress += ((VariableDSCP) descriptor).getSize();
+        symbols.put(name, descriptor);
+    }
+
+    public void addType(String name, TypeDSCP descriptor) {
+        descriptor.setTypeCode(freeType);
+        freeType++;
         symbols.put(name, descriptor);
     }
 

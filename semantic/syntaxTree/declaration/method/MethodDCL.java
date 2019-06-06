@@ -71,7 +71,7 @@ public class MethodDCL extends Node {
             for (Argument argument : arguments) {
                 int freeAddress = currentFunctionSYMTAB.getFreeAddress();
                 currentFunctionSYMTAB.addSymbol(argument.getName(),
-                        new VariableDSCP(argument.getName(), argument.getArgumentType(), 1 * argument.getArgumentType().getSize(), freeAddress, false));
+                        new VariableDSCP(argument.getName(), argument.getType(), 1 * argument.getType().getSize(), freeAddress, false));
             }
         }
         Display.add(currentFunctionSYMTAB);

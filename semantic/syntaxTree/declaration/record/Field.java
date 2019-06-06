@@ -30,7 +30,7 @@ public class Field {
         return name;
     }
 
-    public TypeDSCP getFieldType() {
+    public TypeDSCP getType() {
         Optional<DSCP> typeDSCP = Display.find(type);
         if (!typeDSCP.isPresent() || !(typeDSCP.get() instanceof TypeDSCP))
             throw new SymbolNotFoundException(type + " is not declared");
@@ -42,7 +42,7 @@ public class Field {
         for (int i = 0; i < arrayLevels; i++) {
             desc.append('[');
         }
-        TypeDSCP typeDSCP = getFieldType();
+        TypeDSCP typeDSCP = getType();
         if (typeDSCP.isPrimitive()) {
             desc.append(Utility.getPrimitiveTypeDescriptor(typeDSCP.getTypeCode()));
         } else {

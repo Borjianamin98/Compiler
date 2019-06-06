@@ -5,9 +5,8 @@ public class TypeDSCP extends DSCP {
     private int size;
     private boolean isPrimitive;
 
-    public TypeDSCP(String name, int typeCode, int size, boolean isPrimitive) {
+    public TypeDSCP(String name, int size, boolean isPrimitive) {
         super(name);
-        this.typeCode = typeCode;
         this.size = size;
         this.isPrimitive = isPrimitive;
     }
@@ -22,5 +21,9 @@ public class TypeDSCP extends DSCP {
 
     public int getSize() {
         return size;
+    }
+
+    public void setTypeCode(int typeCode) {
+        this.typeCode = typeCode;
     }
 }

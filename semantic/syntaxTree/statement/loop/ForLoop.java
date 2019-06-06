@@ -44,19 +44,17 @@ public class ForLoop extends Statement {
         Label conditionLabel = new Label();
         mv.visitLabel(conditionLabel);
         condition.generateCode(cv, mv);
-        switch (condition.getResultType().getTypeCode()) {
-            case Constants.INTEGER_CODE:
-                // condition can be type int
-                break;
-            case Constants.LONG_CODE:
-            case Constants.FLOAT_CODE:
-            case Constants.DOUBLE_CODE:
-            case Constants.CHAR_CODE:
-            case Constants.STRING_CODE:
-                // TODO handle string like python
-                break;
-            default:
-                    throw new BooleanExpressionException();
+        int resultTypeCode = condition.getResultType().getTypeCode();
+        if (resultTypeCode == Constants.INTEGER_DSCP.getTypeCode()) {
+            // condition can be type int
+        } else if (resultTypeCode == Constants.LONG_DSCP.getTypeCode() ||
+                resultTypeCode == Constants.FLOAT_DSCP.getTypeCode() ||
+                resultTypeCode == Constants.DOUBLE_DSCP.getTypeCode() ||
+                resultTypeCode == Constants.CHAR_DSCP.getTypeCode() ||
+                resultTypeCode == Constants.STRING_DSCP.getTypeCode()) {
+            // TODO handle string like python
+        } else {
+            throw new BooleanExpressionException();
         }
         Label outLabel = new Label();
         mv.visitJumpInsn(Opcodes.IFEQ, outLabel);

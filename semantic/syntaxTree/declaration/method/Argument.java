@@ -23,7 +23,7 @@ public class Argument {
         return name;
     }
 
-    public TypeDSCP getArgumentType() {
+    public TypeDSCP getType() {
         Optional<DSCP> typeDSCP = Display.find(type);
         if (!typeDSCP.isPresent() || !(typeDSCP.get() instanceof TypeDSCP))
             throw new SymbolNotFoundException(type + " is not declared");
@@ -35,7 +35,7 @@ public class Argument {
         for (int i = 0; i < arrayLevels; i++) {
             desc.append('[');
         }
-        TypeDSCP typeDSCP = getArgumentType();
+        TypeDSCP typeDSCP = getType();
         if (typeDSCP.isPrimitive()) {
             desc.append(Utility.getPrimitiveTypeDescriptor(typeDSCP.getTypeCode()));
         } else {

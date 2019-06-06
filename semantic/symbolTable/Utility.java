@@ -13,20 +13,18 @@ public class Utility {
     }
 
     public static String getTypePrefix(int type) {
-        switch (type) {
-            case Constants.INTEGER_CODE:
-            case Constants.BOOLEAN_CODE:
-            case Constants.CHAR_CODE:
-                return "I";
-            case Constants.LONG_CODE:
-                return "L";
-            case Constants.DOUBLE_CODE:
-                return "D";
-            case Constants.FLOAT_CODE:
-                return "F";
-            default:
-                return "A";
+        if (type == Constants.INTEGER_DSCP.getTypeCode() ||
+                type == Constants.BOOLEAN_DSCP.getTypeCode() ||
+                type == Constants.CHAR_DSCP.getTypeCode()) {
+            return "I";
+        } else if (type == Constants.LONG_DSCP.getTypeCode()) {
+            return "L";
+        } else if (type == Constants.DOUBLE_DSCP.getTypeCode()) {
+            return "D";
+        } else if (type == Constants.FLOAT_DSCP.getTypeCode()) {
+            return "F";
         }
+        return "A";
     }
 
     public static int getOpcode(String prefix, String instruction) {
@@ -46,26 +44,24 @@ public class Utility {
     }
 
     public static String getPrimitiveTypeDescriptor(int type) {
-        switch (type) {
-            case Constants.INTEGER_CODE:
-                return "I";
-            case Constants.CHAR_CODE:
-                return "C";
-            case Constants.LONG_CODE:
-                return "J";
-            case Constants.DOUBLE_CODE:
-                return "D";
-            case Constants.FLOAT_CODE:
-                return "F";
-            case Constants.BOOLEAN_CODE:
-                return "Z";
-            case Constants.VOID_CODE:
-                return "V";
-            case Constants.STRING_CODE:
-                return "Ljava/lang/String;";
-            default:
-                throw new RuntimeException(type + " is not a primitive type");
+        if (type == Constants.INTEGER_DSCP.getTypeCode()) {
+            return "I";
+        } else if (type == Constants.CHAR_DSCP.getTypeCode()) {
+            return "C";
+        } else if (type == Constants.LONG_DSCP.getTypeCode()) {
+            return "J";
+        } else if (type == Constants.DOUBLE_DSCP.getTypeCode()) {
+            return "D";
+        } else if (type == Constants.FLOAT_DSCP.getTypeCode()) {
+            return "F";
+        } else if (type == Constants.BOOLEAN_DSCP.getTypeCode()) {
+            return "Z";
+        } else if (type == Constants.VOID_DSCP.getTypeCode()) {
+            return "V";
+        } else if (type == Constants.STRING_DSCP.getTypeCode()) {
+            return "Ljava/lang/String;";
         }
+        throw new RuntimeException(type + " is not a primitive type");
     }
 
     public static String createMethodDescriptor(List<Argument> arguments, boolean hasReturn, TypeDSCP returnType) {
