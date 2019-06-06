@@ -21,5 +21,6 @@ public class MultiplyAssignment extends Assignment {
             throw new ConstantModificationException(getVariable().getName() + " can't not modified");
         mv.visitInsn(Utility.getOpcode(getVariable().getDSCP().getType().getTypeCode(), "MUL"));
         mv.visitVarInsn(Utility.getOpcode(getVariable().getDSCP().getType().getTypeCode(), "STORE"), getVariable().getDSCP().getAddress());
+        getVariable().getDSCP().setInitialized(true);
     }
 }

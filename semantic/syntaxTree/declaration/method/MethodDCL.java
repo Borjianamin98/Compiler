@@ -32,7 +32,7 @@ public class MethodDCL extends Node {
         this.hasReturn = false;
     }
 
-    public MethodDCL(String owner, String name, TypeDSCP returnType, List<Argument> arguments, Block body) {
+    public MethodDCL(String owner, String name, List<Argument> arguments, Block body, TypeDSCP returnType) {
         this(owner, name, arguments, body);
         this.returnType = returnType;
         this.hasReturn = true;
@@ -71,17 +71,13 @@ public class MethodDCL extends Node {
             for (Argument argument : arguments) {
                 int freeAddress = currentFunctionSYMTAB.getFreeAddress();
                 currentFunctionSYMTAB.addSymbol(argument.getName(),
-                        new VariableDSCP(argument.getName(), argument.getType(), 1 * argument.getType().getSize(), freeAddress, false));
+                        new VariableDSCP(argument.getName(), argument.getType(), 1 * argument.getType().getSize(), freeAddress, false, true));
             }
         }
         Display.add(currentFunctionSYMTAB);
         body.generateCode(cv, methodVisitor);
         Display.pop();
 
-        if (hasReturn)
-            methodVisitor.visitInsn(Utility.getOpcode(returnType.getTypeCode(), "RETURN"));
-        else
-            methodVisitor.visitInsn(Opcodes.RETURN);
         methodVisitor.visitMaxs(0, 0);
         methodVisitor.visitEnd();
     }

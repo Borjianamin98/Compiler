@@ -4,14 +4,16 @@ public class VariableDSCP extends DSCP {
     private TypeDSCP type;
     private int size;
     private int address;
-    private boolean isConstant;
+    private boolean constant;
+    private boolean initialized;
 
-    public VariableDSCP(String name, TypeDSCP type, int size, int address, boolean isConstant) {
+    public VariableDSCP(String name, TypeDSCP type, int size, int address, boolean constant, boolean initialized) {
         super(name);
         this.type = type;
         this.size = size;
         this.address = address;
-        this.isConstant = isConstant;
+        this.constant = constant;
+        this.initialized = initialized;
     }
 
     public int getAddress() {
@@ -19,7 +21,15 @@ public class VariableDSCP extends DSCP {
     }
 
     public boolean isConstant() {
-        return isConstant;
+        return constant;
+    }
+
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    public void setInitialized(boolean initialized) {
+        this.initialized = initialized;
     }
 
     public TypeDSCP getType() {

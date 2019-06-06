@@ -38,18 +38,21 @@ public class VariableDCL extends Declaration {
         if (!typeDSCP.isPresent() || !(typeDSCP.get() instanceof TypeDSCP))
             throw new SymbolNotFoundException();
         TypeDSCP variableTypeDSCP = (TypeDSCP) typeDSCP.get();
+        boolean isInitialized = false;
         if (variableTypeDSCP instanceof RecordTypeDSCP) {
             RecordTypeDSCP recordTypeDSCP = (RecordTypeDSCP) variableTypeDSCP;
             mv.visitTypeInsn(Opcodes.NEW, recordTypeDSCP.getName());
             mv.visitInsn(Opcodes.DUP);
             mv.visitMethodInsn(Opcodes.INVOKESPECIAL, recordTypeDSCP.getName(), "<init>", "()V", false);
             mv.visitVarInsn(Opcodes.ASTORE, top.getFreeAddress());
+            isInitialized = true;
         }
-        VariableDSCP variableDSCP = new VariableDSCP(getName(), variableTypeDSCP, variableTypeDSCP.getSize(), top.getFreeAddress(), isConstant());
-        top.addSymbol(getName(), variableDSCP);
         if (getDefaultValue() != null) {
             getDefaultValue().generateCode(cv, mv);
-            mv.visitVarInsn(Utility.getOpcode(getDefaultValue().getResultType().getTypeCode(), "STORE"), variableDSCP.getAddress());
+            mv.visitVarInsn(Utility.getOpcode(getDefaultValue().getResultType().getTypeCode(), "STORE"), top.getFreeAddress());
+            isInitialized = true;
         }
+        VariableDSCP variableDSCP = new VariableDSCP(getName(), variableTypeDSCP, variableTypeDSCP.getSize(), top.getFreeAddress(), isConstant(), isInitialized);
+        top.addSymbol(getName(), variableDSCP);
     }
 }

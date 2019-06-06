@@ -22,6 +22,8 @@ public class SimpleVariable extends Variable {
     @Override
     public void generateCode(ClassVisitor cv, MethodVisitor mv) {
         getDSCP();
+        if (!dscp.isInitialized())
+            throw new RuntimeException("Variable " + getName() + " is not initialized");
         mv.visitVarInsn(Utility.getOpcode(dscp.getType().getTypeCode(), "LOAD"), dscp.getAddress());
         setResultType(dscp.getType());
     }
