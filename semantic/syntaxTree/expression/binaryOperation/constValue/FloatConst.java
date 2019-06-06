@@ -9,7 +9,7 @@ public class FloatConst extends Expression {
     public double value;
 
     public FloatConst(double value) {
-        super(Constants.FLOAT_CODE);
+        super(Constants.FLOAT_DSCP);
         this.value = value;
     }
 

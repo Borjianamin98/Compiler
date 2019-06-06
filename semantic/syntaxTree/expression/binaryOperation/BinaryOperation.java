@@ -1,11 +1,12 @@
 package semantic.syntaxTree.expression.binaryOperation;
 
+import semantic.symbolTable.descriptor.TypeDSCP;
 import semantic.syntaxTree.expression.Expression;
 
 public abstract class BinaryOperation extends Expression {
     private Expression firstOperand;
     private Expression secondOperand;
-    private int resultType;
+    private TypeDSCP resultType;
 
     public BinaryOperation(Expression firstOperand, Expression secondOperand) {
         this.firstOperand = firstOperand;
@@ -20,11 +21,11 @@ public abstract class BinaryOperation extends Expression {
         return secondOperand;
     }
 
-    public int getResultType() {
+    public TypeDSCP getResultType() {
         return resultType;
     }
 
-    public int setResultType(int resultType) {
-        return this.resultType = resultType;
+    public void setResultType(TypeDSCP resultType) {
+        this.resultType = resultType;
     }
 }

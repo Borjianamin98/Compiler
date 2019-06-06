@@ -9,7 +9,7 @@ public class DoubleConst extends Expression {
     public double value;
 
     public DoubleConst(double value) {
-        super(Constants.DOUBLE_CODE);
+        super(Constants.DOUBLE_DSCP);
         this.value = value;
     }
 

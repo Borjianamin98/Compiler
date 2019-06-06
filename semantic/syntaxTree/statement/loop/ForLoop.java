@@ -44,7 +44,7 @@ public class ForLoop extends Statement {
         Label conditionLabel = new Label();
         mv.visitLabel(conditionLabel);
         condition.generateCode(cv, mv);
-        switch (condition.getResultType()) {
+        switch (condition.getResultType().getTypeCode()) {
             case Constants.INTEGER_CODE:
                 // condition can be type int
                 break;

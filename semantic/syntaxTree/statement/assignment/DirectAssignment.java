@@ -18,6 +18,6 @@ public class DirectAssignment extends Assignment {
         if (getVariable().getDSCP().isConstant())
             throw new ConstantModificationException(getVariable().getName() + " can't not modified");
         // TODO Conversesion between types like int to double (i2d)
-        mv.visitVarInsn(Utility.getOpcode(getVariable().getDSCP().getType(), "STORE"), getVariable().getDSCP().getAddress());
+        mv.visitVarInsn(Utility.getOpcode(getVariable().getDSCP().getType().getTypeCode(), "STORE"), getVariable().getDSCP().getAddress());
     }
 }

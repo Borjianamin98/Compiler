@@ -23,7 +23,7 @@ public class Variable extends Expression {
     @Override
     public void generateCode(ClassVisitor cv, MethodVisitor mv) {
         getDSCP();
-        mv.visitVarInsn(Utility.getOpcode(dscp.getType(), "LOAD"), dscp.getAddress());
+        mv.visitVarInsn(Utility.getOpcode(dscp.getType().getTypeCode(), "LOAD"), dscp.getAddress());
         setResultType(dscp.getType());
     }
 

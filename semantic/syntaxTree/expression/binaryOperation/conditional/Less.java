@@ -12,7 +12,7 @@ public class Less extends BinaryOperation {
 
     public Less(Expression firstOperand, Expression secondOperand) {
         super(firstOperand, secondOperand);
-        setResultType(Constants.INTEGER_CODE);
+        setResultType(Constants.INTEGER_DSCP);
     }
 
     @Override

@@ -8,6 +8,7 @@ import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
 import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.MethodDSCP;
+import semantic.symbolTable.descriptor.TypeDSCP;
 import semantic.symbolTable.descriptor.VariableDSCP;
 import semantic.syntaxTree.Node;
 import semantic.syntaxTree.block.Block;
@@ -18,7 +19,7 @@ public class MethodDCL extends Node {
     private String owner;
     private String name;
     private boolean hasReturn;
-    private int returnType;
+    private TypeDSCP returnType;
     private Block body;
     private List<Argument> arguments;
 
@@ -31,7 +32,7 @@ public class MethodDCL extends Node {
         this.hasReturn = false;
     }
 
-    public MethodDCL(String owner, String name, int returnType, List<Argument> arguments, Block body) {
+    public MethodDCL(String owner, String name, TypeDSCP returnType, List<Argument> arguments, Block body) {
         this(owner, name, arguments, body);
         this.returnType = returnType;
         this.hasReturn = true;
@@ -70,7 +71,7 @@ public class MethodDCL extends Node {
             for (Argument argument : arguments) {
                 int freeAddress = currentFunctionSYMTAB.getFreeAddress();
                 currentFunctionSYMTAB.addSymbol(argument.getName(),
-                        new VariableDSCP(argument.getArgumentType().getType(), 1 * argument.getArgumentType().getSize(), freeAddress, false));
+                        new VariableDSCP(argument.getName(), argument.getArgumentType(), 1 * argument.getArgumentType().getSize(), freeAddress, false));
             }
         }
         Display.add(currentFunctionSYMTAB);
@@ -78,7 +79,7 @@ public class MethodDCL extends Node {
         Display.pop();
 
         if (hasReturn)
-            methodVisitor.visitInsn(Utility.getOpcode(returnType, "RETURN"));
+            methodVisitor.visitInsn(Utility.getOpcode(returnType.getTypeCode(), "RETURN"));
         else
             methodVisitor.visitInsn(Opcodes.RETURN);
         methodVisitor.visitMaxs(0, 0);

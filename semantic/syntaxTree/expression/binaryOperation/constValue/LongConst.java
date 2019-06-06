@@ -9,7 +9,7 @@ public class LongConst extends Expression {
     public long value;
 
     public LongConst(long value) {
-        super(Constants.LONG_CODE);
+        super(Constants.LONG_DSCP);
         this.value = value;
     }
 

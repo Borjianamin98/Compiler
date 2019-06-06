@@ -1,20 +1,26 @@
 package semantic.symbolTable.descriptor;
 
-public class FieldDSCP extends SizedDSCP {
-    private String name;
+public class FieldDSCP extends DSCP {
+    private TypeDSCP type;
+    private int size;
     private boolean isConstant;
 
-    public FieldDSCP(int type, int size, String name, boolean isConstant) {
-        super(type, size);
-        this.name = name;
+    public FieldDSCP(String name, TypeDSCP type, int size, boolean isConstant) {
+        super(name);
+        this.type = type;
+        this.size = size;
         this.isConstant = isConstant;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public boolean isConstant() {
         return isConstant;
+    }
+
+    public TypeDSCP getType() {
+        return type;
+    }
+
+    public int getSize() {
+        return size;
     }
 }

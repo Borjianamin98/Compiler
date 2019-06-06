@@ -9,7 +9,7 @@ public class IntegerConst extends Expression {
     public int value;
 
     public IntegerConst(int value) {
-        super(Constants.INTEGER_CODE);
+        super(Constants.INTEGER_DSCP);
         this.value = value;
     }
 

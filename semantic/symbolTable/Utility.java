@@ -1,7 +1,9 @@
 package semantic.symbolTable;
 
 import jdk.internal.org.objectweb.asm.Opcodes;
+import jdk.internal.org.objectweb.asm.Type;
 import semantic.Constants;
+import semantic.symbolTable.descriptor.TypeDSCP;
 import semantic.syntaxTree.declaration.method.Argument;
 
 import java.util.List;
@@ -66,11 +68,14 @@ public class Utility {
         }
     }
 
-    public static String createMethodDescriptor(List<Argument> arguments, boolean hasReturn, int returnType) {
+    public static String createMethodDescriptor(List<Argument> arguments, boolean hasReturn, TypeDSCP returnType) {
         StringBuilder methodDescriptor = new StringBuilder(createArgumentDescriptor(arguments));
-        if (hasReturn)
-            methodDescriptor.append(Utility.getPrimitiveTypeDescriptor(returnType));
-        else
+        if (hasReturn) {
+            if (returnType.isPrimitive())
+                methodDescriptor.append(Utility.getPrimitiveTypeDescriptor(returnType.getTypeCode()));
+            else
+                methodDescriptor.append("L").append(returnType.getName()).append(";");
+        } else
             methodDescriptor.append("V");
         return methodDescriptor.toString();
     }

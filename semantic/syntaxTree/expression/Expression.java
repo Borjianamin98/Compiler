@@ -1,23 +1,24 @@
 package semantic.syntaxTree.expression;
 
+import semantic.symbolTable.descriptor.TypeDSCP;
 import semantic.syntaxTree.Node;
 
 public abstract class Expression extends Node {
-    private int resultType;
+    private TypeDSCP resultType;
 
     public Expression() {
 
     }
 
-    public Expression(int resultType) {
+    public Expression(TypeDSCP resultType) {
         this.resultType = resultType;
     }
 
-    public int getResultType() {
+    public TypeDSCP getResultType() {
         return resultType;
     }
 
-    public int setResultType(int resultType) {
-        return this.resultType = resultType;
+    public void setResultType(TypeDSCP resultType) {
+        this.resultType = resultType;
     }
 }

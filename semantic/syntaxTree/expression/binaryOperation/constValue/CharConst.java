@@ -9,7 +9,7 @@ public class CharConst extends Expression {
     public char value;
 
     public CharConst(char value) {
-        super(Constants.INTEGER_CODE);
+        super(Constants.INTEGER_DSCP);
         this.value = value;
     }
 

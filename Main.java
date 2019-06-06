@@ -35,8 +35,6 @@ public class Main implements Opcodes {
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
-        Display.add(false); // Top SymbolTable
-
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
         cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC | Opcodes.ACC_SUPER, "Tester", null, "java/lang/Object", null);
@@ -66,7 +64,7 @@ public class Main implements Opcodes {
                 vart.generateCode(cv, mv);
             }
         });
-        MethodDCL func1 = new MethodDCL("Tester", "testFunc", Constants.INTEGER_CODE, args, block);
+        MethodDCL func1 = new MethodDCL("Tester", "testFunc", Constants.INTEGER_DSCP, args, block);
         func1.generateCode(cw, mw);
 
         mw = cw.visitMethod(ACC_PUBLIC | ACC_STATIC, "main", "([Ljava/lang/String;)V", null, null);

@@ -32,11 +32,11 @@ public class VariableDCL extends Declaration {
         if (!typeDSCP.isPresent() || !(typeDSCP.get() instanceof TypeDSCP))
             throw new SymbolNotFoundException();
         TypeDSCP variableTypeDSCP = (TypeDSCP) typeDSCP.get();
-        VariableDSCP variableDSCP = new VariableDSCP(variableTypeDSCP.getType(), variableTypeDSCP.getSize(), top.getFreeAddress(), isConstant());
+        VariableDSCP variableDSCP = new VariableDSCP(getName(), variableTypeDSCP, variableTypeDSCP.getSize(), top.getFreeAddress(), isConstant());
         top.addSymbol(getName(), variableDSCP);
         if (getDefaultValue() != null) {
             getDefaultValue().generateCode(cv, mv);
-            mv.visitVarInsn(Utility.getOpcode(getDefaultValue().getResultType(), "STORE"), variableDSCP.getAddress());
+            mv.visitVarInsn(Utility.getOpcode(getDefaultValue().getResultType().getTypeCode(), "STORE"), variableDSCP.getAddress());
         }
     }
 }

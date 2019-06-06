@@ -5,14 +5,15 @@ import semantic.syntaxTree.declaration.method.Argument;
 
 import java.util.List;
 
-public class MethodDSCP implements DSCP {
+public class MethodDSCP extends DSCP {
     private String owner;
     private String name;
     private boolean hasReturn;
-    private int returnType;
+    private TypeDSCP returnType;
     private List<Argument> arguments;
 
-    public MethodDSCP(String owner, String name, boolean hasReturn, int returnType, List<Argument> arguments) {
+    public MethodDSCP(String owner, String name, boolean hasReturn, TypeDSCP returnType, List<Argument> arguments) {
+        super(name);
         this.owner = owner;
         this.name = name;
         this.hasReturn = hasReturn;
@@ -32,7 +33,7 @@ public class MethodDSCP implements DSCP {
         return hasReturn;
     }
 
-    public int getReturnType() {
+    public TypeDSCP getReturnType() {
         return returnType;
     }
 
