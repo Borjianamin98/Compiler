@@ -16,6 +16,7 @@ import semantic.syntaxTree.expression.binaryOperation.constValue.IntegerConst;
 import semantic.syntaxTree.identifier.MemberVariable;
 import semantic.syntaxTree.identifier.SimpleVariable;
 import semantic.syntaxTree.identifier.Variable;
+import semantic.syntaxTree.statement.PrintFunction;
 import semantic.syntaxTree.statement.ReturnStatement;
 import semantic.syntaxTree.statement.Statement;
 import semantic.syntaxTree.statement.assignment.Assignment;
@@ -62,20 +63,8 @@ public class Main implements Opcodes {
         args.add(new Argument("t", 0, "int"));
         args.add(new Argument("i", 0, "double"));
         Block block = new Block();
-        block.addStatement(new Statement() {
-            @Override
-            public void generateCode(ClassVisitor cv, MethodVisitor mv) {
-                SimpleVariable vart = new SimpleVariable("t");
-                SimpleVariable vari = new SimpleVariable("i");
-                mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-                vart.generateCode(cv, mv);
-                mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
-                mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-                vari.generateCode(cv, mv);
-                mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(D)V", false);
-            }
-        });
-        block.addStatement(new ReturnStatement(new SimpleVariable("t")));
+        block.addStatement(new PrintFunction(new SimpleVariable("t")));
+        block.addStatement(new PrintFunction(new SimpleVariable("i")));
         MethodDCL func1 = new MethodDCL("Tester", "testFunc", args, block, Constants.INTEGER_DSCP);
         func1.generateCode(cw, mw);
 
@@ -149,7 +138,7 @@ public class Main implements Opcodes {
 //        MethodCall methodCall = new MethodCall("testFunc", parameters);
 //        methodCall.generateCode(cw, mw);
 
-        VariableDCL variableDCL = new VariableDCL("x", "int", false);
+        VariableDCL variableDCL = new VariableDCL("x", "int", false, new IntegerConst(1));
         variableDCL.generateCode(cw, mw);
         Variable varx = new SimpleVariable("x");
         Plus plus = new Plus(varx, new IntegerConst(1));
@@ -167,9 +156,8 @@ public class Main implements Opcodes {
         Switch switchCase = new Switch(plus, cases, block1);
         switchCase.generateCode(cw, mw);
 
-        mw.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-        varx.generateCode(cw, mw);
-        mw.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
+        PrintFunction printFunction = new PrintFunction(varx);
+        printFunction.generateCode(cw, mw);
 
         mw.visitInsn(RETURN);
         mw.visitMaxs(0, 0);
