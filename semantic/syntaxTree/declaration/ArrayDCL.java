@@ -2,10 +2,11 @@ package semantic.syntaxTree.declaration;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
 import semantic.symbolTable.Utility;
-import semantic.symbolTable.descriptor.variable.ArrayVariableDSCP;
+import semantic.symbolTable.descriptor.variable.VariableDSCP;
 
 import java.util.List;
 
@@ -31,6 +32,7 @@ public class ArrayDCL extends Declaration {
         }
         mv.visitMultiANewArrayInsn(getDescriptor(), dimension.size());
         SymbolTable top = Display.top();
-        top.addSymbol(getName(), new ArrayVariableDSCP(getName(), getTypeDSCP(), 1, top.getFreeAddress(), isConstant(), dimension.size()));
+        mv.visitVarInsn(Opcodes.ASTORE, top.getFreeAddress());
+        top.addSymbol(getName(), new VariableDSCP(getName(), getTypeDSCP(), 1, top.getFreeAddress(), isConstant(), dimension.size()));
     }
 }

@@ -1,29 +1,16 @@
 import java_cup.runtime.ComplexSymbolFactory;
 import org.objectweb.asm.*;
-import semantic.Constants;
 import semantic.syntaxTree.Node;
-import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.ArrayDCL;
 import semantic.syntaxTree.declaration.VariableDCL;
-import semantic.syntaxTree.declaration.method.Argument;
-import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.declaration.record.Field;
 import semantic.syntaxTree.declaration.record.RecordTypeDCL;
 import semantic.syntaxTree.expression.Expression;
-import semantic.syntaxTree.expression.MethodCall;
-import semantic.syntaxTree.expression.binaryOperation.arithmetic.Plus;
-import semantic.syntaxTree.expression.binaryOperation.constValue.DoubleConst;
 import semantic.syntaxTree.expression.binaryOperation.constValue.IntegerConst;
 import semantic.syntaxTree.identifier.MemberVariable;
 import semantic.syntaxTree.identifier.SimpleVariable;
 import semantic.syntaxTree.identifier.Variable;
 import semantic.syntaxTree.statement.PrintFunction;
-import semantic.syntaxTree.statement.ReturnStatement;
-import semantic.syntaxTree.statement.Statement;
-import semantic.syntaxTree.statement.assignment.Assignment;
-import semantic.syntaxTree.statement.assignment.DirectAssignment;
-import semantic.syntaxTree.statement.condition.switchcase.Case;
-import semantic.syntaxTree.statement.condition.switchcase.Switch;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -119,13 +106,16 @@ public class Main implements Opcodes {
 //        MethodCall methodCall2 = new MethodCall(func1.getName(), parameters2);
 //        methodCall2.generateCode(cw, mw);
 
-        List<Field> fields = new ArrayList<>();
-        fields.add(new Field("x", 0, "int", new IntegerConst(1)));
-        fields.add(new Field("y", 0, "int"));
-        fields.add(new Field("z", 0, "int"));
-        fields.add(new Field("t", 0, "string"));
-        RecordTypeDCL recordTypeDCL = new RecordTypeDCL("A", fields);
-        recordTypeDCL.generateCode(cw, mw);
+        List<Field> f1 = new ArrayList<>();
+        f1.add(new Field("x", 0, "int", false, new IntegerConst(1)));
+        f1.add(new Field("y", 0, "int", false));
+        RecordTypeDCL r1 = new RecordTypeDCL("A", f1);
+        r1.generateCode(cw, mw);
+
+        List<Field> f2 = new ArrayList<>();
+        f2.add(new Field("x", 0, "A", false));
+        RecordTypeDCL r2 = new RecordTypeDCL("B", f2);
+        r2.generateCode(cw, mw);
 
 //        VariableDCL vara = new VariableDCL("a", "A", false);
 //        vara.generateCode(cw, mw);
@@ -162,10 +152,28 @@ public class Main implements Opcodes {
 
         List<Integer> d = new ArrayList<>();
         d.add(2);
-//        d.add(3);
+        d.add(3);
 //        d.add(20);
-        ArrayDCL arrayDCL = new ArrayDCL("x", "A", false, d);
+        ArrayDCL arrayDCL = new ArrayDCL("x", "B", false, d);
         arrayDCL.generateCode(cw, mw);
+//        VariableDCL variableDCL = new VariableDCL("y", "int", false);
+//        variableDCL.generateCode(cw, mw);
+//
+        List<Expression> dd = new ArrayList<>();
+        dd.add(new IntegerConst(1));
+        dd.add(new IntegerConst(1));
+//        SimpleVariable variable = new SimpleVariable("x", dd);
+//        variable.assignValue(cw, mw, new IntegerConst(5));
+
+//        DirectAssignment ass = new DirectAssignment(new SimpleVariable("y"), variable);
+//        ass.generateCode(cw, mw);
+//        VariableDCL varD = new ArrayDCL("x", "B", false, );
+//        varD.generateCode(cw, mw);
+
+        SimpleVariable varx = new SimpleVariable("x", dd);
+        MemberVariable m1 = new MemberVariable(varx, "x");
+        MemberVariable m2 = new MemberVariable(m1, "x");
+        new PrintFunction(m2).generateCode(cw, mw);
 
         mw.visitInsn(RETURN);
         mw.visitMaxs(0, 0);

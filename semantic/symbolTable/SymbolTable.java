@@ -3,7 +3,7 @@ package semantic.symbolTable;
 import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
-import semantic.symbolTable.descriptor.variable.SimpleVariableDSCP;
+import semantic.symbolTable.descriptor.variable.VariableDSCP;
 
 import java.util.HashMap;
 
@@ -29,8 +29,8 @@ public class SymbolTable {
     public void addSymbol(String name, DSCP descriptor) {
         if (descriptor instanceof TypeDSCP)
             throw new RuntimeException("TypeDSCP must add through addType to SymbolTable");
-        if (descriptor instanceof SimpleVariableDSCP)
-            freeAddress += ((SimpleVariableDSCP) descriptor).getSize();
+        if (descriptor instanceof VariableDSCP)
+            freeAddress += ((VariableDSCP) descriptor).getSize();
         symbols.put(name, descriptor);
     }
 

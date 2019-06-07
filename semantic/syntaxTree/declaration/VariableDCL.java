@@ -7,7 +7,7 @@ import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
 import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
-import semantic.symbolTable.descriptor.variable.SimpleVariableDSCP;
+import semantic.symbolTable.descriptor.variable.VariableDSCP;
 import semantic.syntaxTree.expression.Expression;
 
 public class VariableDCL extends Declaration {
@@ -39,7 +39,7 @@ public class VariableDCL extends Declaration {
             mv.visitVarInsn(Utility.getOpcode(defaultValue.getResultType().getTypeCode(), "STORE"), top.getFreeAddress());
             isInitialized = true;
         }
-        SimpleVariableDSCP simpleVariableDSCP = new SimpleVariableDSCP(getName(), getTypeDSCP(), getTypeDSCP().getSize(), top.getFreeAddress(), isConstant(), isInitialized);
-        top.addSymbol(getName(), simpleVariableDSCP);
+        VariableDSCP variableDSCP = new VariableDSCP(getName(), getTypeDSCP(), getTypeDSCP().getSize(), top.getFreeAddress(), isConstant(), isInitialized);
+        top.addSymbol(getName(), variableDSCP);
     }
 }

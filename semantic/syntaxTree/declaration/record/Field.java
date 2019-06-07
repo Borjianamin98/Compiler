@@ -14,16 +14,18 @@ public class Field {
     private String type;
     private String name;
     private Expression defaultValue;
+    private boolean constant;
 
-    public Field(String name, int arrayLevels, String type, Expression defaultValue) {
+    public Field(String name, int arrayLevels, String type, boolean constant, Expression defaultValue) {
         this.name = name;
         this.arrayLevels = arrayLevels;
         this.type = type;
+        this.constant = constant;
         this.defaultValue = defaultValue;
     }
 
-    public Field(String name, int arrayLevels, String type) {
-        this(name, arrayLevels, type, null);
+    public Field(String name, int arrayLevels, String type, boolean constant) {
+        this(name, arrayLevels, type, constant, null);
     }
 
     public String getName() {
@@ -43,5 +45,13 @@ public class Field {
 
     public Expression getDefaultValue() {
         return defaultValue;
+    }
+
+    public int getArrayLevels() {
+        return arrayLevels;
+    }
+
+    public boolean isConstant() {
+        return constant;
     }
 }
