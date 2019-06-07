@@ -6,14 +6,14 @@ import semantic.exception.IllegalTypeException;
 import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
-import semantic.symbolTable.descriptor.VariableDSCP;
+import semantic.symbolTable.descriptor.variable.SimpleVariableDSCP;
 import semantic.symbolTable.Display;
 import semantic.syntaxTree.expression.Expression;
 
 import java.util.Optional;
 
 public class SimpleVariable extends Variable {
-    private VariableDSCP dscp;
+    private SimpleVariableDSCP dscp;
 
     public SimpleVariable(String name) {
         super(name);
@@ -35,13 +35,13 @@ public class SimpleVariable extends Variable {
     }
 
     @Override
-    public VariableDSCP getDSCP() {
+    public SimpleVariableDSCP getDSCP() {
         if (dscp == null) {
             Optional<DSCP> fetchedDSCP = Display.find(getName());
             if (!fetchedDSCP.isPresent())
                 throw new SymbolNotFoundException(getName() + " is not declared");
-            if (fetchedDSCP.get() instanceof VariableDSCP) {
-                dscp = (VariableDSCP) fetchedDSCP.get();
+            if (fetchedDSCP.get() instanceof SimpleVariableDSCP) {
+                dscp = (SimpleVariableDSCP) fetchedDSCP.get();
             } else
                 throw new IllegalTypeException(getName() + " is not a variable");
         }

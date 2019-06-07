@@ -1,6 +1,6 @@
 package semantic.syntaxTree.expression.binaryOperation;
 
-import semantic.symbolTable.descriptor.TypeDSCP;
+import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.expression.Expression;
 
 public abstract class BinaryOperation extends Expression {

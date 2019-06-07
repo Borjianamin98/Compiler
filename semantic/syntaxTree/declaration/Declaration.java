@@ -1,13 +1,11 @@
 package semantic.syntaxTree.declaration;
 
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.MethodVisitor;
 import semantic.exception.DuplicateDeclarationException;
 import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
 import semantic.symbolTable.descriptor.DSCP;
-import semantic.symbolTable.descriptor.TypeDSCP;
+import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.Node;
 import semantic.syntaxTree.expression.Expression;
 
@@ -18,13 +16,11 @@ public abstract class Declaration extends Node {
     private String type;
     private TypeDSCP typeDSCP;
     private boolean isConstant;
-    private Expression defaultValue;
 
-    public Declaration(String name, String type, boolean isConstant, Expression defaultValue) {
+    public Declaration(String name, String type, boolean isConstant) {
         this.name = name;
         this.type = type;
         this.isConstant = isConstant;
-        this.defaultValue = defaultValue;
     }
 
     public String getName() {
@@ -37,10 +33,6 @@ public abstract class Declaration extends Node {
 
     public boolean isConstant() {
         return isConstant;
-    }
-
-    public Expression getDefaultValue() {
-        return defaultValue;
     }
 
     public TypeDSCP getTypeDSCP() {

@@ -4,7 +4,7 @@ import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
-import semantic.symbolTable.descriptor.TypeDSCP;
+import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.expression.Expression;
 
 import java.util.Optional;

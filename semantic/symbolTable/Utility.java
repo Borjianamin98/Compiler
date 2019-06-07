@@ -1,9 +1,8 @@
 package semantic.symbolTable;
 
 import jdk.internal.org.objectweb.asm.Opcodes;
-import jdk.internal.org.objectweb.asm.Type;
 import semantic.Constants;
-import semantic.symbolTable.descriptor.TypeDSCP;
+import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.Argument;
 
 import java.util.List;

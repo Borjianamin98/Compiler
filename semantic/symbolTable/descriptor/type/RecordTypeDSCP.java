@@ -1,4 +1,4 @@
-package semantic.symbolTable.descriptor;
+package semantic.symbolTable.descriptor.type;
 
 import semantic.syntaxTree.declaration.record.Field;
 

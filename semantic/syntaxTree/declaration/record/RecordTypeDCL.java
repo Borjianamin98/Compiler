@@ -7,7 +7,7 @@ import org.objectweb.asm.Opcodes;
 import semantic.exception.DuplicateDeclarationException;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
-import semantic.symbolTable.descriptor.RecordTypeDSCP;
+import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
 import semantic.syntaxTree.Node;
 
 import java.io.FileOutputStream;

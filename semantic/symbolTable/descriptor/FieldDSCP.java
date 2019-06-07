@@ -1,5 +1,7 @@
 package semantic.symbolTable.descriptor;
 
+import semantic.symbolTable.descriptor.type.TypeDSCP;
+
 public class FieldDSCP extends DSCP {
     private TypeDSCP type;
     private int size;

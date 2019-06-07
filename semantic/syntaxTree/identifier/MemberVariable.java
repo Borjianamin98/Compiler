@@ -7,15 +7,15 @@ import semantic.exception.IllegalTypeException;
 import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.descriptor.DSCP;
-import semantic.symbolTable.descriptor.RecordTypeDSCP;
-import semantic.symbolTable.descriptor.VariableDSCP;
+import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
+import semantic.symbolTable.descriptor.variable.SimpleVariableDSCP;
 import semantic.syntaxTree.expression.Expression;
 
 import java.util.Optional;
 
 public class MemberVariable extends Variable {
     private String parent;
-    private VariableDSCP parentDSCP;
+    private SimpleVariableDSCP parentDSCP;
     private RecordTypeDSCP recordTypeDSCP;
 
     public MemberVariable(String parent, String name) {
@@ -39,13 +39,13 @@ public class MemberVariable extends Variable {
     }
 
     @Override
-    public VariableDSCP getDSCP() {
+    public SimpleVariableDSCP getDSCP() {
         if (parentDSCP == null) {
             Optional<DSCP> fetchedDSCP = Display.find(parent);
             if (!fetchedDSCP.isPresent())
                 throw new SymbolNotFoundException(parent + " is not declared");
-            if (fetchedDSCP.get() instanceof VariableDSCP) {
-                parentDSCP = (VariableDSCP) fetchedDSCP.get();
+            if (fetchedDSCP.get() instanceof SimpleVariableDSCP) {
+                parentDSCP = (SimpleVariableDSCP) fetchedDSCP.get();
             } else
                 throw new IllegalTypeException(parent + " is not a variable");
             if (!(parentDSCP.getType() instanceof RecordTypeDSCP) ||

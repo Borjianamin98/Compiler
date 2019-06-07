@@ -1,19 +1,20 @@
-package semantic.symbolTable.descriptor;
+package semantic.symbolTable.descriptor.variable;
+
+import semantic.symbolTable.descriptor.DSCP;
+import semantic.symbolTable.descriptor.type.TypeDSCP;
 
 public class VariableDSCP extends DSCP {
     private TypeDSCP type;
     private int size;
     private int address;
     private boolean constant;
-    private boolean initialized;
 
-    public VariableDSCP(String name, TypeDSCP type, int size, int address, boolean constant, boolean initialized) {
+    public VariableDSCP(String name, TypeDSCP type, int size, int address, boolean constant) {
         super(name);
         this.type = type;
         this.size = size;
         this.address = address;
         this.constant = constant;
-        this.initialized = initialized;
     }
 
     public int getAddress() {
@@ -22,14 +23,6 @@ public class VariableDSCP extends DSCP {
 
     public boolean isConstant() {
         return constant;
-    }
-
-    public boolean isInitialized() {
-        return initialized;
-    }
-
-    public void setInitialized(boolean initialized) {
-        this.initialized = initialized;
     }
 
     public TypeDSCP getType() {
