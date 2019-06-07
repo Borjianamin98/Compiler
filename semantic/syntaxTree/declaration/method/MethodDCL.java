@@ -9,7 +9,7 @@ import semantic.symbolTable.SymbolTable;
 import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.MethodDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
-import semantic.symbolTable.descriptor.variable.VariableDSCP;
+import semantic.symbolTable.descriptor.hastype.VariableDSCP;
 import semantic.syntaxTree.Node;
 import semantic.syntaxTree.block.Block;
 

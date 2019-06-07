@@ -3,7 +3,7 @@ package semantic.symbolTable;
 import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
-import semantic.symbolTable.descriptor.variable.VariableDSCP;
+import semantic.symbolTable.descriptor.hastype.VariableDSCP;
 
 import java.util.HashMap;
 

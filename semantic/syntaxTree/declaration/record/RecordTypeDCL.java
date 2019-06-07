@@ -7,7 +7,7 @@ import org.objectweb.asm.Opcodes;
 import semantic.exception.DuplicateDeclarationException;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
-import semantic.symbolTable.descriptor.FieldDSCP;
+import semantic.symbolTable.descriptor.hastype.FieldDSCP;
 import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
 import semantic.syntaxTree.Node;
 

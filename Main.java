@@ -1,16 +1,19 @@
 import java_cup.runtime.ComplexSymbolFactory;
 import org.objectweb.asm.*;
 import semantic.syntaxTree.Node;
+import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.ArrayDCL;
 import semantic.syntaxTree.declaration.VariableDCL;
 import semantic.syntaxTree.declaration.record.Field;
 import semantic.syntaxTree.declaration.record.RecordTypeDCL;
 import semantic.syntaxTree.expression.Expression;
+import semantic.syntaxTree.expression.binaryOperation.conditional.Less;
 import semantic.syntaxTree.expression.binaryOperation.constValue.IntegerConst;
 import semantic.syntaxTree.identifier.MemberVariable;
 import semantic.syntaxTree.identifier.SimpleVariable;
 import semantic.syntaxTree.identifier.Variable;
 import semantic.syntaxTree.statement.PrintFunction;
+import semantic.syntaxTree.statement.loop.RepeatUntil;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -108,7 +111,7 @@ public class Main implements Opcodes {
 
         List<Field> f1 = new ArrayList<>();
         f1.add(new Field("x", 0, "int", false, new IntegerConst(1)));
-        f1.add(new Field("y", 0, "int", false));
+        f1.add(new Field("y", 0, "double", false));
         RecordTypeDCL r1 = new RecordTypeDCL("A", f1);
         r1.generateCode(cw, mw);
 
@@ -120,8 +123,8 @@ public class Main implements Opcodes {
 //        VariableDCL vara = new VariableDCL("a", "A", false);
 //        vara.generateCode(cw, mw);
 //
-//        Variable variable = new MemberVariable("a", "x");
-//        Assignment ass1 = new DirectAssignment(variable, new IntegerConst(10));
+//        Variable hastype = new MemberVariable("a", "x");
+//        Assignment ass1 = new DirectAssignment(hastype, new IntegerConst(10));
 //        ass1.generateCode(cw, mw);
 //        List<Expression> parameters = new ArrayList<>();
 //        parameters.add(new MemberVariable("a", "x"));
@@ -150,30 +153,26 @@ public class Main implements Opcodes {
 //        PrintFunction printFunction = new PrintFunction(varx);
 //        printFunction.generateCode(cw, mw);
 
-        List<Integer> d = new ArrayList<>();
-        d.add(2);
-        d.add(3);
-//        d.add(20);
-        ArrayDCL arrayDCL = new ArrayDCL("x", "B", false, d);
-        arrayDCL.generateCode(cw, mw);
-//        VariableDCL variableDCL = new VariableDCL("y", "int", false);
-//        variableDCL.generateCode(cw, mw);
-//
-        List<Expression> dd = new ArrayList<>();
-        dd.add(new IntegerConst(1));
-        dd.add(new IntegerConst(1));
-//        SimpleVariable variable = new SimpleVariable("x", dd);
-//        variable.assignValue(cw, mw, new IntegerConst(5));
+//        List<Integer> d = new ArrayList<>();
+//        d.add(2);
+//        d.add(3);
+//        ArrayDCL arrayDCL = new ArrayDCL("x", "B", false, d);
+//        arrayDCL.generateCode(cw, mw);
+//        List<Expression> dd = new ArrayList<>();
+//        dd.add(new IntegerConst(1));
+//        dd.add(new IntegerConst(1));
+//        SimpleVariable varx = new SimpleVariable("x", dd);
+//        MemberVariable m1 = new MemberVariable(varx, "x");
+//        MemberVariable m2 = new MemberVariable(m1, "y");
+//        new PrintFunction(m2).generateCode(cw, mw);
 
-//        DirectAssignment ass = new DirectAssignment(new SimpleVariable("y"), variable);
-//        ass.generateCode(cw, mw);
-//        VariableDCL varD = new ArrayDCL("x", "B", false, );
-//        varD.generateCode(cw, mw);
-
-        SimpleVariable varx = new SimpleVariable("x", dd);
-        MemberVariable m1 = new MemberVariable(varx, "x");
-        MemberVariable m2 = new MemberVariable(m1, "x");
-        new PrintFunction(m2).generateCode(cw, mw);
+        VariableDCL variableDCL = new VariableDCL("x", "int", false, new IntegerConst(1));
+        variableDCL.generateCode(cw, mw);
+        Block block = new Block();
+        block.addStatement(new PrintFunction(new SimpleVariable("x")));
+        Less less = new Less(new SimpleVariable("x"), new IntegerConst(5));
+        RepeatUntil r = new RepeatUntil(less, block);
+        r.generateCode(cw, mw);
 
         mw.visitInsn(RETURN);
         mw.visitMaxs(0, 0);

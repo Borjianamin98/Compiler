@@ -11,37 +11,25 @@ import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.statement.Statement;
 import semantic.syntaxTree.statement.assignment.Assignment;
 
-public class ForLoop extends Statement {
-    private Assignment initialAssignment;
+public class RepeatUntil extends Statement {
     private Expression condition;
-    /**
-     * only one of steps available at any time
-     */
-    private Assignment stepAssignment;
-    private Expression stepExpression;
-
     private Block body;
 
-    public ForLoop(Assignment initialAssignment, Expression condition, Assignment stepAssignment, Block body) {
-        this.initialAssignment = initialAssignment;
+    public RepeatUntil(Expression condition, Block body) {
         this.condition = condition;
-        this.stepAssignment = stepAssignment;
-        this.body = body;
-    }
-
-    public ForLoop(Assignment initialAssignment, Expression condition, Expression stepExpression, Block body) {
-        this.initialAssignment = initialAssignment;
-        this.condition = condition;
-        this.stepExpression = stepExpression;
         this.body = body;
     }
 
     @Override
     public void generateCode(ClassVisitor cv, MethodVisitor mv) {
-        if (initialAssignment != null)
-            initialAssignment.generateCode(cv, mv);
-        Label conditionLabel = new Label();
-        mv.visitLabel(conditionLabel);
+        Label bodyLabel = new Label();
+        mv.visitLabel(bodyLabel);
+
+        // Uncomment if each for body is a new scope
+//        Display.add(true);
+        body.generateCode(cv, mv);
+//        Display.pop();
+
         condition.generateCode(cv, mv);
         int resultTypeCode = condition.getResultType().getTypeCode();
         if (resultTypeCode == Constants.INTEGER_DSCP.getTypeCode()) {
@@ -55,19 +43,6 @@ public class ForLoop extends Statement {
         } else {
             throw new BooleanExpressionException();
         }
-        Label outLabel = new Label();
-        mv.visitJumpInsn(Opcodes.IFEQ, outLabel);
-
-        // Uncomment if each for body is a new scope
-//        Display.add(true);
-        body.generateCode(cv, mv);
-//        Display.pop();
-
-        if (stepAssignment != null)
-            stepAssignment.generateCode(cv, mv);
-        if (stepExpression != null)
-            stepExpression.generateCode(cv, mv);
-        mv.visitJumpInsn(Opcodes.GOTO, conditionLabel);
-        mv.visitLabel(outLabel);
+        mv.visitJumpInsn(Opcodes.IFNE, bodyLabel);
     }
 }

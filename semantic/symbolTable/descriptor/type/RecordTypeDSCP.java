@@ -1,7 +1,6 @@
 package semantic.symbolTable.descriptor.type;
 
-import semantic.symbolTable.descriptor.FieldDSCP;
-import semantic.syntaxTree.declaration.record.Field;
+import semantic.symbolTable.descriptor.hastype.FieldDSCP;
 
 import java.util.List;
 

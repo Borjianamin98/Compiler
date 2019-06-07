@@ -7,8 +7,8 @@ import semantic.exception.IllegalTypeException;
 import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
-import semantic.symbolTable.descriptor.variable.HasTypeDSCP;
-import semantic.symbolTable.descriptor.variable.VariableDSCP;
+import semantic.symbolTable.descriptor.hastype.HasTypeDSCP;
+import semantic.symbolTable.descriptor.hastype.VariableDSCP;
 import semantic.symbolTable.Display;
 import semantic.syntaxTree.expression.Expression;
 
@@ -84,7 +84,7 @@ public class SimpleVariable extends Variable {
             if (fetchedDSCP.get() instanceof VariableDSCP) {
                 dscp = (VariableDSCP) fetchedDSCP.get();
             } else
-                throw new IllegalTypeException(getName() + " is not a variable");
+                throw new IllegalTypeException(getName() + " is not a hastype");
         }
         return dscp;
     }

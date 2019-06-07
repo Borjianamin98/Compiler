@@ -5,7 +5,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import semantic.exception.IllegalTypeException;
 import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
-import semantic.symbolTable.descriptor.variable.HasTypeDSCP;
+import semantic.symbolTable.descriptor.hastype.HasTypeDSCP;
 import semantic.syntaxTree.expression.Expression;
 
 public class MemberVariable extends Variable {

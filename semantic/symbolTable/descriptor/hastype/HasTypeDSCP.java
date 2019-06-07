@@ -1,4 +1,4 @@
-package semantic.symbolTable.descriptor.variable;
+package semantic.symbolTable.descriptor.hastype;
 
 import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;

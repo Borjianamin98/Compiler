@@ -29,7 +29,7 @@ public class Display {
     /**
      * add a new level of SymbolTable for Display array
      * @param afterLast if true, the address of new SymbolTable will continue from last address of top SymbolTable.
-     *                  It is used for inside a function which have only one local variable array
+     *                  It is used for inside a function which have only one local hastype array
      */
     public static void add(boolean afterLast) {
         if (afterLast)

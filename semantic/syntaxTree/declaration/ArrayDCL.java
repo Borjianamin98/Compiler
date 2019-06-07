@@ -6,7 +6,7 @@ import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
 import semantic.symbolTable.Utility;
-import semantic.symbolTable.descriptor.variable.VariableDSCP;
+import semantic.symbolTable.descriptor.hastype.VariableDSCP;
 
 import java.util.List;
 
