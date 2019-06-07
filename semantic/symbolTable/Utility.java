@@ -64,6 +64,19 @@ public class Utility {
         throw new RuntimeException(type + " is not a primitive type");
     }
 
+    public static String getDescriptor(TypeDSCP type, int arrayLevel) {
+        StringBuilder desc = new StringBuilder();
+        for (int i = 0; i < arrayLevel; i++) {
+            desc.append('[');
+        }
+        if (type.isPrimitive()) {
+            desc.append(Utility.getPrimitiveTypeDescriptor(type.getTypeCode()));
+        } else {
+            desc.append('L').append(type.getName()).append(";");
+        }
+        return desc.toString();
+    }
+
     public static String createMethodDescriptor(List<Argument> arguments, boolean hasReturn, TypeDSCP returnType) {
         StringBuilder methodDescriptor = new StringBuilder(createArgumentDescriptor(arguments));
         if (hasReturn) {

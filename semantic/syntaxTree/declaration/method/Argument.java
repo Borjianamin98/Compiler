@@ -31,16 +31,6 @@ public class Argument {
     }
 
     public String getDescriptor() {
-        StringBuilder desc = new StringBuilder();
-        for (int i = 0; i < arrayLevels; i++) {
-            desc.append('[');
-        }
-        TypeDSCP typeDSCP = getType();
-        if (typeDSCP.isPrimitive()) {
-            desc.append(Utility.getPrimitiveTypeDescriptor(typeDSCP.getTypeCode()));
-        } else {
-            desc.append('L').append(type).append(";");
-        }
-        return desc.toString();
+        return Utility.getDescriptor(getType(), arrayLevels);
     }
 }

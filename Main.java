@@ -3,6 +3,7 @@ import org.objectweb.asm.*;
 import semantic.Constants;
 import semantic.syntaxTree.Node;
 import semantic.syntaxTree.block.Block;
+import semantic.syntaxTree.declaration.ArrayDCL;
 import semantic.syntaxTree.declaration.VariableDCL;
 import semantic.syntaxTree.declaration.method.Argument;
 import semantic.syntaxTree.declaration.method.MethodDCL;
@@ -59,15 +60,15 @@ public class Main implements Opcodes {
         mw.visitMaxs(0, 0);
         mw.visitEnd();
 
-        List<Argument> args = new ArrayList<>();
-        args.add(new Argument("t", 0, "int"));
-        args.add(new Argument("i", 0, "double"));
-        Block block = new Block();
-        block.addStatement(new PrintFunction(new SimpleVariable("t")));
-        block.addStatement(new PrintFunction(new SimpleVariable("i")));
-        MethodDCL func1 = new MethodDCL("Tester", "testFunc", args, block, Constants.INTEGER_DSCP);
-        func1.generateCode(cw, mw);
-
+//        List<Argument> args = new ArrayList<>();
+//        args.add(new Argument("t", 0, "int"));
+//        args.add(new Argument("i", 0, "double"));
+//        Block block = new Block();
+//        block.addStatement(new PrintFunction(new SimpleVariable("t")));
+//        block.addStatement(new PrintFunction(new SimpleVariable("i")));
+//        MethodDCL func1 = new MethodDCL("Tester", "testFunc", args, block, Constants.INTEGER_DSCP);
+//        func1.generateCode(cw, mw);
+//
         mw = cw.visitMethod(ACC_PUBLIC | ACC_STATIC, "main", "([Ljava/lang/String;)V", null, null);
         mw.visitCode();
 
@@ -118,14 +119,14 @@ public class Main implements Opcodes {
 //        MethodCall methodCall2 = new MethodCall(func1.getName(), parameters2);
 //        methodCall2.generateCode(cw, mw);
 
-//        List<Field> fields = new ArrayList<>();
-//        fields.add(new Field("x", 0, "int", new IntegerConst(1)));
-//        fields.add(new Field("y", 0, "int"));
-//        fields.add(new Field("z", 0, "int"));
-//        fields.add(new Field("t", 0, "string"));
-//        RecordTypeDCL recordTypeDCL = new RecordTypeDCL("A", fields);
-//        recordTypeDCL.generateCode(cw, mw);
-//
+        List<Field> fields = new ArrayList<>();
+        fields.add(new Field("x", 0, "int", new IntegerConst(1)));
+        fields.add(new Field("y", 0, "int"));
+        fields.add(new Field("z", 0, "int"));
+        fields.add(new Field("t", 0, "string"));
+        RecordTypeDCL recordTypeDCL = new RecordTypeDCL("A", fields);
+        recordTypeDCL.generateCode(cw, mw);
+
 //        VariableDCL vara = new VariableDCL("a", "A", false);
 //        vara.generateCode(cw, mw);
 //
@@ -138,26 +139,33 @@ public class Main implements Opcodes {
 //        MethodCall methodCall = new MethodCall("testFunc", parameters);
 //        methodCall.generateCode(cw, mw);
 
-        VariableDCL variableDCL = new VariableDCL("x", "int", false, new IntegerConst(1));
-        variableDCL.generateCode(cw, mw);
-        Variable varx = new SimpleVariable("x");
-        Plus plus = new Plus(varx, new IntegerConst(1));
-        List<Case> cases = new ArrayList<>();
-        int[] keys = new int[]{4, 1, 11};
-        for (int key : keys) {
-            Block block1 = new Block();
-            DirectAssignment ass1 = new DirectAssignment(varx, new IntegerConst(key));
-            block1.addStatement(ass1);
-            cases.add(new Case(key, block1));
-        }
-        Block block1 = new Block();
-        DirectAssignment ass1 = new DirectAssignment(varx, new IntegerConst(12));
-        block1.addStatement(ass1);
-        Switch switchCase = new Switch(plus, cases, block1);
-        switchCase.generateCode(cw, mw);
+//        VariableDCL variableDCL = new VariableDCL("x", "int", false, new IntegerConst(1));
+//        variableDCL.generateCode(cw, mw);
+//        Variable varx = new SimpleVariable("x");
+//        Plus plus = new Plus(varx, new IntegerConst(1));
+//        List<Case> cases = new ArrayList<>();
+//        int[] keys = new int[]{4, 1, 11};
+//        for (int key : keys) {
+//            Block block1 = new Block();
+//            DirectAssignment ass1 = new DirectAssignment(varx, new IntegerConst(key));
+//            block1.addStatement(ass1);
+//            cases.add(new Case(key, block1));
+//        }
+//        Block block1 = new Block();
+//        DirectAssignment ass1 = new DirectAssignment(varx, new IntegerConst(12));
+//        block1.addStatement(ass1);
+//        Switch switchCase = new Switch(plus, cases, block1);
+//        switchCase.generateCode(cw, mw);
+//
+//        PrintFunction printFunction = new PrintFunction(varx);
+//        printFunction.generateCode(cw, mw);
 
-        PrintFunction printFunction = new PrintFunction(varx);
-        printFunction.generateCode(cw, mw);
+        List<Integer> d = new ArrayList<>();
+        d.add(2);
+//        d.add(3);
+//        d.add(20);
+        ArrayDCL arrayDCL = new ArrayDCL("x", "A", false, d);
+        arrayDCL.generateCode(cw, mw);
 
         mw.visitInsn(RETURN);
         mw.visitMaxs(0, 0);

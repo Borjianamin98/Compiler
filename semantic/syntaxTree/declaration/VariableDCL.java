@@ -28,19 +28,10 @@ public class VariableDCL extends Declaration {
 
     @Override
     public void generateCode(ClassVisitor cv, MethodVisitor mv) {
-        // Only check current block table
-        // otherwise this declaration shadows other declarations
         SymbolTable top = Display.top();
-        if (top.contain(getName())) {
-            throw new DuplicateDeclarationException(getName() + " declared more than one time");
-        }
-        Optional<DSCP> typeDSCP = Display.find(getType());
-        if (!typeDSCP.isPresent() || !(typeDSCP.get() instanceof TypeDSCP))
-            throw new SymbolNotFoundException();
-        TypeDSCP variableTypeDSCP = (TypeDSCP) typeDSCP.get();
         boolean isInitialized = false;
-        if (variableTypeDSCP instanceof RecordTypeDSCP) {
-            RecordTypeDSCP recordTypeDSCP = (RecordTypeDSCP) variableTypeDSCP;
+        if (getTypeDSCP() instanceof RecordTypeDSCP) {
+            RecordTypeDSCP recordTypeDSCP = (RecordTypeDSCP) getTypeDSCP();
             mv.visitTypeInsn(Opcodes.NEW, recordTypeDSCP.getName());
             mv.visitInsn(Opcodes.DUP);
             mv.visitMethodInsn(Opcodes.INVOKESPECIAL, recordTypeDSCP.getName(), "<init>", "()V", false);
@@ -52,7 +43,7 @@ public class VariableDCL extends Declaration {
             mv.visitVarInsn(Utility.getOpcode(getDefaultValue().getResultType().getTypeCode(), "STORE"), top.getFreeAddress());
             isInitialized = true;
         }
-        VariableDSCP variableDSCP = new VariableDSCP(getName(), variableTypeDSCP, variableTypeDSCP.getSize(), top.getFreeAddress(), isConstant(), isInitialized);
+        VariableDSCP variableDSCP = new VariableDSCP(getName(), getTypeDSCP(), getTypeDSCP().getSize(), top.getFreeAddress(), isConstant(), isInitialized);
         top.addSymbol(getName(), variableDSCP);
     }
 }
