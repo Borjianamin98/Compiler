@@ -5,6 +5,7 @@ import org.objectweb.asm.MethodVisitor;
 import semantic.exception.ConstantModificationException;
 import semantic.symbolTable.Utility;
 import semantic.syntaxTree.expression.Expression;
+import semantic.syntaxTree.identifier.SimpleVariable;
 import semantic.syntaxTree.identifier.Variable;
 
 public class MultiplyAssignment extends Assignment {
@@ -18,7 +19,8 @@ public class MultiplyAssignment extends Assignment {
         getValue().generateCode(cv, mv);
         if (getVariable().getDSCP().isConstant())
             throw new ConstantModificationException(getVariable().getName() + " can't not modified");
-        mv.visitInsn(Utility.getOpcode(getVariable().getDSCP().getType(), "MUL"));
-        mv.visitVarInsn(Utility.getOpcode(getVariable().getDSCP().getType(), "STORE"), getVariable().getDSCP().getAddress());
+        mv.visitInsn(Utility.getOpcode(getVariable().getDSCP().getType().getTypeCode(), "MUL"));
+        mv.visitVarInsn(Utility.getOpcode(getVariable().getDSCP().getType().getTypeCode(), "STORE"), getVariable().getDSCP().getAddress());
+        getVariable().getDSCP().setInitialized(true);
     }
 }

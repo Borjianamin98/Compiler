@@ -11,7 +11,7 @@ import semantic.syntaxTree.expression.binaryOperation.BinaryOperation;
 public class And extends BinaryOperation {
     public And(Expression firstOperand, Expression secondOperand) {
         super(firstOperand, secondOperand);
-        setResultType(Constants.INTEGER_CODE);
+        setResultType(Constants.INTEGER_DSCP);
     }
 
     @Override

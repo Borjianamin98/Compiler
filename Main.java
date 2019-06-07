@@ -1,15 +1,28 @@
 import java_cup.runtime.ComplexSymbolFactory;
 import org.objectweb.asm.*;
 import semantic.Constants;
-import semantic.symbolTable.Display;
+import semantic.syntaxTree.Node;
 import semantic.syntaxTree.block.Block;
+import semantic.syntaxTree.declaration.VariableDCL;
 import semantic.syntaxTree.declaration.method.Argument;
 import semantic.syntaxTree.declaration.method.MethodDCL;
+import semantic.syntaxTree.declaration.record.Field;
+import semantic.syntaxTree.declaration.record.RecordTypeDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.expression.MethodCall;
+import semantic.syntaxTree.expression.binaryOperation.arithmetic.Plus;
+import semantic.syntaxTree.expression.binaryOperation.constValue.DoubleConst;
 import semantic.syntaxTree.expression.binaryOperation.constValue.IntegerConst;
-import semantic.syntaxTree.statement.Statement;
+import semantic.syntaxTree.identifier.MemberVariable;
+import semantic.syntaxTree.identifier.SimpleVariable;
 import semantic.syntaxTree.identifier.Variable;
+import semantic.syntaxTree.statement.PrintFunction;
+import semantic.syntaxTree.statement.ReturnStatement;
+import semantic.syntaxTree.statement.Statement;
+import semantic.syntaxTree.statement.assignment.Assignment;
+import semantic.syntaxTree.statement.assignment.DirectAssignment;
+import semantic.syntaxTree.statement.condition.switchcase.Case;
+import semantic.syntaxTree.statement.condition.switchcase.Switch;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -35,8 +48,6 @@ public class Main implements Opcodes {
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
-        Display.add(false); // Top SymbolTable
-
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
         cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC | Opcodes.ACC_SUPER, "Tester", null, "java/lang/Object", null);
@@ -50,31 +61,19 @@ public class Main implements Opcodes {
 
         List<Argument> args = new ArrayList<>();
         args.add(new Argument("t", 0, "int"));
-        args.add(new Argument("i", 0, "int"));
+        args.add(new Argument("i", 0, "double"));
         Block block = new Block();
-        block.addStatement(new Statement() {
-            @Override
-            public void generateCode(ClassVisitor cv, MethodVisitor mv) {
-                Variable vart = new Variable("t");
-                Variable vari = new Variable("i");
-                mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-                vart.generateCode(cv, mv);
-                mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
-                mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-                vari.generateCode(cv, mv);
-                mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
-                vart.generateCode(cv, mv);
-            }
-        });
-        MethodDCL func1 = new MethodDCL("Tester", "testFunc", Constants.INTEGER_CODE, args, block);
+        block.addStatement(new PrintFunction(new SimpleVariable("t")));
+        block.addStatement(new PrintFunction(new SimpleVariable("i")));
+        MethodDCL func1 = new MethodDCL("Tester", "testFunc", args, block, Constants.INTEGER_DSCP);
         func1.generateCode(cw, mw);
 
         mw = cw.visitMethod(ACC_PUBLIC | ACC_STATIC, "main", "([Ljava/lang/String;)V", null, null);
         mw.visitCode();
 
 //        Parser.list.get(Parser.list.size() - 1).generateCode(cw, mw);
-//        Variable varx = new Variable("x", new DSCP(Constants.INTEGER_CODE, Constants.INTEGER_SIZE, 2));
-//        Variable vart = new Variable("t", new DSCP(Constants.INTEGER_CODE, Constants.INTEGER_SIZE, 3));
+//        SimpleVariable varx = new SimpleVariable("x", new DSCP(Constants.INTEGER_CODE, Constants.INTEGER_SIZE, 2));
+//        SimpleVariable vart = new SimpleVariable("t", new DSCP(Constants.INTEGER_CODE, Constants.INTEGER_SIZE, 3));
 //        Multiply mult1 = new Multiply(new IntegerConst(5), vart);
 //        Multiply mult2 = new Multiply(new IntegerConst(3), mult1);
 //        Multiply mult3 = new Multiply(varx, new IntegerConst(2));
@@ -84,7 +83,7 @@ public class Main implements Opcodes {
 //        Assignment forAssign = new DirectAssignment(vari, new IntegerConst(1));
 //        VariableDCL variDCL = new VariableDCL("i", "int", false, new IntegerConst(1));
 //        variDCL.generateCode(cw, mw);
-//        Variable vari = new Variable("i");
+//        SimpleVariable vari = new SimpleVariable("i");
 //        Assignment ass1 = new DirectAssignment(vari, new IntegerConst(1));
 //        Less less1 = new Less(vari, new IntegerConst(11));
 //        Assignment ass2 = new PlusAssignment(vari, new IntegerConst(1));
@@ -92,7 +91,7 @@ public class Main implements Opcodes {
 //        Statement st = new Statement() {
 //            @Override
 //            public void generateCode(ClassVisitor cv, MethodVisitor mv) {
-//                Variable vari = new Variable("i");
+//                SimpleVariable vari = new SimpleVariable("i");
 //                mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
 //                vari.generateCode(cv, mv);
 //                mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
@@ -103,28 +102,69 @@ public class Main implements Opcodes {
 //        forLoop.generateCode(cw, mw);
 //        VariableDCL varjDCL = new VariableDCL("j", "int", false, new IntegerConst(1));
 //        varjDCL.generateCode(cw, mw);
-//        vari = new Variable("i");
+//        vari = new SimpleVariable("i");
 //        mw.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
 //        vari.generateCode(cw, mw);
 //        mw.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
 
-        List<Expression> parameters = new ArrayList<>();
-        parameters.add(new IntegerConst(5));
-        parameters.add(new IntegerConst(10));
-        MethodCall methodCall = new MethodCall(func1.getName(), parameters);
+//        List<Expression> parameters = new ArrayList<>();
+//        parameters.add(new IntegerConst(5));
+//        parameters.add(new IntegerConst(10));
+//        MethodCall methodCall = new MethodCall(func1.getName(), parameters);
+//
+//        List<Expression> parameters2 = new ArrayList<>();
+//        parameters2.add(methodCall);
+//        parameters2.add(new IntegerConst(20));
+//        MethodCall methodCall2 = new MethodCall(func1.getName(), parameters2);
+//        methodCall2.generateCode(cw, mw);
 
-        List<Expression> parameters2 = new ArrayList<>();
-        parameters2.add(methodCall);
-        parameters2.add(new IntegerConst(20));
-        MethodCall methodCall2 = new MethodCall(func1.getName(), parameters2);
-        methodCall2.generateCode(cw, mw);
+//        List<Field> fields = new ArrayList<>();
+//        fields.add(new Field("x", 0, "int", new IntegerConst(1)));
+//        fields.add(new Field("y", 0, "int"));
+//        fields.add(new Field("z", 0, "int"));
+//        fields.add(new Field("t", 0, "string"));
+//        RecordTypeDCL recordTypeDCL = new RecordTypeDCL("A", fields);
+//        recordTypeDCL.generateCode(cw, mw);
+//
+//        VariableDCL vara = new VariableDCL("a", "A", false);
+//        vara.generateCode(cw, mw);
+//
+//        Variable variable = new MemberVariable("a", "x");
+//        Assignment ass1 = new DirectAssignment(variable, new IntegerConst(10));
+//        ass1.generateCode(cw, mw);
+//        List<Expression> parameters = new ArrayList<>();
+//        parameters.add(new MemberVariable("a", "x"));
+//        parameters.add(new DoubleConst(1));
+//        MethodCall methodCall = new MethodCall("testFunc", parameters);
+//        methodCall.generateCode(cw, mw);
+
+        VariableDCL variableDCL = new VariableDCL("x", "int", false, new IntegerConst(1));
+        variableDCL.generateCode(cw, mw);
+        Variable varx = new SimpleVariable("x");
+        Plus plus = new Plus(varx, new IntegerConst(1));
+        List<Case> cases = new ArrayList<>();
+        int[] keys = new int[]{4, 1, 11};
+        for (int key : keys) {
+            Block block1 = new Block();
+            DirectAssignment ass1 = new DirectAssignment(varx, new IntegerConst(key));
+            block1.addStatement(ass1);
+            cases.add(new Case(key, block1));
+        }
+        Block block1 = new Block();
+        DirectAssignment ass1 = new DirectAssignment(varx, new IntegerConst(12));
+        block1.addStatement(ass1);
+        Switch switchCase = new Switch(plus, cases, block1);
+        switchCase.generateCode(cw, mw);
+
+        PrintFunction printFunction = new PrintFunction(varx);
+        printFunction.generateCode(cw, mw);
 
         mw.visitInsn(RETURN);
         mw.visitMaxs(0, 0);
         mw.visitEnd();
         cw.visitEnd();
 
-        FileOutputStream fos = new FileOutputStream("Tester.class");
+        FileOutputStream fos = new FileOutputStream(Node.outputPath + "Tester.class");
         fos.write(cw.toByteArray());
         fos.close();
     }

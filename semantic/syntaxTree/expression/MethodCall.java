@@ -35,13 +35,13 @@ public class MethodCall extends Expression {
         for (int i = 0; i < parameters.size(); i++) {
             Expression parameter = parameters.get(i);
             parameter.generateCode(cv, mv);
-            if (parameter.getResultType() != argumentsDSCP.get(i).getArgumentType().getType())
+            if (parameter.getResultType().getTypeCode() != argumentsDSCP.get(i).getType().getTypeCode())
                 throw new TypeMismatchException((i + 1) + "th parameter doesn't match with " + (i + 1) + "th argument of " + methodName);
         }
         mv.visitMethodInsn(Opcodes.INVOKESTATIC, methodDSCP.getOwner(), methodDSCP.getName(), methodDSCP.getDescriptor(), false);
         if (methodDSCP.hasReturn())
             setResultType(methodDSCP.getReturnType());
         else
-            setResultType(Constants.VOID_CODE);
+            setResultType(Constants.VOID_DSCP);
     }
 }

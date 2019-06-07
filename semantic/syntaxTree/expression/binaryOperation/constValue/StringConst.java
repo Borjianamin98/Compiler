@@ -9,7 +9,7 @@ public class StringConst extends Expression {
     public String value;
 
     public StringConst(String value) {
-        super(Constants.STRING_CODE);
+        super(Constants.STRING_DSCP);
         this.value = value;
     }
 

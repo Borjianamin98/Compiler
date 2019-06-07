@@ -1,9 +1,7 @@
 package semantic.symbolTable;
 
-import semantic.Constants;
 import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.descriptor.DSCP;
-import semantic.symbolTable.descriptor.SizedDSCP;
 import semantic.symbolTable.descriptor.TypeDSCP;
 import semantic.symbolTable.descriptor.VariableDSCP;
 
@@ -11,7 +9,7 @@ import java.util.HashMap;
 
 public class SymbolTable {
     public static SymbolTable symbolTable = new SymbolTable();
-    public static int freeType = 8;
+    private static int freeType;
 
     private HashMap<String, DSCP> symbols;
     private int freeAddress;
@@ -21,14 +19,6 @@ public class SymbolTable {
         symbols = new HashMap<>();
         freeAddress = 0;
 //        tempNumber = 0;
-
-        symbols.put("int", new TypeDSCP(Constants.INTEGER_CODE, Constants.INTEGER_SIZE, true));
-        symbols.put("bool", new TypeDSCP(Constants.INTEGER_CODE, Constants.INTEGER_SIZE, true));
-        symbols.put("long", new TypeDSCP(Constants.LONG_CODE, Constants.LONG_SIZE, true));
-        symbols.put("float", new TypeDSCP(Constants.FLOAT_CODE, Constants.FLOAT_SIZE, true));
-        symbols.put("double", new TypeDSCP(Constants.DOUBLE_CODE, Constants.DOUBLE_SIZE, true));
-        symbols.put("char", new TypeDSCP(Constants.CHAR_CODE, Constants.CHAR_SIZE, true));
-        symbols.put("string", new TypeDSCP(Constants.STRING_CODE, Constants.STRING_SIZE, true));
     }
 
     public SymbolTable(int startAddress) {
@@ -37,8 +27,16 @@ public class SymbolTable {
     }
 
     public void addSymbol(String name, DSCP descriptor) {
-        if (descriptor instanceof SizedDSCP)
-            freeAddress += ((SizedDSCP) descriptor).getSize();
+        if (descriptor instanceof TypeDSCP)
+            throw new RuntimeException("TypeDSCP must add through addType to SymbolTable");
+        if (descriptor instanceof VariableDSCP)
+            freeAddress += ((VariableDSCP) descriptor).getSize();
+        symbols.put(name, descriptor);
+    }
+
+    public void addType(String name, TypeDSCP descriptor) {
+        descriptor.setTypeCode(freeType);
+        freeType++;
         symbols.put(name, descriptor);
     }
 
