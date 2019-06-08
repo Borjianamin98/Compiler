@@ -61,8 +61,8 @@ public class SymbolTable {
         return symbols.get(name);
     }
 
-    public String getTemp(TypeDSCP type) {
-        String tempName = "_" + tempNumber + "_";
+    public String getTempName() {
+        String tempName = "temp$" + tempNumber;
 //        addSymbol(tempName + "$0", new VariableDSCP(tempName + "$0", type, type.getSize(), freeAddress, false, false));
 //        int counterLevel = 0;
 //        if (type instanceof ArrayTypeDSCP) {

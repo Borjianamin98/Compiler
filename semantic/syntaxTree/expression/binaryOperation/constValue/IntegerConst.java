@@ -3,6 +3,7 @@ package semantic.syntaxTree.expression.binaryOperation.constValue;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import semantic.symbolTable.Constants;
+import semantic.symbolTable.Utility;
 import semantic.syntaxTree.expression.Expression;
 
 public class IntegerConst extends Expression {
@@ -15,6 +16,9 @@ public class IntegerConst extends Expression {
 
     @Override
     public void generateCode(ClassVisitor cv, MethodVisitor mv) {
-        mv.visitLdcInsn(value);
+        if (value >= 0 && value <= 5)
+            mv.visitInsn(Utility.getOpcode("I", "CONST", "_" + value));
+        else
+            mv.visitLdcInsn(value);
     }
 }

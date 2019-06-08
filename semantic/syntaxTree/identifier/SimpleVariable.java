@@ -38,7 +38,7 @@ public class SimpleVariable extends Variable {
     }
 
     @Override
-    public HasTypeDSCP getDSCP() {
+    public VariableDSCP getDSCP() {
         if (dscp == null) {
             Optional<DSCP> fetchedDSCP = Display.find(getName());
             if (!fetchedDSCP.isPresent())

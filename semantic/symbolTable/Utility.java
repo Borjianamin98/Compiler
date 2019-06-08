@@ -29,9 +29,9 @@ public class Utility {
         return "A";
     }
 
-    public static int getOpcode(String prefix, String instruction) {
+    public static int getOpcode(String prefix, String instruction, String postfix) {
         try {
-            return (int) Opcodes.class.getDeclaredField(prefix + instruction).get(null);
+            return (int) Opcodes.class.getDeclaredField(prefix + instruction + postfix).get(null);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Not found requested opcode");
         }

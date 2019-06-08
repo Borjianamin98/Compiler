@@ -190,41 +190,14 @@ public class Main implements Opcodes {
         ass2.generateCode(cw, mw);
         SimpleVariable vary = new SimpleVariable("x");
         ArrayVariable vary$1 = new ArrayVariable(vary, new IntegerConst(1));
-        ArrayVariable vary$2 = new ArrayVariable(vary$1, new IntegerConst(2));
-        PrintFunction printFunction = new PrintFunction(vary$2);
-        printFunction.generateCode(cw, mw);
-//
-//        Variable varx = new SimpleVariable("x");
-////        DirectAssignment ass = new DirectAssignment(varx, new IntegerConst(5));
-////        ass.generateCode(cw, mw);
-////        varx.assignValue(cw, mw, new IntegerConst(5));
-//        ArrayVariable varx$1 = new ArrayVariable(varx, new IntegerConst(0));
-//        ArrayVariable varx$2 = new ArrayVariable(varx$1, new IntegerConst(1));
-////        ArrayVariable varx$3 = new ArrayVariable(varx$2, new IntegerConst(2));
-////        MemberVariable varx$4 = new MemberVariable(varx$2, "x");
-////        varx$4.assignValue(cw, mw, new IntegerConst(5));
-//
-//        List<Argument> args = new ArrayList<>();
-//        args.add(new Argument("x", 3, "int"));
-//        Block body = new Block();
-//        SimpleVariable varxx = new SimpleVariable("x");
-//        ArrayVariable varxx$1 = new ArrayVariable(varxx, new IntegerConst(1));
-//        ArrayVariable varxx$2 = new ArrayVariable(varxx$1, new IntegerConst(2));
-//        ArrayVariable varxx$3 = new ArrayVariable(varxx$2, new IntegerConst(2));
-//        body.addStatement(new PrintFunction(varxx$3));
-//        body.addStatement(new ReturnStatement());
-//        MethodDCL methodDCL = new MethodDCL("Tester", "testFunc", args, body);
-//        methodDCL.generateCode(cw, mw);
-//
-//        List<Expression> pars = new ArrayList<>();
-//        pars.add(varx);
-//        MethodCall methodCall = new MethodCall("testFunc", pars);
-//        methodCall.generateCode(cw, mw);
+//        ArrayVariable vary$2 = new ArrayVariable(vary$1, new IntegerConst(2));
+//        PrintFunction printFunction = new PrintFunction(vary$2);
+//        printFunction.generateCode(cw, mw);
 
 
         Block body = new Block();
-        body.addStatement(new PrintFunction(new ArrayVariable(new SimpleVariable("y"), new IntegerConst(1))));
-        Foreach foreach = new Foreach("y", new SimpleVariable("x") , body);
+//        body.addStatement(new PrintFunction(new SimpleVariable("t")));
+        Foreach foreach = new Foreach("t", vary , body);
         foreach.generateCode(cw, mw);
 
         mw.visitInsn(RETURN);
