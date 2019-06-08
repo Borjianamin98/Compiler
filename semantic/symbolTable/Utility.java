@@ -1,10 +1,14 @@
 package semantic.symbolTable;
 
 import jdk.internal.org.objectweb.asm.Opcodes;
+import semantic.exception.SymbolNotFoundException;
+import semantic.symbolTable.descriptor.DSCP;
+import semantic.symbolTable.descriptor.type.ArrayTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.Argument;
 
 import java.util.List;
+import java.util.Optional;
 
 public class Utility {
     private Utility() {
@@ -60,6 +64,21 @@ public class Utility {
             return "Ljava/lang/String;";
         }
         throw new RuntimeException(type + " is not a primitive type");
+    }
+
+    public static ArrayTypeDSCP addArrayType(TypeDSCP baseType, int dimensions) {
+        if (dimensions <= 0)
+            throw new RuntimeException("Dimensions must be greater than zero");
+        TypeDSCP lastDimensionType = baseType;
+        for (int i = dimensions - 1; i >= 0; i--) {
+            TypeDSCP typeDSCP;
+            if ((typeDSCP = SymbolTable.getType("[" + lastDimensionType.getDescriptor())) == null) {
+                typeDSCP = new ArrayTypeDSCP(lastDimensionType, baseType);
+                SymbolTable.addType(typeDSCP.getName(), typeDSCP);
+            }
+            lastDimensionType = typeDSCP;
+        }
+        return (ArrayTypeDSCP) lastDimensionType;
     }
 
     public static String getDescriptor(TypeDSCP type, int arrayLevel) {

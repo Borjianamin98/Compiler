@@ -14,7 +14,7 @@ import java.util.Optional;
 public abstract class Declaration extends Node {
     private String name;
     private String type;
-    private TypeDSCP typeDSCP;
+    protected TypeDSCP typeDSCP;
     private boolean isConstant;
 
     public Declaration(String name, String type, boolean isConstant) {
@@ -35,19 +35,5 @@ public abstract class Declaration extends Node {
         return isConstant;
     }
 
-    public TypeDSCP getTypeDSCP() {
-        if (typeDSCP == null) {
-            // Only check current block table
-            // otherwise this declaration shadows other declarations
-            SymbolTable top = Display.top();
-            if (top.contain(getName())) {
-                throw new DuplicateDeclarationException(getName() + " declared more than one time");
-            }
-            Optional<DSCP> fetchedDSCP = Display.find(getType());
-            if (!fetchedDSCP.isPresent() || !(fetchedDSCP.get() instanceof TypeDSCP))
-                throw new SymbolNotFoundException();
-            typeDSCP = (TypeDSCP) fetchedDSCP.get();
-        }
-        return typeDSCP;
-    }
+    public abstract TypeDSCP getTypeDSCP();
 }

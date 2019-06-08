@@ -19,8 +19,8 @@ public class MultiplyAssignment extends Assignment {
 //        getValue().generateCode(cv, mv);
 //        if (getVariable().getDSCP().isConstant())
 //            throw new ConstantModificationException(getVariable().getName() + " can't not modified");
-//        mv.visitInsn(Utility.getOpcode(getVariable().getDSCP().getOriginType().getTypeCode(), "MUL"));
-//        mv.visitVarInsn(Utility.getOpcode(getVariable().getDSCP().getOriginType().getTypeCode(), "STORE"), getVariable().getDSCP().getAddress());
+//        mv.visitInsn(Utility.getOpcode(getVariable().getDSCP().getBaseType().getTypeCode(), "MUL"));
+//        mv.visitVarInsn(Utility.getOpcode(getVariable().getDSCP().getBaseType().getTypeCode(), "STORE"), getVariable().getDSCP().getAddress());
 //        getVariable().getDSCP().setInitialized(true);
     }
 }

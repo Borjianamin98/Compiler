@@ -8,7 +8,7 @@ public class RecordTypeDSCP extends TypeDSCP {
     private List<FieldDSCP> fields;
 
     public RecordTypeDSCP(String name, int size, List<FieldDSCP> fields) {
-        super(name, size, false);
+        super(name, size, 0, false);
         this.fields = fields;
     }
 

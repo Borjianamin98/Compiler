@@ -32,7 +32,7 @@ public class SymbolTable {
     public void addSymbol(String name, DSCP descriptor) {
         if (descriptor instanceof TypeDSCP)
             throw new RuntimeException("TypeDSCP must add through addType to SymbolTable");
-        if (descriptor instanceof VariableDSCP)
+        if (descriptor instanceof VariableDSCP && ((VariableDSCP) descriptor).isAddressable())
             freeAddress += ((VariableDSCP) descriptor).getSize();
         symbols.put(name, descriptor);
     }

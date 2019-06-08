@@ -1,23 +1,17 @@
 package semantic.symbolTable.descriptor.type;
 
 public class ArrayTypeDSCP extends TypeDSCP {
-    private int arrayLevel;
     private TypeDSCP internalType;
-    private TypeDSCP originType;
+    private TypeDSCP baseType;
 
-    public ArrayTypeDSCP(int arrayLevel, TypeDSCP internalType, TypeDSCP originType) {
-        super("[" + internalType.getDescriptor(), 1, false);
-        this.arrayLevel = arrayLevel;
+    public ArrayTypeDSCP(TypeDSCP internalType, TypeDSCP baseType) {
+        super("[" + internalType.getDescriptor(), 1, internalType.getDimensions() + 1, false);
         this.internalType = internalType;
-        this.originType = originType;
+        this.baseType = baseType;
     }
 
-    public int getArrayLevel() {
-        return arrayLevel;
-    }
-
-    public TypeDSCP getOriginType() {
-        return originType;
+    public TypeDSCP getBaseType() {
+        return baseType;
     }
 
     @Override

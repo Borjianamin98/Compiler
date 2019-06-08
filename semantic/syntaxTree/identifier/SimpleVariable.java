@@ -40,7 +40,7 @@ public class SimpleVariable extends Variable {
     @Override
     public HasTypeDSCP getDSCP() {
         if (dscp == null) {
-            Optional<DSCP> fetchedDSCP = Display.find(getName() + "$0");
+            Optional<DSCP> fetchedDSCP = Display.find(getName());
             if (!fetchedDSCP.isPresent())
                 throw new SymbolNotFoundException(getName() + " is not declared");
             if (fetchedDSCP.get() instanceof VariableDSCP) {

@@ -6,10 +6,13 @@ import semantic.syntaxTree.declaration.ArrayDCL;
 import semantic.syntaxTree.declaration.record.Field;
 import semantic.syntaxTree.declaration.record.RecordTypeDCL;
 import semantic.syntaxTree.expression.Expression;
+import semantic.syntaxTree.expression.NewArrayInstruction;
 import semantic.syntaxTree.expression.binaryOperation.constValue.IntegerConst;
 import semantic.syntaxTree.identifier.ArrayVariable;
 import semantic.syntaxTree.identifier.SimpleVariable;
+import semantic.syntaxTree.identifier.Variable;
 import semantic.syntaxTree.statement.PrintFunction;
+import semantic.syntaxTree.statement.assignment.DirectAssignment;
 import semantic.syntaxTree.statement.loop.Foreach;
 
 import java.io.FileOutputStream;
@@ -175,8 +178,21 @@ public class Main implements Opcodes {
         d.add(new IntegerConst(2));
         d.add(new IntegerConst(3));
 //        d.add(new IntegerConst(4));
-        ArrayDCL arrayDCL = new ArrayDCL("x", "int", false, d);
+        ArrayDCL arrayDCL = new ArrayDCL("x", "int", false, 2);
         arrayDCL.generateCode(cw, mw);
+        Variable var = new SimpleVariable("x");
+        NewArrayInstruction newIns = new NewArrayInstruction("int", d);
+        DirectAssignment ass = new DirectAssignment(var, newIns);
+        ass.generateCode(cw, mw);
+        ArrayDCL array2 = new ArrayDCL("y", "int", false, 2);
+        array2.generateCode(cw, mw);
+        DirectAssignment ass2 = new DirectAssignment(new SimpleVariable("y"), new SimpleVariable("x"));
+        ass2.generateCode(cw, mw);
+        SimpleVariable vary = new SimpleVariable("x");
+        ArrayVariable vary$1 = new ArrayVariable(vary, new IntegerConst(1));
+        ArrayVariable vary$2 = new ArrayVariable(vary$1, new IntegerConst(2));
+        PrintFunction printFunction = new PrintFunction(vary$2);
+        printFunction.generateCode(cw, mw);
 //
 //        Variable varx = new SimpleVariable("x");
 ////        DirectAssignment ass = new DirectAssignment(varx, new IntegerConst(5));
