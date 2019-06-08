@@ -9,10 +9,12 @@ import semantic.syntaxTree.declaration.record.RecordTypeDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.expression.binaryOperation.conditional.Less;
 import semantic.syntaxTree.expression.binaryOperation.constValue.IntegerConst;
+import semantic.syntaxTree.identifier.ArrayVariable;
 import semantic.syntaxTree.identifier.MemberVariable;
 import semantic.syntaxTree.identifier.SimpleVariable;
 import semantic.syntaxTree.identifier.Variable;
 import semantic.syntaxTree.statement.PrintFunction;
+import semantic.syntaxTree.statement.assignment.DirectAssignment;
 import semantic.syntaxTree.statement.loop.RepeatUntil;
 
 import java.io.FileOutputStream;
@@ -166,13 +168,31 @@ public class Main implements Opcodes {
 //        MemberVariable m2 = new MemberVariable(m1, "y");
 //        new PrintFunction(m2).generateCode(cw, mw);
 
-        VariableDCL variableDCL = new VariableDCL("x", "int", false, new IntegerConst(1));
-        variableDCL.generateCode(cw, mw);
-        Block block = new Block();
-        block.addStatement(new PrintFunction(new SimpleVariable("x")));
-        Less less = new Less(new SimpleVariable("x"), new IntegerConst(5));
-        RepeatUntil r = new RepeatUntil(less, block);
-        r.generateCode(cw, mw);
+//        VariableDCL variableDCL = new VariableDCL("x", "int", false, new IntegerConst(1));
+//        variableDCL.generateCode(cw, mw);
+//        Block block = new Block();
+//        block.addStatement(new PrintFunction(new SimpleVariable("x")));
+//        Less less = new Less(new SimpleVariable("x"), new IntegerConst(5));
+//        RepeatUntil r = new RepeatUntil(less, block);
+//        r.generateCode(cw, mw);
+
+        List<Integer> d = new ArrayList<>();
+        d.add(2);
+        d.add(3);
+        d.add(4);
+        ArrayDCL arrayDCL = new ArrayDCL("x", "A", false, d);
+        arrayDCL.generateCode(cw, mw);
+
+        Variable varx = new SimpleVariable("x");
+//        DirectAssignment ass = new DirectAssignment(varx, new IntegerConst(5));
+//        ass.generateCode(cw, mw);
+//        varx.assignValue(cw, mw, new IntegerConst(5));
+        ArrayVariable varx$1 = new ArrayVariable(varx, new IntegerConst(0));
+        ArrayVariable varx$2 = new ArrayVariable(varx$1, new IntegerConst(1));
+        ArrayVariable varx$3 = new ArrayVariable(varx$2, new IntegerConst(2));
+        MemberVariable varx$4 = new MemberVariable(varx$3, "x");
+        varx$4.assignValue(cw, mw, new IntegerConst(5));
+
 
         mw.visitInsn(RETURN);
         mw.visitMaxs(0, 0);

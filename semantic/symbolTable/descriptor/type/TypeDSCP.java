@@ -1,5 +1,6 @@
 package semantic.symbolTable.descriptor.type;
 
+import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
 
 public class TypeDSCP extends DSCP {
@@ -11,6 +12,10 @@ public class TypeDSCP extends DSCP {
         super(name);
         this.size = size;
         this.isPrimitive = isPrimitive;
+    }
+
+    public String getDescriptor() {
+        return Utility.getDescriptor(this, 0);
     }
 
     public boolean isPrimitive() {

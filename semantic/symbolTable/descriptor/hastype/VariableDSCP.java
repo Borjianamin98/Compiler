@@ -7,13 +7,7 @@ public class VariableDSCP extends HasTypeDSCP {
     private int address;
 
     public VariableDSCP(String name, TypeDSCP type, int size, int address, boolean constant, boolean initialized) {
-        super(name, type, 0, constant, initialized);
-        this.size = size;
-        this.address = address;
-    }
-
-    public VariableDSCP(String name, TypeDSCP type, int size, int address, boolean constant, int arrayLevel) {
-        super(name, type, arrayLevel, constant, true);
+        super(name, type, constant, initialized);
         this.size = size;
         this.address = address;
     }

@@ -1,6 +1,5 @@
 package semantic.symbolTable;
 
-import semantic.Constants;
 import semantic.symbolTable.descriptor.DSCP;
 
 import java.util.ArrayList;
@@ -9,7 +8,7 @@ import java.util.Optional;
 
 public class Display {
     private static List<SymbolTable> displayList = new ArrayList<>();
-    private static SymbolTable mainSymbolTable = new SymbolTable();
+    static SymbolTable mainSymbolTable = new SymbolTable();
 
     static {
         mainSymbolTable.addType("int", Constants.INTEGER_DSCP);

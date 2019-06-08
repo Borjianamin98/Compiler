@@ -3,7 +3,7 @@ package semantic.syntaxTree.expression;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import semantic.Constants;
+import semantic.symbolTable.Constants;
 import semantic.exception.SymbolNotFoundException;
 import semantic.exception.TypeMismatchException;
 import semantic.symbolTable.Display;

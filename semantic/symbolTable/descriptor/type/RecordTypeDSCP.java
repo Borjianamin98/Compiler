@@ -12,10 +12,6 @@ public class RecordTypeDSCP extends TypeDSCP {
         this.fields = fields;
     }
 
-    public List<FieldDSCP> getFields() {
-        return fields;
-    }
-
     public boolean containsField(String name) {
         for (FieldDSCP field : fields) {
             if (field.getName().equals(name))

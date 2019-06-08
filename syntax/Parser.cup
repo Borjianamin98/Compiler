@@ -127,12 +127,9 @@ var_declrations ::= var_dcl var_declrations
                    |
                    var_dcl;
 
-var_dcl         ::= CONST {: isConst = true; :} type:kind {: semanticStack.push(kind); :}
-                    var_dcl_part SEMICOLON {: semanticStack.pop(); isConst = false; :}
-                    {: System.out.println(identifier); :}
+var_dcl         ::= CONST type var_dcl_part SEMICOLON
                     |
-                    type:kind {: semanticStack.push(kind); :}
-                    var_dcl_part SEMICOLON {: semanticStack.pop(); :}
+                    type var_dcl_part SEMICOLON
                     ;
 
 var_dcl_part    ::= var_dcl_cnt COMMA var_dcl_part
@@ -143,7 +140,6 @@ var_dcl_part    ::= var_dcl_cnt COMMA var_dcl_part
 var_dcl_cnt     ::= IDENTIFIER:name
                     {:
 //                        DSCP typeDSCP = (DSCP) semanticStack.getLast();
-getTypeCode
 //                        mainSymbolTable.setADRC(mainSymbolTable.getADRC() + typeDSCP.getSize());
                     :}
                     |
@@ -225,7 +221,7 @@ loop_stmt       ::= FOR LPAREN for_init_part SEMICOLON expr SEMICOLON for_step_p
                     REPEAT block UNTIL LPAREN expr RPAREN SEMICOLON
                     {: System.out.println("repeat stat"); :}
                     |
-                    FOREACH LPAREN IDENTIFIER IN IDENTIFIER RPAREN block
+                    FOREACH LPAREN IDENTIFIER IN expr RPAREN block
                     {: System.out.println("foreach stat"); :}
                     ;
 
@@ -344,20 +340,14 @@ array_part      ::= LBRACKET expr RBRACKET
                     LBRACKET expr RBRACKET array_part;
 
 const_val       ::= INT_CONST:val
-                    {: RESULT = new IntegerConst(val); :}
                     |
                     LONG_CONST:val
-                    {: RESULT = new LongConst(val); :}
                     |
                     REAL_CONST:val
-                    {: RESULT = new RealConst(val); :}
                     |
                     CHAR_CONST:val
-                    {: RESULT = new CharConst(val); :}
                     |
                     BOOL_CONST:val
-                    {: RESULT = new IntegerConst(val); :}
                     |
                     STRING_CONST:val
-                    {: RESULT = new StringConst(val); :}
                     ;

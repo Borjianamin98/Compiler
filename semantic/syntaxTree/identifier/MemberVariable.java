@@ -26,25 +26,26 @@ public class MemberVariable extends Variable {
 //        if (!parentDSCP.isInitialized())
 //            throw new RuntimeException("Variable " + getName() + " is not initialized");
         parent.generateCode(cv, mv);
-//        mv.visitVarInsn(Opcodes.ALOAD, parentDSCP.getAddress());
         mv.visitFieldInsn(Opcodes.GETFIELD, recordTypeDSCP.getName(), memberName, recordTypeDSCP.getField(memberName).getDescriptor());
         setResultType(recordTypeDSCP.getField(memberName).getType());
     }
 
     @Override
     public void assignValue(ClassVisitor cv, MethodVisitor mv, Expression value) {
-//        mv.visitVarInsn(Opcodes.ALOAD, parentDSCP.getAddress());
-//        value.generateCode(cv, mv);
-//        mv.visitFieldInsn(Opcodes.PUTFIELD, parentDSCP.getType().getName(), getName(), recordTypeDSCP.getField(getName()).getDescriptor());
+        getDSCP();
+        parent.generateCode(cv, mv);
+        value.generateCode(cv, mv);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, recordTypeDSCP.getName(), memberName, recordTypeDSCP.getField(memberName).getDescriptor());
     }
 
     @Override
     public HasTypeDSCP getDSCP() {
         if (parentDSCP == null) {
-            if (!(parent.getDSCP().getType() instanceof RecordTypeDSCP) ||
-                    !(((RecordTypeDSCP) parent.getDSCP().getType()).containsField(memberName)))
-                throw new IllegalTypeException("member field " + memberName + " doesn't exist");
+            if (!(parent.getDSCP().getType() instanceof RecordTypeDSCP))
+                throw new IllegalTypeException(parent.getDSCP().getName() + " is not a record");
             recordTypeDSCP = (RecordTypeDSCP) parent.getDSCP().getType();
+            if (!(recordTypeDSCP.containsField(memberName)))
+                throw new IllegalTypeException("Member field " + memberName + " doesn't exist");
             parentDSCP = recordTypeDSCP.getField(memberName);
         }
         return parentDSCP;

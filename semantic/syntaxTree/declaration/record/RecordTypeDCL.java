@@ -33,9 +33,10 @@ public class RecordTypeDCL extends Node {
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         classWriter.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC | Opcodes.ACC_SUPER, name, null, "java/lang/Object", null);
 
+        // TODO field which are array!!!
         for (Field field : fields) {
             classWriter.visitField(Opcodes.ACC_PUBLIC, field.getName(), field.getDescriptor(), null, null).visitEnd();
-            fieldDSCPS.add(new FieldDSCP(field.getName(), field.getType(), field.getArrayLevels(),
+            fieldDSCPS.add(new FieldDSCP(field.getName(), field.getType(),
                     field.isConstant(), field.getDefaultValue() != null));
             recordSize += field.getType().getSize();
         }

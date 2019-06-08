@@ -13,12 +13,12 @@ public class SymbolTable {
 
     private HashMap<String, DSCP> symbols;
     private int freeAddress;
-//    private int tempNumber;
+    private int tempNumber;
 
     public SymbolTable() {
         symbols = new HashMap<>();
         freeAddress = 0;
-//        tempNumber = 0;
+        tempNumber = 0;
     }
 
     public SymbolTable(int startAddress) {
@@ -35,9 +35,10 @@ public class SymbolTable {
     }
 
     public void addType(String name, TypeDSCP descriptor) {
+        // TODO add all types to main symbol table
         descriptor.setTypeCode(freeType);
         freeType++;
-        symbols.put(name, descriptor);
+        Display.mainSymbolTable.symbols.put(name, descriptor);
     }
 
     public boolean contain(String name) {
@@ -50,41 +51,11 @@ public class SymbolTable {
         return symbols.get(name);
     }
 
-//    private DSCP addSymbolDSCP(String name, DSCP descriptor) {
-//        if (!symbols.containsKey(name))
-//            throw new SymbolNotFoundException();
-//        symbols.put(name, descriptor);
-//        return descriptor;
-//    }
-
-//    public String getTemp(int type) {
-////        String tempName = "$temp_" + tempNumber;
-////        switch (type) {
-////            case Constants.INTEGER_CODE:
-////                addSymbol(tempName, new DSCP(Constants.INTEGER_CODE, Constants.INTEGER_SIZE, freeAddress));
-////                freeAddress += Constants.INTEGER_SIZE;
-////                break;
-////            case Constants.LONG_CODE:
-////                addSymbol(tempName, new DSCP(Constants.LONG_CODE, Constants.LONG_SIZE, freeAddress));
-////                freeAddress += Constants.LONG_SIZE;
-////                break;
-////            case Constants.REAL_CODE:
-////                addSymbol(tempName, new DSCP(Constants.REAL_CODE, Constants.REAL_SIZE, freeAddress));
-////                freeAddress += Constants.REAL_SIZE;
-////                break;
-////            case Constants.STRING_CODE:
-////                // TODO
-////                break;
-////            case Constants.VOID_CODE:
-////                // TODO
-////                // do nothing
-////                break;
-////            default:
-////                addSymbol(tempName, new DSCP(type, Constants.REFERENCE_SIZE, freeAddress));
-////                freeAddress += Constants.REFERENCE_SIZE;
-////        }
-////        return tempName;
-//    }
+    public String getTemp(TypeDSCP type) {
+        String tempName = "$" + tempNumber;
+        addSymbol(tempName, new VariableDSCP(tempName, type, type.getSize(), freeAddress, false, false));
+        return tempName;
+    }
 
     public int getFreeAddress() {
         return freeAddress;
