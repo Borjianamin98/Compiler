@@ -1,4 +1,6 @@
-package semantic.symbolTable.descriptor;
+package semantic.symbolTable.descriptor.type;
+
+import semantic.symbolTable.descriptor.DSCP;
 
 public class TypeDSCP extends DSCP {
     private int typeCode;

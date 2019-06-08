@@ -1,6 +1,6 @@
 package semantic;
 
-import semantic.symbolTable.descriptor.TypeDSCP;
+import semantic.symbolTable.descriptor.type.TypeDSCP;
 
 public class Constants {
     private Constants() {

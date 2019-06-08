@@ -4,7 +4,7 @@ import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
-import semantic.symbolTable.descriptor.TypeDSCP;
+import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.expression.Expression;
 
 import java.util.Optional;
@@ -14,16 +14,18 @@ public class Field {
     private String type;
     private String name;
     private Expression defaultValue;
+    private boolean constant;
 
-    public Field(String name, int arrayLevels, String type, Expression defaultValue) {
+    public Field(String name, int arrayLevels, String type, boolean constant, Expression defaultValue) {
         this.name = name;
         this.arrayLevels = arrayLevels;
         this.type = type;
+        this.constant = constant;
         this.defaultValue = defaultValue;
     }
 
-    public Field(String name, int arrayLevels, String type) {
-        this(name, arrayLevels, type, null);
+    public Field(String name, int arrayLevels, String type, boolean constant) {
+        this(name, arrayLevels, type, constant, null);
     }
 
     public String getName() {
@@ -38,20 +40,18 @@ public class Field {
     }
 
     public String getDescriptor() {
-        StringBuilder desc = new StringBuilder();
-        for (int i = 0; i < arrayLevels; i++) {
-            desc.append('[');
-        }
-        TypeDSCP typeDSCP = getType();
-        if (typeDSCP.isPrimitive()) {
-            desc.append(Utility.getPrimitiveTypeDescriptor(typeDSCP.getTypeCode()));
-        } else {
-            desc.append('L').append(type).append(";");
-        }
-        return desc.toString();
+        return Utility.getDescriptor(getType(), arrayLevels);
     }
 
     public Expression getDefaultValue() {
         return defaultValue;
+    }
+
+    public int getArrayLevels() {
+        return arrayLevels;
+    }
+
+    public boolean isConstant() {
+        return constant;
     }
 }

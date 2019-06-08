@@ -14,7 +14,7 @@ public class DirectAssignment extends Assignment {
     @Override
     public void generateCode(ClassVisitor cv, MethodVisitor mv) {
         if (getVariable().getDSCP().isConstant())
-            throw new ConstantModificationException(getVariable().getName() + " can't not modified");
+            throw new ConstantModificationException("Variable can't not modified");
         // TODO Conversesion between types like int to double (i2d)
         getVariable().assignValue(cv, mv, getValue());
         getVariable().getDSCP().setInitialized(true);

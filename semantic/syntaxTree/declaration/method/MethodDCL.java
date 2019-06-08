@@ -8,8 +8,8 @@ import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
 import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.MethodDSCP;
-import semantic.symbolTable.descriptor.TypeDSCP;
-import semantic.symbolTable.descriptor.VariableDSCP;
+import semantic.symbolTable.descriptor.type.TypeDSCP;
+import semantic.symbolTable.descriptor.hastype.VariableDSCP;
 import semantic.syntaxTree.Node;
 import semantic.syntaxTree.block.Block;
 

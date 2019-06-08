@@ -7,11 +7,13 @@ import org.objectweb.asm.Opcodes;
 import semantic.exception.DuplicateDeclarationException;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
-import semantic.symbolTable.descriptor.RecordTypeDSCP;
+import semantic.symbolTable.descriptor.hastype.FieldDSCP;
+import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
 import semantic.syntaxTree.Node;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RecordTypeDCL extends Node {
@@ -27,11 +29,14 @@ public class RecordTypeDCL extends Node {
     public void generateCode(ClassVisitor cv, MethodVisitor mv) {
         // Generate Code
         int recordSize = 0;
+        List<FieldDSCP> fieldDSCPS = new ArrayList<>();
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         classWriter.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC | Opcodes.ACC_SUPER, name, null, "java/lang/Object", null);
 
         for (Field field : fields) {
             classWriter.visitField(Opcodes.ACC_PUBLIC, field.getName(), field.getDescriptor(), null, null).visitEnd();
+            fieldDSCPS.add(new FieldDSCP(field.getName(), field.getType(), field.getArrayLevels(),
+                    field.isConstant(), field.getDefaultValue() != null));
             recordSize += field.getType().getSize();
         }
 
@@ -66,7 +71,7 @@ public class RecordTypeDCL extends Node {
             throw new DuplicateDeclarationException(name + " declared more than one time");
         }
         // TODO size of record is: recordSize or 1 (pointer size)
-        RecordTypeDSCP recordDSCP = new RecordTypeDSCP(name, 1, fields);
+        RecordTypeDSCP recordDSCP = new RecordTypeDSCP(name, 1, fieldDSCPS);
         top.addType(name, recordDSCP);
     }
 }

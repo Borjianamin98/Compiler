@@ -1,9 +1,8 @@
 package semantic.symbolTable;
 
 import jdk.internal.org.objectweb.asm.Opcodes;
-import jdk.internal.org.objectweb.asm.Type;
 import semantic.Constants;
-import semantic.symbolTable.descriptor.TypeDSCP;
+import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.Argument;
 
 import java.util.List;
@@ -62,6 +61,19 @@ public class Utility {
             return "Ljava/lang/String;";
         }
         throw new RuntimeException(type + " is not a primitive type");
+    }
+
+    public static String getDescriptor(TypeDSCP type, int arrayLevel) {
+        StringBuilder desc = new StringBuilder();
+        for (int i = 0; i < arrayLevel; i++) {
+            desc.append('[');
+        }
+        if (type.isPrimitive()) {
+            desc.append(Utility.getPrimitiveTypeDescriptor(type.getTypeCode()));
+        } else {
+            desc.append('L').append(type.getName()).append(";");
+        }
+        return desc.toString();
     }
 
     public static String createMethodDescriptor(List<Argument> arguments, boolean hasReturn, TypeDSCP returnType) {

@@ -4,7 +4,7 @@ import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
-import semantic.symbolTable.descriptor.TypeDSCP;
+import semantic.symbolTable.descriptor.type.TypeDSCP;
 
 import java.util.Optional;
 
@@ -31,16 +31,6 @@ public class Argument {
     }
 
     public String getDescriptor() {
-        StringBuilder desc = new StringBuilder();
-        for (int i = 0; i < arrayLevels; i++) {
-            desc.append('[');
-        }
-        TypeDSCP typeDSCP = getType();
-        if (typeDSCP.isPrimitive()) {
-            desc.append(Utility.getPrimitiveTypeDescriptor(typeDSCP.getTypeCode()));
-        } else {
-            desc.append('L').append(type).append(";");
-        }
-        return desc.toString();
+        return Utility.getDescriptor(getType(), arrayLevels);
     }
 }

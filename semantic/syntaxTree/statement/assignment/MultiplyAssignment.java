@@ -15,12 +15,12 @@ public class MultiplyAssignment extends Assignment {
 
     @Override
     public void generateCode(ClassVisitor cv, MethodVisitor mv) {
-        getVariable().generateCode(cv, mv);
-        getValue().generateCode(cv, mv);
-        if (getVariable().getDSCP().isConstant())
-            throw new ConstantModificationException(getVariable().getName() + " can't not modified");
-        mv.visitInsn(Utility.getOpcode(getVariable().getDSCP().getType().getTypeCode(), "MUL"));
-        mv.visitVarInsn(Utility.getOpcode(getVariable().getDSCP().getType().getTypeCode(), "STORE"), getVariable().getDSCP().getAddress());
-        getVariable().getDSCP().setInitialized(true);
+//        getVariable().generateCode(cv, mv);
+//        getValue().generateCode(cv, mv);
+//        if (getVariable().getDSCP().isConstant())
+//            throw new ConstantModificationException(getVariable().getName() + " can't not modified");
+//        mv.visitInsn(Utility.getOpcode(getVariable().getDSCP().getType().getTypeCode(), "MUL"));
+//        mv.visitVarInsn(Utility.getOpcode(getVariable().getDSCP().getType().getTypeCode(), "STORE"), getVariable().getDSCP().getAddress());
+//        getVariable().getDSCP().setInitialized(true);
     }
 }

@@ -1,6 +1,7 @@
 package semantic.symbolTable.descriptor;
 
 import semantic.symbolTable.Utility;
+import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.Argument;
 
 import java.util.List;

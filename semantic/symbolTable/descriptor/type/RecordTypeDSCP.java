@@ -1,31 +1,31 @@
-package semantic.symbolTable.descriptor;
+package semantic.symbolTable.descriptor.type;
 
-import semantic.syntaxTree.declaration.record.Field;
+import semantic.symbolTable.descriptor.hastype.FieldDSCP;
 
 import java.util.List;
 
 public class RecordTypeDSCP extends TypeDSCP {
-    private List<Field> fields;
+    private List<FieldDSCP> fields;
 
-    public RecordTypeDSCP(String name, int size, List<Field> fields) {
+    public RecordTypeDSCP(String name, int size, List<FieldDSCP> fields) {
         super(name, size, false);
         this.fields = fields;
     }
 
-    public List<Field> getFields() {
+    public List<FieldDSCP> getFields() {
         return fields;
     }
 
     public boolean containsField(String name) {
-        for (Field field : fields) {
+        for (FieldDSCP field : fields) {
             if (field.getName().equals(name))
                 return true;
         }
         return false;
     }
 
-    public Field getField(String name) {
-        for (Field field : fields) {
+    public FieldDSCP getField(String name) {
+        for (FieldDSCP field : fields) {
             if (field.getName().equals(name))
                 return field;
         }

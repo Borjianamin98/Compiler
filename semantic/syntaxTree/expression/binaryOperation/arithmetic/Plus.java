@@ -3,7 +3,7 @@ package semantic.syntaxTree.expression.binaryOperation.arithmetic;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import semantic.symbolTable.Utility;
-import semantic.symbolTable.descriptor.TypeDSCP;
+import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.expression.binaryOperation.BinaryOperation;
 
