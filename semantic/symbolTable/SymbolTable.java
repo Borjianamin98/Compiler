@@ -3,6 +3,8 @@ package semantic.symbolTable;
 import semantic.exception.DuplicateDeclarationException;
 import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.descriptor.DSCP;
+import semantic.symbolTable.descriptor.hastype.ArrayDSCP;
+import semantic.symbolTable.descriptor.type.ArrayTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.symbolTable.descriptor.hastype.VariableDSCP;
 
@@ -60,8 +62,19 @@ public class SymbolTable {
     }
 
     public String getTemp(TypeDSCP type) {
-        String tempName = "$" + tempNumber;
-        addSymbol(tempName, new VariableDSCP(tempName, type, type.getSize(), freeAddress, false, false));
+        String tempName = "_" + tempNumber + "_";
+//        addSymbol(tempName + "$0", new VariableDSCP(tempName + "$0", type, type.getSize(), freeAddress, false, false));
+//        int counterLevel = 0;
+//        if (type instanceof ArrayTypeDSCP) {
+//            TypeDSCP typeDSCP;
+//            if ((typeDSCP = SymbolTable.getType("[" + lastDimensionType.getDescriptor())) == null) {
+//                typeDSCP = new ArrayTypeDSCP(lastDimensionType);
+//                SymbolTable.addType(typeDSCP.getName(), typeDSCP);
+//            }
+//            addSymbol(tempName + "$0$" + counterLevel, new ArrayDSCP(tempName + "$0$" + counterLevel, type, type.getSize(), false));
+//
+//        }
+        tempNumber++;
         return tempName;
     }
 

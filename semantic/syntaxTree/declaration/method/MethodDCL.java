@@ -78,7 +78,7 @@ public class MethodDCL extends Node {
                 for (int i = argument.getArrayLevels() - 1; i >= 0; i--) {
                     TypeDSCP typeDSCP;
                     if ((typeDSCP = SymbolTable.getType("[" + lastDimensionType.getDescriptor())) == null) {
-                        typeDSCP = new ArrayTypeDSCP(lastDimensionType);
+                        typeDSCP = new ArrayTypeDSCP(argument.getArrayLevels() - i, lastDimensionType, argument.getOriginType());
                         SymbolTable.addType(typeDSCP.getName(), typeDSCP);
                     }
                     DSCP descriptor;
@@ -86,7 +86,8 @@ public class MethodDCL extends Node {
                         // TODO Think about initialization value
                         descriptor = new VariableDSCP(argument.getName() + "$" + i, typeDSCP, 1, freeAddress, false, true);
                     } else {
-                        descriptor = new ArrayDSCP(argument.getName() + "$" + i, typeDSCP, lastDimensionType, false);
+                        descriptor = new ArrayDSCP(argument.getName() + "$" + i, typeDSCP, lastDimensionType, argument.getOriginType(),
+                                argument.getArrayLevels() - i, false);
                     }
                     currentFunctionSYMTAB.addSymbol(descriptor.getName(), descriptor);
                     lastDimensionType = typeDSCP;

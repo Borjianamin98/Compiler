@@ -3,23 +3,14 @@ import org.objectweb.asm.*;
 import semantic.syntaxTree.Node;
 import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.ArrayDCL;
-import semantic.syntaxTree.declaration.VariableDCL;
-import semantic.syntaxTree.declaration.method.Argument;
-import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.declaration.record.Field;
 import semantic.syntaxTree.declaration.record.RecordTypeDCL;
 import semantic.syntaxTree.expression.Expression;
-import semantic.syntaxTree.expression.MethodCall;
-import semantic.syntaxTree.expression.binaryOperation.conditional.Less;
 import semantic.syntaxTree.expression.binaryOperation.constValue.IntegerConst;
 import semantic.syntaxTree.identifier.ArrayVariable;
-import semantic.syntaxTree.identifier.MemberVariable;
 import semantic.syntaxTree.identifier.SimpleVariable;
-import semantic.syntaxTree.identifier.Variable;
 import semantic.syntaxTree.statement.PrintFunction;
-import semantic.syntaxTree.statement.ReturnStatement;
-import semantic.syntaxTree.statement.assignment.DirectAssignment;
-import semantic.syntaxTree.statement.loop.RepeatUntil;
+import semantic.syntaxTree.statement.loop.Foreach;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -180,40 +171,45 @@ public class Main implements Opcodes {
 //        RepeatUntil r = new RepeatUntil(less, block);
 //        r.generateCode(cw, mw);
 
-        List<Integer> d = new ArrayList<>();
-        d.add(2);
-        d.add(3);
-        d.add(4);
+        List<Expression> d = new ArrayList<>();
+        d.add(new IntegerConst(2));
+        d.add(new IntegerConst(3));
+//        d.add(new IntegerConst(4));
         ArrayDCL arrayDCL = new ArrayDCL("x", "int", false, d);
         arrayDCL.generateCode(cw, mw);
+//
+//        Variable varx = new SimpleVariable("x");
+////        DirectAssignment ass = new DirectAssignment(varx, new IntegerConst(5));
+////        ass.generateCode(cw, mw);
+////        varx.assignValue(cw, mw, new IntegerConst(5));
+//        ArrayVariable varx$1 = new ArrayVariable(varx, new IntegerConst(0));
+//        ArrayVariable varx$2 = new ArrayVariable(varx$1, new IntegerConst(1));
+////        ArrayVariable varx$3 = new ArrayVariable(varx$2, new IntegerConst(2));
+////        MemberVariable varx$4 = new MemberVariable(varx$2, "x");
+////        varx$4.assignValue(cw, mw, new IntegerConst(5));
+//
+//        List<Argument> args = new ArrayList<>();
+//        args.add(new Argument("x", 3, "int"));
+//        Block body = new Block();
+//        SimpleVariable varxx = new SimpleVariable("x");
+//        ArrayVariable varxx$1 = new ArrayVariable(varxx, new IntegerConst(1));
+//        ArrayVariable varxx$2 = new ArrayVariable(varxx$1, new IntegerConst(2));
+//        ArrayVariable varxx$3 = new ArrayVariable(varxx$2, new IntegerConst(2));
+//        body.addStatement(new PrintFunction(varxx$3));
+//        body.addStatement(new ReturnStatement());
+//        MethodDCL methodDCL = new MethodDCL("Tester", "testFunc", args, body);
+//        methodDCL.generateCode(cw, mw);
+//
+//        List<Expression> pars = new ArrayList<>();
+//        pars.add(varx);
+//        MethodCall methodCall = new MethodCall("testFunc", pars);
+//        methodCall.generateCode(cw, mw);
 
-        Variable varx = new SimpleVariable("x");
-//        DirectAssignment ass = new DirectAssignment(varx, new IntegerConst(5));
-//        ass.generateCode(cw, mw);
-//        varx.assignValue(cw, mw, new IntegerConst(5));
-        ArrayVariable varx$1 = new ArrayVariable(varx, new IntegerConst(0));
-        ArrayVariable varx$2 = new ArrayVariable(varx$1, new IntegerConst(1));
-//        ArrayVariable varx$3 = new ArrayVariable(varx$2, new IntegerConst(2));
-//        MemberVariable varx$4 = new MemberVariable(varx$2, "x");
-//        varx$4.assignValue(cw, mw, new IntegerConst(5));
 
-        List<Argument> args = new ArrayList<>();
-        args.add(new Argument("x", 3, "int"));
         Block body = new Block();
-        SimpleVariable varxx = new SimpleVariable("x");
-        ArrayVariable varxx$1 = new ArrayVariable(varxx, new IntegerConst(1));
-        ArrayVariable varxx$2 = new ArrayVariable(varxx$1, new IntegerConst(2));
-        ArrayVariable varxx$3 = new ArrayVariable(varxx$2, new IntegerConst(2));
-        body.addStatement(new PrintFunction(varxx$3));
-        body.addStatement(new ReturnStatement());
-        MethodDCL methodDCL = new MethodDCL("Tester", "testFunc", args, body);
-        methodDCL.generateCode(cw, mw);
-
-        List<Expression> pars = new ArrayList<>();
-        pars.add(varx);
-        MethodCall methodCall = new MethodCall("testFunc", pars);
-        methodCall.generateCode(cw, mw);
-
+        body.addStatement(new PrintFunction(new ArrayVariable(new SimpleVariable("y"), new IntegerConst(1))));
+        Foreach foreach = new Foreach("y", new SimpleVariable("x") , body);
+        foreach.generateCode(cw, mw);
 
         mw.visitInsn(RETURN);
         mw.visitMaxs(0, 0);

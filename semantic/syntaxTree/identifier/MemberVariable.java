@@ -27,7 +27,7 @@ public class MemberVariable extends Variable {
 //            throw new RuntimeException("Variable " + getName() + " is not initialized");
         parent.generateCode(cv, mv);
         mv.visitFieldInsn(Opcodes.GETFIELD, recordTypeDSCP.getName(), memberName, recordTypeDSCP.getField(memberName).getDescriptor());
-        setResultType(recordTypeDSCP.getField(memberName).getType());
+        setResultType(parentDSCP.getType());
     }
 
     @Override

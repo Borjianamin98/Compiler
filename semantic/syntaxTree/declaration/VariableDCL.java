@@ -39,7 +39,7 @@ public class VariableDCL extends Declaration {
             mv.visitVarInsn(Utility.getOpcode(defaultValue.getResultType().getTypeCode(), "STORE"), top.getFreeAddress());
             isInitialized = true;
         }
-        VariableDSCP variableDSCP = new VariableDSCP(getName(), getTypeDSCP(), getTypeDSCP().getSize(), top.getFreeAddress(), isConstant(), isInitialized);
+        VariableDSCP variableDSCP = new VariableDSCP(getName() + "$0", getTypeDSCP(), getTypeDSCP().getSize(), top.getFreeAddress(), isConstant(), isInitialized);
         top.addSymbol(getName() + "$0", variableDSCP);
     }
 }
