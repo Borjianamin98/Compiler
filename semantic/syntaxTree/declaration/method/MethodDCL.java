@@ -7,7 +7,10 @@ import semantic.exception.DuplicateDeclarationException;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
 import semantic.symbolTable.Utility;
+import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.MethodDSCP;
+import semantic.symbolTable.descriptor.hastype.ArrayDSCP;
+import semantic.symbolTable.descriptor.type.ArrayTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.symbolTable.descriptor.hastype.VariableDSCP;
 import semantic.syntaxTree.Node;
@@ -70,8 +73,24 @@ public class MethodDCL extends Node {
         if (arguments != null) {
             for (Argument argument : arguments) {
                 int freeAddress = currentFunctionSYMTAB.getFreeAddress();
-                currentFunctionSYMTAB.addSymbol(argument.getName(),
-                        new VariableDSCP(argument.getName(), argument.getType(), 1 * argument.getType().getSize(), freeAddress, false, true));
+
+                TypeDSCP lastDimensionType = argument.getOriginType();
+                for (int i = argument.getArrayLevels() - 1; i >= 0; i--) {
+                    TypeDSCP typeDSCP;
+                    if ((typeDSCP = SymbolTable.getType("[" + lastDimensionType.getDescriptor())) == null) {
+                        typeDSCP = new ArrayTypeDSCP(lastDimensionType);
+                        SymbolTable.addType(typeDSCP.getName(), typeDSCP);
+                    }
+                    DSCP descriptor;
+                    if (i == 0) {
+                        // TODO Think about initialization value
+                        descriptor = new VariableDSCP(argument.getName() + "$" + i, typeDSCP, 1, freeAddress, false, true);
+                    } else {
+                        descriptor = new ArrayDSCP(argument.getName() + "$" + i, typeDSCP, lastDimensionType, false);
+                    }
+                    currentFunctionSYMTAB.addSymbol(descriptor.getName(), descriptor);
+                    lastDimensionType = typeDSCP;
+                }
             }
         }
         Display.add(currentFunctionSYMTAB);

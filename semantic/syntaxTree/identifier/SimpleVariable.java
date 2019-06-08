@@ -21,21 +21,6 @@ public class SimpleVariable extends Variable {
         this.name = name;
     }
 
-    public void generateDimensionCode(ClassVisitor cv, MethodVisitor mv) {
-//        getDSCP();
-//        if (dscp.isArray()) {
-//            if (dscp.getArrayLevel() != getDimensions().size())
-//                throw new RuntimeException(getName() + " is a " + dscp.getArrayLevel() + "-dimension array");
-//            // load all dimension except last dimension
-//            mv.visitVarInsn(Opcodes.ALOAD, dscp.getAddress());
-//            for (int i = 0; i < getDimensions().size() - 1; i++) {
-//                Expression dimension = getDimensions().get(i);
-//                dimension.generateCode(cv, mv);
-//                mv.visitInsn(Opcodes.AALOAD);
-//            }
-//        }
-    }
-
     @Override
     public void generateCode(ClassVisitor cv, MethodVisitor mv) {
         getDSCP();

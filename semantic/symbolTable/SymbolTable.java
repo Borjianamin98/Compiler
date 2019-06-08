@@ -1,5 +1,6 @@
 package semantic.symbolTable;
 
+import semantic.exception.DuplicateDeclarationException;
 import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
@@ -34,11 +35,18 @@ public class SymbolTable {
         symbols.put(name, descriptor);
     }
 
-    public void addType(String name, TypeDSCP descriptor) {
+    public static void addType(String name, TypeDSCP descriptor) {
+        if (Display.mainSymbolTable.symbols.containsKey(name)) {
+            throw new DuplicateDeclarationException("Type " + name + " declared more than once");
+        }
         // TODO add all types to main symbol table
         descriptor.setTypeCode(freeType);
         freeType++;
         Display.mainSymbolTable.symbols.put(name, descriptor);
+    }
+
+    public static TypeDSCP getType(String name) {
+        return (TypeDSCP) Display.mainSymbolTable.symbols.get(name);
     }
 
     public boolean contain(String name) {

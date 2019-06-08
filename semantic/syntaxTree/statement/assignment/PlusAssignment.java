@@ -14,8 +14,8 @@ public class PlusAssignment extends Assignment {
     public void generateCode(ClassVisitor cv, MethodVisitor mv) {
 //        getVariable().generateCode(cv, mv);
 //        getValue().generateCode(cv, mv);
-//        mv.visitInsn(Utility.getOpcode(getVariable().getDSCP().getType().getTypeCode(), "ADD"));
-//        mv.visitVarInsn(Utility.getOpcode(getVariable().getDSCP().getType().getTypeCode(), "STORE"), getVariable().getDSCP().getAddress());
+//        mv.visitInsn(Utility.getOpcode(getVariable().getDSCP().getOriginType().getTypeCode(), "ADD"));
+//        mv.visitVarInsn(Utility.getOpcode(getVariable().getDSCP().getOriginType().getTypeCode(), "STORE"), getVariable().getDSCP().getAddress());
 //        getVariable().getDSCP().setInitialized(true);
     }
 }

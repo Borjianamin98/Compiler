@@ -23,14 +23,25 @@ public class Argument {
         return name;
     }
 
-    public TypeDSCP getType() {
+    public TypeDSCP getOriginType() {
         Optional<DSCP> typeDSCP = Display.find(type);
         if (!typeDSCP.isPresent() || !(typeDSCP.get() instanceof TypeDSCP))
             throw new SymbolNotFoundException(type + " is not declared");
         return ((TypeDSCP) typeDSCP.get());
     }
 
+    public TypeDSCP getType() {
+        Optional<DSCP> typeDSCP = Display.find(getDescriptor());
+        if (!typeDSCP.isPresent() || !(typeDSCP.get() instanceof TypeDSCP))
+            throw new SymbolNotFoundException(type + " is not declared");
+        return ((TypeDSCP) typeDSCP.get());
+    }
+
     public String getDescriptor() {
-        return Utility.getDescriptor(getType(), arrayLevels);
+        return Utility.getDescriptor(getOriginType(), arrayLevels);
+    }
+
+    public int getArrayLevels() {
+        return arrayLevels;
     }
 }

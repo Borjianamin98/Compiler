@@ -40,6 +40,6 @@ public class VariableDCL extends Declaration {
             isInitialized = true;
         }
         VariableDSCP variableDSCP = new VariableDSCP(getName(), getTypeDSCP(), getTypeDSCP().getSize(), top.getFreeAddress(), isConstant(), isInitialized);
-        top.addSymbol(getName(), variableDSCP);
+        top.addSymbol(getName() + "$0", variableDSCP);
     }
 }

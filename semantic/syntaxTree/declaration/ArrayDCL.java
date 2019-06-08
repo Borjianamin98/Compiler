@@ -11,7 +11,6 @@ import semantic.symbolTable.descriptor.hastype.ArrayDSCP;
 import semantic.symbolTable.descriptor.hastype.VariableDSCP;
 import semantic.symbolTable.descriptor.type.ArrayTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
-import semantic.syntaxTree.identifier.Variable;
 
 import java.util.List;
 
@@ -40,14 +39,17 @@ public class ArrayDCL extends Declaration {
         TypeDSCP lastDimensionType = getTypeDSCP();
         VariableDSCP variableDSCP = null;
         for (int i = dimension.size() - 1; i >= 0; i--) {
-            TypeDSCP typeDSCP = new ArrayTypeDSCP(lastDimensionType);
-            top.addType(typeDSCP.getName(), typeDSCP);
-            DSCP descriptor = null;
+            TypeDSCP typeDSCP;
+            if ((typeDSCP = SymbolTable.getType("[" + lastDimensionType.getDescriptor())) == null) {
+                typeDSCP = new ArrayTypeDSCP(lastDimensionType);
+                SymbolTable.addType(typeDSCP.getName(), typeDSCP);
+            }
+            DSCP descriptor;
             if (i == 0) {
                 // TODO Think about initialization value
                 descriptor = variableDSCP = new VariableDSCP(getName() + "$" + i, typeDSCP, 1, top.getFreeAddress(), isConstant(), true);
             } else {
-                descriptor = new ArrayDSCP(getName() + "$" + i, typeDSCP, lastDimensionType, dimension.get(i), false);
+                descriptor = new ArrayDSCP(getName() + "$" + i, typeDSCP, lastDimensionType, false);
             }
             top.addSymbol(descriptor.getName(), descriptor);
             lastDimensionType = typeDSCP;
