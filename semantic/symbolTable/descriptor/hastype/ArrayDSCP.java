@@ -8,15 +8,15 @@ public class ArrayDSCP extends VariableDSCP {
     private TypeDSCP content;
     private TypeDSCP baseType;
 
-    public ArrayDSCP(String name, TypeDSCP type, TypeDSCP content, TypeDSCP baseType, boolean constant) {
-        super(name, type, 1, -1, constant, true);
+    public ArrayDSCP(String name, TypeDSCP type, TypeDSCP content, TypeDSCP baseType, boolean constant, boolean initialized) {
+        super(name, type, 1, -1, constant, initialized);
         this.content = content;
         this.baseType = baseType;
         this.dimensions = content.getDimensions() + 1;
     }
 
-    public ArrayDSCP(String name, TypeDSCP type, TypeDSCP content, TypeDSCP baseType, int address, boolean constant) {
-        super(name, type, 1, address, constant, true);
+    public ArrayDSCP(String name, TypeDSCP type, TypeDSCP content, TypeDSCP baseType, int address, boolean constant, boolean initialized) {
+        super(name, type, 1, address, constant, initialized);
         this.content = content;
         this.baseType = baseType;
         this.dimensions = content.getDimensions() + 1;

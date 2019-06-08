@@ -86,7 +86,7 @@ public class MethodDCL extends Node {
                         // TODO Think about initialization value
                         descriptor = new VariableDSCP(argument.getName() + "$" + i, typeDSCP, 1, freeAddress, false, true);
                     } else {
-                        descriptor = new ArrayDSCP(argument.getName() + "$" + i, typeDSCP, lastDimensionType, argument.getOriginType(), false);
+                        descriptor = new ArrayDSCP(argument.getName() + "$" + i, typeDSCP, lastDimensionType, argument.getOriginType(), false, true);
                     }
                     currentFunctionSYMTAB.addSymbol(descriptor.getName(), descriptor);
                     lastDimensionType = typeDSCP;

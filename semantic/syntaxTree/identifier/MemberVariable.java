@@ -11,7 +11,7 @@ import semantic.syntaxTree.expression.Expression;
 public class MemberVariable extends Variable {
     private Variable parent;
     private String memberName;
-    private HasTypeDSCP parentDSCP;
+    private HasTypeDSCP dscp;
     private RecordTypeDSCP recordTypeDSCP;
 
     public MemberVariable(Variable parent, String memberName) {
@@ -22,12 +22,11 @@ public class MemberVariable extends Variable {
     @Override
     public void generateCode(ClassVisitor cv, MethodVisitor mv) {
         getDSCP();
-        // TODO Check initialization
-//        if (!parentDSCP.isInitialized())
-//            throw new RuntimeException("Variable " + getName() + " is not initialized");
         parent.generateCode(cv, mv);
+        if (!dscp.isInitialized())
+            throw new RuntimeException("Field " + memberName + " of " + dscp.getType().getName() + " is not initialized");
         mv.visitFieldInsn(Opcodes.GETFIELD, recordTypeDSCP.getName(), memberName, recordTypeDSCP.getField(memberName).getDescriptor());
-        setResultType(parentDSCP.getType());
+        setResultType(dscp.getType());
     }
 
     @Override
@@ -40,14 +39,14 @@ public class MemberVariable extends Variable {
 
     @Override
     public HasTypeDSCP getDSCP() {
-        if (parentDSCP == null) {
+        if (dscp == null) {
             if (!(parent.getDSCP().getType() instanceof RecordTypeDSCP))
                 throw new IllegalTypeException(parent.getDSCP().getName() + " is not a record");
             recordTypeDSCP = (RecordTypeDSCP) parent.getDSCP().getType();
             if (!(recordTypeDSCP.containsField(memberName)))
                 throw new IllegalTypeException("Member field " + memberName + " doesn't exist");
-            parentDSCP = recordTypeDSCP.getField(memberName);
+            dscp = recordTypeDSCP.getField(memberName);
         }
-        return parentDSCP;
+        return dscp;
     }
 }

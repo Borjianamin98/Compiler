@@ -63,17 +63,6 @@ public class SymbolTable {
 
     public String getTempName() {
         String tempName = "temp$" + tempNumber;
-//        addSymbol(tempName + "$0", new VariableDSCP(tempName + "$0", type, type.getSize(), freeAddress, false, false));
-//        int counterLevel = 0;
-//        if (type instanceof ArrayTypeDSCP) {
-//            TypeDSCP typeDSCP;
-//            if ((typeDSCP = SymbolTable.getType("[" + lastDimensionType.getDescriptor())) == null) {
-//                typeDSCP = new ArrayTypeDSCP(lastDimensionType);
-//                SymbolTable.addType(typeDSCP.getName(), typeDSCP);
-//            }
-//            addSymbol(tempName + "$0$" + counterLevel, new ArrayDSCP(tempName + "$0$" + counterLevel, type, type.getSize(), false));
-//
-//        }
         tempNumber++;
         return tempName;
     }
