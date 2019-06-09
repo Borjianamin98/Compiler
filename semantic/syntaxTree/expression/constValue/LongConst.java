@@ -1,4 +1,4 @@
-package semantic.syntaxTree.expression.binaryOperation.constValue;
+package semantic.syntaxTree.expression.constValue;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;

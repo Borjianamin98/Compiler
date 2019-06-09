@@ -5,9 +5,8 @@ import org.objectweb.asm.MethodVisitor;
 import semantic.exception.ConstantModificationException;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
-import semantic.syntaxTree.identifier.Variable;
+import semantic.syntaxTree.expression.identifier.Variable;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
 
 public class DirectAssignment extends Assignment {
     public DirectAssignment(Variable variable, Expression value) {

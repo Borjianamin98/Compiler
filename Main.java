@@ -4,20 +4,14 @@ import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.VariableDCL;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.declaration.method.StartMethodDCL;
-import semantic.syntaxTree.expression.binaryOperation.arithmetic.Multiply;
-import semantic.syntaxTree.expression.binaryOperation.arithmetic.Plus;
-import semantic.syntaxTree.expression.binaryOperation.constValue.DoubleConst;
-import semantic.syntaxTree.expression.binaryOperation.constValue.FloatConst;
-import semantic.syntaxTree.expression.binaryOperation.constValue.IntegerConst;
-import semantic.syntaxTree.expression.binaryOperation.constValue.StringConst;
-import semantic.syntaxTree.identifier.SimpleVariable;
+import semantic.syntaxTree.expression.binaryOperation.conditional.Less;
+import semantic.syntaxTree.expression.constValue.DoubleConst;
+import semantic.syntaxTree.expression.constValue.IntegerConst;
+import semantic.syntaxTree.expression.identifier.SimpleVariable;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.syntaxTree.statement.PrintFunction;
 import semantic.syntaxTree.statement.assignment.DirectAssignment;
-import semantic.syntaxTree.statement.controlflow.BreakStatement;
-import semantic.syntaxTree.statement.controlflow.ContinueStatement;
 import semantic.syntaxTree.statement.controlflow.ReturnStatement;
-import semantic.syntaxTree.statement.controlflow.loop.RepeatUntil;
+import semantic.syntaxTree.statement.controlflow.loop.ForLoop;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -56,16 +50,19 @@ public class Main implements Opcodes {
 //        RepeatUntil repeatUntil = new RepeatUntil(new IntegerConst(1), repeatBlock);
 //        body.addBlockCode(repeatUntil);
 
-        Multiply m = new Multiply(new IntegerConst(6), new IntegerConst(3));
-        Plus p = new Plus(new FloatConst(2.5), m);
-        Multiply m2 = new Multiply(new IntegerConst(3), p);
-        Plus p2 = new Plus(m2, new IntegerConst(2));
-        VariableDCL vara = new VariableDCL("a", "double", false, false);
-        body.addBlockCode(vara);
-        body.addBlockCode(new DirectAssignment(new SimpleVariable("a"), p2));
+//        Multiply m = new Multiply(new IntegerConst(6), new IntegerConst(3));
+//        Plus p = new Plus(new FloatConst(2.5), m);
+//        Multiply m2 = new Multiply(new IntegerConst(3), p);
+//        Plus p2 = new Plus(m2, new IntegerConst(2));
+//        VariableDCL vara = new VariableDCL("a", "double", false, false);
+//        body.addBlockCode(vara);
+        DirectAssignment assignment = new DirectAssignment(new SimpleVariable("a"), new IntegerConst(1));
+
+        ForLoop forLoop = new ForLoop(null, new Less(new IntegerConst(1), new IntegerConst(2)), null, null);
+        body.addBlockCode(forLoop);
 
         body.addBlockCode(new ReturnStatement());
-        ClassDCL clazz = new ClassDCL("Tester", null, methodDCLS , null);
+        ClassDCL clazz = new ClassDCL("Tester", null, methodDCLS, null);
         clazz.generateCode(null, null, null, null);
     }
 

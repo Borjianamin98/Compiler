@@ -36,12 +36,12 @@ public class ForLoop extends Statement {
         this.body = body;
     }
 
-    public ForLoop(Assignment initialAssignment, Expression condition, Expression stepExpression, Block body) {
-        this.initialAssignment = initialAssignment;
-        this.condition = condition;
-        this.stepExpression = stepExpression;
-        this.body = body;
-    }
+//    public ForLoop(Assignment initialAssignment, Expression condition, Expression stepExpression, Block body) {
+//        this.initialAssignment = initialAssignment;
+//        this.condition = condition;
+//        this.stepExpression = stepExpression;
+//        this.body = body;
+//    }
 
     @Override
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
@@ -74,18 +74,20 @@ public class ForLoop extends Statement {
 
         // generate body code
         Display.add(true);
-        for (BlockCode blockCode : body.getBlockCodes()) {
-            if (blockCode instanceof BreakStatement) {
-                mv.visitJumpInsn(Opcodes.GOTO, outLabel);
-                break; // other code in this block are unnecessary
-            } else if (blockCode instanceof ContinueStatement) {
-                mv.visitJumpInsn(Opcodes.GOTO, stepLabel);
-                break; // other code in this block are unnecessary
-            } else if (blockCode instanceof ReturnStatement) {
-                blockCode.generateCode(currentClass, currentMethod, cv, mv);
-                break; // other code in this block are unnecessary
-            } else
-                blockCode.generateCode(currentClass, currentMethod, cv, mv);
+        if (body != null) {
+            for (BlockCode blockCode : body.getBlockCodes()) {
+                if (blockCode instanceof BreakStatement) {
+                    mv.visitJumpInsn(Opcodes.GOTO, outLabel);
+                    break; // other code in this block are unnecessary
+                } else if (blockCode instanceof ContinueStatement) {
+                    mv.visitJumpInsn(Opcodes.GOTO, stepLabel);
+                    break; // other code in this block are unnecessary
+                } else if (blockCode instanceof ReturnStatement) {
+                    blockCode.generateCode(currentClass, currentMethod, cv, mv);
+                    break; // other code in this block are unnecessary
+                } else
+                    blockCode.generateCode(currentClass, currentMethod, cv, mv);
+            }
         }
         Display.pop();
 

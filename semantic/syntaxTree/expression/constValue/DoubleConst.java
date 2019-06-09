@@ -1,4 +1,4 @@
-package semantic.syntaxTree.expression.binaryOperation.constValue;
+package semantic.syntaxTree.expression.constValue;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -8,16 +8,16 @@ import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.typeTree.TypeTree;
 
-public class StringConst extends Expression {
-    public String value;
+public class DoubleConst extends Expression {
+    public double value;
 
-    public StringConst(String value) {
+    public DoubleConst(double value) {
         this.value = value;
     }
 
     @Override
     public TypeDSCP getResultType() {
-        return TypeTree.STRING_DSCP;
+        return TypeTree.DOUBLE_DSCP;
     }
 
     @Override

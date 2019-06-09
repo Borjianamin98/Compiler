@@ -1,4 +1,4 @@
-package semantic.syntaxTree.identifier;
+package semantic.syntaxTree.expression.identifier;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
