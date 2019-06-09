@@ -50,7 +50,7 @@ terminal String             STRING_CONST;
 non terminal                program;
 non terminal                method_cal, parameters;
 non terminal                simpleVariable, array_part;
-non terminal DSCP           type;
+non terminal DSCP           baseType;
 non terminal                assignment, assign_mark;
 non terminal                cond_stmt, loop_stmt, statement;
 non terminal Block          block;
@@ -91,18 +91,18 @@ program         ::= var_dcl program
                     |
                     ;
 
-extern_dcl      ::= EXTERN type IDENTIFIER SEMICOLON;
+extern_dcl      ::= EXTERN baseType IDENTIFIER SEMICOLON;
 
-function_dcl    ::= FUNCTION type IDENTIFIER LPAREN arguments RPAREN SEMICOLON
+function_dcl    ::= FUNCTION baseType IDENTIFIER LPAREN arguments RPAREN SEMICOLON
                     {: System.out.println("function prototype"); :}
                     |
-                    FUNCTION type IDENTIFIER LPAREN RPAREN SEMICOLON
+                    FUNCTION baseType IDENTIFIER LPAREN RPAREN SEMICOLON
                     {: System.out.println("function prototype"); :}
                     |
-                    FUNCTION type IDENTIFIER LPAREN arguments RPAREN block
+                    FUNCTION baseType IDENTIFIER LPAREN arguments RPAREN block
                     {: System.out.println("function declaration"); :}
                     |
-                    FUNCTION type IDENTIFIER LPAREN RPAREN block
+                    FUNCTION baseType IDENTIFIER LPAREN RPAREN block
                     {: System.out.println("function declaration"); :}
                     ;
 
@@ -113,9 +113,9 @@ arguments       ::= argument COMMA arguments
                     {: System.out.println("argument detected"); :}
                     ;
 
-argument        ::= type IDENTIFIER
+argument        ::= baseType IDENTIFIER
                     |
-                    type IDENTIFIER call_array_part;
+                    baseType IDENTIFIER call_array_part;
 
 call_array_part ::= LBRACKET RBRACKET call_array_part
                     |
@@ -127,9 +127,9 @@ var_declrations ::= var_dcl var_declrations
                    |
                    var_dcl;
 
-var_dcl         ::= CONST type var_dcl_part SEMICOLON
+var_dcl         ::= CONST baseType var_dcl_part SEMICOLON
                     |
-                    type var_dcl_part SEMICOLON
+                    baseType var_dcl_part SEMICOLON
                     ;
 
 var_dcl_part    ::= var_dcl_cnt COMMA var_dcl_part
@@ -305,10 +305,10 @@ expr            ::= expr:e1 PLUS expr:e2
                     const_val:val
                     {: RESULT = val; :}
                     |
-                    SIZEOF LPAREN type RPAREN
+                    SIZEOF LPAREN baseType RPAREN
                     ;
 
-type            ::= INT
+baseType            ::= INT
                     | LONG
                     | FLOAT
                     | DOUBLE

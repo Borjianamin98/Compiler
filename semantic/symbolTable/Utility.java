@@ -109,9 +109,8 @@ public class Utility {
     public static String createArgumentDescriptor(List<Argument> arguments) {
         StringBuilder argumentDescriptor = new StringBuilder("(");
         if (arguments != null) {
-            for (Argument argument : arguments) {
+            for (Argument argument : arguments)
                 argumentDescriptor.append(argument.getDescriptor());
-            }
         }
         argumentDescriptor.append(")");
         return argumentDescriptor.toString();

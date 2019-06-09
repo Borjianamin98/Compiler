@@ -3,6 +3,9 @@ import org.objectweb.asm.*;
 import semantic.syntaxTree.Node;
 import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.ArrayDCL;
+import semantic.syntaxTree.declaration.VariableDCL;
+import semantic.syntaxTree.declaration.method.Argument;
+import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.declaration.record.Field;
 import semantic.syntaxTree.declaration.record.RecordTypeDCL;
 import semantic.syntaxTree.expression.Expression;
@@ -14,6 +17,7 @@ import semantic.syntaxTree.identifier.MemberVariable;
 import semantic.syntaxTree.identifier.SimpleVariable;
 import semantic.syntaxTree.identifier.Variable;
 import semantic.syntaxTree.statement.PrintFunction;
+import semantic.syntaxTree.statement.ReturnStatement;
 import semantic.syntaxTree.statement.assignment.DirectAssignment;
 import semantic.syntaxTree.statement.loop.Foreach;
 
@@ -119,6 +123,7 @@ public class Main implements Opcodes {
 
         List<Field> f2 = new ArrayList<>();
         f2.add(new Field("x", 0, "A", false));
+        f2.add(new Field("y", 1, "int", false));
         RecordTypeDCL r2 = new RecordTypeDCL("B", f2);
         r2.generateCode(cw, mw);
 
@@ -180,10 +185,12 @@ public class Main implements Opcodes {
         d.add(new IntegerConst(2));
         d.add(new IntegerConst(3));
 //        d.add(new IntegerConst(4));
-        ArrayDCL arrayDCL = new ArrayDCL("x", "B", false, 2);
-        arrayDCL.generateCode(cw, mw);
+//        ArrayDCL arrayDCL = new ArrayDCL("x", "B", 2, false, false);
+//        arrayDCL.generateCode(cw, mw);
+        VariableDCL varDCL = new VariableDCL("x", "B", false, false);
+        varDCL.generateCode(cw, mw);
         Variable var = new SimpleVariable("x");
-        NewArrayInstruction newIns = new NewArrayInstruction("B", d);
+        NewRecordInstruction newIns = new NewRecordInstruction("B");
         DirectAssignment ass = new DirectAssignment(var, newIns);
         ass.generateCode(cw, mw);
 //        ArrayVariable vary$2 = new ArrayVariable(vary$1, new IntegerConst(2));
@@ -192,11 +199,21 @@ public class Main implements Opcodes {
 
 
         Block body = new Block();
-        body.addStatement(new DirectAssignment(new SimpleVariable("t"), new NewRecordInstruction("B")));
-        body.addStatement(new DirectAssignment(new MemberVariable(new SimpleVariable("t"), "x"), new NewRecordInstruction("A")));
-        body.addStatement(new PrintFunction(new MemberVariable(new MemberVariable(new SimpleVariable("t"), "x"), "x")));
-        Foreach foreach = new Foreach("t", new ArrayVariable(var, new IntegerConst(1)), body);
+//        body.addStatement(new DirectAssignment(new SimpleVariable("t"), new NewRecordInstruction("B")));
+//        body.addStatement(new DirectAssignment(new MemberVariable(new SimpleVariable("t"), "x"), new NewRecordInstruction("A")));
+//        body.addStatement(new PrintFunction(new MemberVariable(new MemberVariable(new SimpleVariable("t"), "x"), "x")));
+        Foreach foreach = new Foreach("t", new MemberVariable(var, "y"), body);
         foreach.generateCode(cw, mw);
+
+        List<Argument> args = new ArrayList<>();
+        args.add(new Argument("x", "int", 0));
+        args.add(new Argument("y", "int", 2));
+        args.add(new Argument("z", "A", 1));
+        Block mBody = new Block();
+        mBody.addStatement(new PrintFunction(new SimpleVariable("x")));
+        mBody.addStatement(new ReturnStatement());
+        MethodDCL m = new MethodDCL("Tester", "test", args, mBody);
+        m.generateCode(cw, mw);
 
         mw.visitInsn(RETURN);
         mw.visitMaxs(0, 0);

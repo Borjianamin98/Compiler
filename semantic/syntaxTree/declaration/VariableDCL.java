@@ -13,8 +13,11 @@ import semantic.symbolTable.descriptor.type.TypeDSCP;
 import java.util.Optional;
 
 public class VariableDCL extends Declaration {
-    public VariableDCL(String name, String type, boolean isConstant) {
+    private boolean initialized;
+
+    public VariableDCL(String name, String type, boolean isConstant, boolean initialized) {
         super(name, type, isConstant);
+        this.initialized = initialized;
     }
 
     @Override
@@ -37,7 +40,8 @@ public class VariableDCL extends Declaration {
             throw new DuplicateDeclarationException(getName() + " declared more than one time");
         }
         getTypeDSCP();
-        VariableDSCP variableDSCP = new VariableDSCP(getName(), getTypeDSCP(), getTypeDSCP().getSize(), top.getFreeAddress(), isConstant(), false);
+        VariableDSCP variableDSCP = new VariableDSCP(getName(), getTypeDSCP(), getTypeDSCP().getSize(),
+                top.getFreeAddress(), isConstant(), initialized);
         top.addSymbol(getName(), variableDSCP);
     }
 }

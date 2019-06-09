@@ -9,39 +9,55 @@ import semantic.symbolTable.descriptor.type.TypeDSCP;
 import java.util.Optional;
 
 public class Argument {
-    private int arrayLevels;
-    private String type;
     private String name;
+    private String baseType;
+    private TypeDSCP baseTypeDSCP;
+    private int dimensions;
 
-    public Argument(String name, int arrayLevels, String type) {
+    public Argument(String name, String baseType, int dimensions) {
         this.name = name;
-        this.arrayLevels = arrayLevels;
-        this.type = type;
+        this.dimensions = dimensions;
+        this.baseType = baseType;
+    }
+
+    public boolean isArray() {
+        return dimensions > 0;
     }
 
     public String getName() {
         return name;
     }
 
-    public TypeDSCP getOriginType() {
-        Optional<DSCP> typeDSCP = Display.find(type);
-        if (!typeDSCP.isPresent() || !(typeDSCP.get() instanceof TypeDSCP))
-            throw new SymbolNotFoundException(type + " is not declared");
-        return ((TypeDSCP) typeDSCP.get());
+    public String getBaseType() {
+        return baseType;
     }
 
-    public TypeDSCP getType() {
-        Optional<DSCP> typeDSCP = Display.find(getDescriptor());
-        if (!typeDSCP.isPresent() || !(typeDSCP.get() instanceof TypeDSCP))
-            throw new SymbolNotFoundException(type + " is not declared");
-        return ((TypeDSCP) typeDSCP.get());
+    public int getDimensions() {
+        return dimensions;
     }
 
     public String getDescriptor() {
-        return Utility.getDescriptor(getOriginType(), arrayLevels);
+        return Utility.getDescriptor(getBaseTypeDSCP(), dimensions);
     }
 
-    public int getArrayLevels() {
-        return arrayLevels;
+    public TypeDSCP getBaseTypeDSCP() {
+        if (baseTypeDSCP == null) {
+            Optional<DSCP> typeDSCP = Display.find(baseType);
+            if (!typeDSCP.isPresent() || !(typeDSCP.get() instanceof TypeDSCP))
+                throw new SymbolNotFoundException(baseType + " is not declared");
+            baseTypeDSCP =((TypeDSCP) typeDSCP.get());
+        }
+        return baseTypeDSCP;
     }
+//
+//    public TypeDSCP getType() {
+//        Optional<DSCP> typeDSCP = Display.find(getDescriptor());
+//        if (!typeDSCP.isPresent() || !(typeDSCP.get() instanceof TypeDSCP))
+//            throw new SymbolNotFoundException(baseType + " is not declared");
+//        return ((TypeDSCP) typeDSCP.get());
+//    }
+//
+//
+//
+
 }

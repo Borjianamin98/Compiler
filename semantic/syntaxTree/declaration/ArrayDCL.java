@@ -18,10 +18,12 @@ import java.util.Optional;
 public class ArrayDCL extends Declaration {
     private int dimensions;
     private TypeDSCP baseType;
+    private boolean initialized;
 
-    public ArrayDCL(String name, String type, boolean isConstant, int dimensions) {
+    public ArrayDCL(String name, String type, int dimensions, boolean isConstant, boolean initialized) {
         super(name, type, isConstant);
         this.dimensions = dimensions;
+        this.initialized = initialized;
     }
 
     private String getDescriptor() {
@@ -58,7 +60,7 @@ public class ArrayDCL extends Declaration {
             lastDimensionType = arrayTypeDSCP.getInternalType();
             lastDSCPName = lastDSCPName + "[]";
         }
-        VariableDSCP variableDSCP = new VariableDSCP(lastDSCPName, lastDimensionType, 1, -1, isConstant(), false);
+        VariableDSCP variableDSCP = new VariableDSCP(lastDSCPName, lastDimensionType, 1, -1, isConstant(), initialized);
         top.addSymbol(lastDSCPName, variableDSCP);
     }
 }

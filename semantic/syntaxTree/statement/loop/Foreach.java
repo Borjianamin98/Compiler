@@ -58,13 +58,13 @@ public class Foreach extends Statement {
         Label conditionLabel = new Label();
 
         // create T[] a = Expression;
-        ArrayDCL arrayDCL = new ArrayDCL(varIteratorName, arrayTypeDSCP.getBaseType().getName(), false, arrayTypeDSCP.getDimensions());
+        ArrayDCL arrayDCL = new ArrayDCL(varIteratorName, arrayTypeDSCP.getBaseType().getName(), arrayTypeDSCP.getDimensions(), false, false);
         arrayDCL.generateCode(cv, mv);
         DirectAssignment iteratorAssignment = new DirectAssignment(varIterator, iterator);
         iteratorAssignment.generateCode(cv, mv);
 
         // create int i = 0;
-        VariableDCL varCounterDCL = new VariableDCL(varCounterName, "int", false);
+        VariableDCL varCounterDCL = new VariableDCL(varCounterName, "int", false, false);
         varCounterDCL.generateCode(cv, mv);
         DirectAssignment counterAssignment = new DirectAssignment(varCounter, new IntegerConst(0));
         counterAssignment.generateCode(cv, mv);
@@ -79,10 +79,10 @@ public class Foreach extends Statement {
         // create Type Identifier;
         Declaration varIdentifierDCL;
         if (arrayTypeDSCP.getInternalType() instanceof ArrayTypeDSCP)
-            varIdentifierDCL = new ArrayDCL(identifierName, arrayTypeDSCP.getBaseType().getName(), false,
-                    arrayTypeDSCP.getInternalType().getDimensions());
+            varIdentifierDCL = new ArrayDCL(identifierName, arrayTypeDSCP.getBaseType().getName(),
+                    arrayTypeDSCP.getInternalType().getDimensions(), false, false);
         else
-            varIdentifierDCL = new VariableDCL(identifierName, arrayTypeDSCP.getInternalType().getName(), false);
+            varIdentifierDCL = new VariableDCL(identifierName, arrayTypeDSCP.getInternalType().getName(), false, false);
         varIdentifierDCL.generateCode(cv, mv);
 
         // create Identifier = a[i];
