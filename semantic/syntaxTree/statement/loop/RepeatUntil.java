@@ -4,12 +4,12 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import semantic.Constants;
+import semantic.symbolTable.Constants;
 import semantic.exception.BooleanExpressionException;
+import semantic.symbolTable.Display;
 import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.statement.Statement;
-import semantic.syntaxTree.statement.assignment.Assignment;
 
 public class RepeatUntil extends Statement {
     private Expression condition;
@@ -25,10 +25,9 @@ public class RepeatUntil extends Statement {
         Label bodyLabel = new Label();
         mv.visitLabel(bodyLabel);
 
-        // Uncomment if each for body is a new scope
-//        Display.add(true);
+        Display.add(true);
         body.generateCode(cv, mv);
-//        Display.pop();
+        Display.pop();
 
         condition.generateCode(cv, mv);
         int resultTypeCode = condition.getResultType().getTypeCode();

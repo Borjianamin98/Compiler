@@ -1,23 +1,38 @@
-package semantic.syntaxTree.declaration;
+package semantic.syntaxTree.declaration.record;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 import semantic.exception.DuplicateDeclarationException;
 import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
+import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
-import semantic.symbolTable.descriptor.hastype.VariableDSCP;
+import semantic.symbolTable.descriptor.hastype.FieldDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
+import semantic.syntaxTree.declaration.Declaration;
 
 import java.util.Optional;
 
-public class VariableDCL extends Declaration {
+public class SimpleFieldDCL extends Declaration {
+    private String owner;
     private boolean initialized;
+    private boolean beingStatic;
 
-    public VariableDCL(String name, String type, boolean isConstant, boolean initialized) {
+    public SimpleFieldDCL(String owner, String name, String type, boolean isConstant, boolean initialized, boolean beingStatic) {
         super(name, type, isConstant);
+        this.owner = owner;
         this.initialized = initialized;
+        this.beingStatic = beingStatic;
+    }
+
+    public String getDescriptor() {
+        return Utility.getDescriptor(getTypeDSCP(), 0);
+    }
+
+    public boolean isStatic() {
+        return beingStatic;
     }
 
     @Override
@@ -37,11 +52,14 @@ public class VariableDCL extends Declaration {
         // otherwise this declaration shadows other declarations
         SymbolTable top = Display.top();
         if (top.contain(getName()))
-            throw new DuplicateDeclarationException(getName() + " declared more than one time");
+            throw new DuplicateDeclarationException("Field " + getName() + " declared more than one time");
 
         getTypeDSCP();
-        VariableDSCP variableDSCP = new VariableDSCP(getName(), getTypeDSCP(), getTypeDSCP().getSize(),
-                top.getFreeAddress(), isConstant(), initialized);
-        top.addSymbol(getName(), variableDSCP);
+        int access = Opcodes.ACC_PUBLIC;
+        access |= isConstant() ? Opcodes.ACC_FINAL : 0;
+        access |= isStatic() ? Opcodes.ACC_STATIC : 0;
+        cv.visitField(access, getName(), getDescriptor(), null, null).visitEnd();
+        FieldDSCP fieldDSCP = new FieldDSCP(owner, getName(), getTypeDSCP(), isConstant(), initialized);
+        top.addSymbol(getName(), fieldDSCP);
     }
 }

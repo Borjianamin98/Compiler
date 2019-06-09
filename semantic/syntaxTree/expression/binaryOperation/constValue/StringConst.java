@@ -2,7 +2,7 @@ package semantic.syntaxTree.expression.binaryOperation.constValue;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
-import semantic.Constants;
+import semantic.symbolTable.Constants;
 import semantic.syntaxTree.expression.Expression;
 
 public class StringConst extends Expression {

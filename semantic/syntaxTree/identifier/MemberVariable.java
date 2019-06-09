@@ -11,7 +11,7 @@ import semantic.syntaxTree.expression.Expression;
 public class MemberVariable extends Variable {
     private Variable parent;
     private String memberName;
-    private HasTypeDSCP parentDSCP;
+    private HasTypeDSCP dscp;
     private RecordTypeDSCP recordTypeDSCP;
 
     public MemberVariable(Variable parent, String memberName) {
@@ -19,34 +19,38 @@ public class MemberVariable extends Variable {
         this.memberName = memberName;
     }
 
+    public RecordTypeDSCP getRecordTypeDSCP() {
+        return recordTypeDSCP;
+    }
+
     @Override
     public void generateCode(ClassVisitor cv, MethodVisitor mv) {
         getDSCP();
-        // TODO Check initialization
-//        if (!parentDSCP.isInitialized())
-//            throw new RuntimeException("Variable " + getName() + " is not initialized");
         parent.generateCode(cv, mv);
-//        mv.visitVarInsn(Opcodes.ALOAD, parentDSCP.getAddress());
-        mv.visitFieldInsn(Opcodes.GETFIELD, recordTypeDSCP.getName(), memberName, recordTypeDSCP.getField(memberName).getDescriptor());
-        setResultType(recordTypeDSCP.getField(memberName).getType());
+        if (!dscp.isInitialized())
+            throw new RuntimeException("Field " + memberName + " of type " + dscp.getType().getName() + " is not initialized");
+        mv.visitFieldInsn(Opcodes.GETFIELD, recordTypeDSCP.getName(), memberName, dscp.getDescriptor());
+        setResultType(dscp.getType());
     }
 
     @Override
     public void assignValue(ClassVisitor cv, MethodVisitor mv, Expression value) {
-//        mv.visitVarInsn(Opcodes.ALOAD, parentDSCP.getAddress());
-//        value.generateCode(cv, mv);
-//        mv.visitFieldInsn(Opcodes.PUTFIELD, parentDSCP.getType().getName(), getName(), recordTypeDSCP.getField(getName()).getDescriptor());
+        getDSCP();
+        parent.generateCode(cv, mv);
+        value.generateCode(cv, mv);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, recordTypeDSCP.getName(), memberName, dscp.getDescriptor());
     }
 
     @Override
     public HasTypeDSCP getDSCP() {
-        if (parentDSCP == null) {
-            if (!(parent.getDSCP().getType() instanceof RecordTypeDSCP) ||
-                    !(((RecordTypeDSCP) parent.getDSCP().getType()).containsField(memberName)))
-                throw new IllegalTypeException("member field " + memberName + " doesn't exist");
+        if (dscp == null) {
+            if (!(parent.getDSCP().getType() instanceof RecordTypeDSCP))
+                throw new IllegalTypeException(parent.getDSCP().getName() + " is not a record");
             recordTypeDSCP = (RecordTypeDSCP) parent.getDSCP().getType();
-            parentDSCP = recordTypeDSCP.getField(memberName);
+            if (!(recordTypeDSCP.getField(memberName).isPresent()))
+                throw new IllegalTypeException("Member field " + memberName + " doesn't exist");
+            dscp = recordTypeDSCP.getField(memberName).get();
         }
-        return parentDSCP;
+        return dscp;
     }
 }

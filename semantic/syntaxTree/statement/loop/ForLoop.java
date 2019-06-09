@@ -4,8 +4,9 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import semantic.Constants;
+import semantic.symbolTable.Constants;
 import semantic.exception.BooleanExpressionException;
+import semantic.symbolTable.Display;
 import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.statement.Statement;
@@ -58,10 +59,9 @@ public class ForLoop extends Statement {
         Label outLabel = new Label();
         mv.visitJumpInsn(Opcodes.IFEQ, outLabel);
 
-        // Uncomment if each for body is a new scope
-//        Display.add(true);
+        Display.add(true);
         body.generateCode(cv, mv);
-//        Display.pop();
+        Display.pop();
 
         if (stepAssignment != null)
             stepAssignment.generateCode(cv, mv);

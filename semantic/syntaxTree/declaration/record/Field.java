@@ -1,57 +1,37 @@
 package semantic.syntaxTree.declaration.record;
 
-import semantic.exception.SymbolNotFoundException;
-import semantic.symbolTable.Display;
-import semantic.symbolTable.Utility;
-import semantic.symbolTable.descriptor.DSCP;
-import semantic.symbolTable.descriptor.type.TypeDSCP;
+import semantic.syntaxTree.declaration.Parameter;
 import semantic.syntaxTree.expression.Expression;
 
-import java.util.Optional;
-
-public class Field {
-    private int arrayLevels;
-    private String type;
-    private String name;
+public class Field extends Parameter {
     private Expression defaultValue;
     private boolean constant;
+    private boolean isStatic;
 
-    public Field(String name, int arrayLevels, String type, boolean constant, Expression defaultValue) {
-        this.name = name;
-        this.arrayLevels = arrayLevels;
-        this.type = type;
+    public Field(String name, String baseType, int dimensions, Expression defaultValue, boolean constant, boolean isStatic) {
+        super(name, baseType, dimensions);
         this.constant = constant;
         this.defaultValue = defaultValue;
+        this.isStatic = isStatic;
     }
 
-    public Field(String name, int arrayLevels, String type, boolean constant) {
-        this(name, arrayLevels, type, constant, null);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public TypeDSCP getType() {
-        Optional<DSCP> typeDSCP = Display.find(type);
-        if (!typeDSCP.isPresent() || !(typeDSCP.get() instanceof TypeDSCP))
-            throw new SymbolNotFoundException(type + " is not declared");
-        return ((TypeDSCP) typeDSCP.get());
-    }
-
-    public String getDescriptor() {
-        return Utility.getDescriptor(getType(), arrayLevels);
+    public Field(String name, String baseType, int dimensions, boolean constant, boolean isStatic) {
+        this(name, baseType, dimensions, null, constant, isStatic);
     }
 
     public Expression getDefaultValue() {
         return defaultValue;
     }
 
-    public int getArrayLevels() {
-        return arrayLevels;
-    }
-
     public boolean isConstant() {
         return constant;
+    }
+
+    public boolean isStatic() {
+        return isStatic;
+    }
+
+    public void setStatic(boolean aStatic) {
+        isStatic = aStatic;
     }
 }

@@ -7,18 +7,21 @@ import semantic.exception.DuplicateDeclarationException;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
 import semantic.symbolTable.Utility;
+import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.MethodDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
-import semantic.symbolTable.descriptor.hastype.VariableDSCP;
 import semantic.syntaxTree.Node;
 import semantic.syntaxTree.block.Block;
+import semantic.syntaxTree.declaration.ArrayDCL;
+import semantic.syntaxTree.declaration.Declaration;
+import semantic.syntaxTree.declaration.VariableDCL;
 
 import java.util.List;
+import java.util.Optional;
 
 public class MethodDCL extends Node {
     private String owner;
     private String name;
-    private boolean hasReturn;
     private TypeDSCP returnType;
     private Block body;
     private List<Argument> arguments;
@@ -29,13 +32,15 @@ public class MethodDCL extends Node {
         this.name = name;
         this.body = body;
         this.arguments = arguments;
-        this.hasReturn = false;
     }
 
     public MethodDCL(String owner, String name, List<Argument> arguments, Block body, TypeDSCP returnType) {
         this(owner, name, arguments, body);
         this.returnType = returnType;
-        this.hasReturn = true;
+    }
+
+    public boolean hasReturn() {
+        return returnType != null;
     }
 
     public String getName() {
@@ -47,34 +52,42 @@ public class MethodDCL extends Node {
     }
 
     public String getDescriptor() {
-        return Utility.createMethodDescriptor(arguments, hasReturn, returnType);
+        return Utility.createMethodDescriptor(arguments, hasReturn(), returnType);
     }
 
     @Override
     public void generateCode(ClassVisitor cv, MethodVisitor mv) {
-        // Update SymbolTable
-        // Only check current block table
-        // otherwise this declaration shadows other declarations
         SymbolTable top = Display.top();
-        if (top.contain(name)) {
-            throw new DuplicateDeclarationException(name + " declared more than one time");
+        Optional<DSCP> fetchedDSCP = Display.find(name);
+        MethodDSCP methodDSCP;
+        if (fetchedDSCP.isPresent()) {
+            if (!(fetchedDSCP.get() instanceof MethodDSCP))
+                throw new DuplicateDeclarationException("Function " + name + " declared more than one time");
+            methodDSCP = (MethodDSCP) fetchedDSCP.get();
+        } else {
+            methodDSCP = new MethodDSCP(owner, name, returnType);
+            top.addSymbol(name, methodDSCP);
         }
-        MethodDSCP methodDSCP = new MethodDSCP(owner, name, hasReturn, returnType, arguments);
-        top.addSymbol(name, methodDSCP);
+
+        methodDSCP.addArguments(arguments);
 
         // Generate Code
         MethodVisitor methodVisitor = cv.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, name, getDescriptor(), null, null);
         methodVisitor.visitCode();
 
-        SymbolTable currentFunctionSYMTAB = new SymbolTable();
+        // Add function symbol table
+        Display.add(false);
         if (arguments != null) {
             for (Argument argument : arguments) {
-                int freeAddress = currentFunctionSYMTAB.getFreeAddress();
-                currentFunctionSYMTAB.addSymbol(argument.getName(),
-                        new VariableDSCP(argument.getName(), argument.getType(), 1 * argument.getType().getSize(), freeAddress, false, true));
+                Declaration argDCL;
+                if (argument.isArray())
+                    argDCL = new ArrayDCL(argument.getName(), argument.getBaseType(), argument.getDimensions(), false, true);
+                else
+                    argDCL = new VariableDCL(argument.getName(), argument.getBaseType(), false, true);
+                argDCL.generateCode(cv, mv);
             }
         }
-        Display.add(currentFunctionSYMTAB);
+
         body.generateCode(cv, methodVisitor);
         Display.pop();
 

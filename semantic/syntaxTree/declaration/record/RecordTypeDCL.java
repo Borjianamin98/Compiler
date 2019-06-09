@@ -7,13 +7,12 @@ import org.objectweb.asm.Opcodes;
 import semantic.exception.DuplicateDeclarationException;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
-import semantic.symbolTable.descriptor.hastype.FieldDSCP;
 import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
 import semantic.syntaxTree.Node;
+import semantic.syntaxTree.declaration.Declaration;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class RecordTypeDCL extends Node {
@@ -27,19 +26,24 @@ public class RecordTypeDCL extends Node {
 
     @Override
     public void generateCode(ClassVisitor cv, MethodVisitor mv) {
-        // Generate Code
-        int recordSize = 0;
-        List<FieldDSCP> fieldDSCPS = new ArrayList<>();
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         classWriter.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC | Opcodes.ACC_SUPER, name, null, "java/lang/Object", null);
 
+        Display.add(false); // Record symbol table
         for (Field field : fields) {
-            classWriter.visitField(Opcodes.ACC_PUBLIC, field.getName(), field.getDescriptor(), null, null).visitEnd();
-            fieldDSCPS.add(new FieldDSCP(field.getName(), field.getType(), field.getArrayLevels(),
-                    field.isConstant(), field.getDefaultValue() != null));
-            recordSize += field.getType().getSize();
+            field.setStatic(false);
+            Declaration fieldDCL;
+            if (field.isArray()) {
+                fieldDCL = new ArrayFieldDCL(name, field.getName(), field.getBaseType(), field.getDimensions(),
+                        field.isConstant(), field.getDefaultValue() != null, field.isStatic());
+            } else {
+                fieldDCL = new SimpleFieldDCL(name, field.getName(), field.getBaseType(), field.isConstant(),
+                        field.getDefaultValue() != null, field.isStatic());
+            }
+            fieldDCL.generateCode(classWriter, null);
         }
 
+        // Constructor of record
         MethodVisitor methodVisitor = classWriter.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
         methodVisitor.visitCode();
         methodVisitor.visitVarInsn(Opcodes.ALOAD, 0);
@@ -51,27 +55,25 @@ public class RecordTypeDCL extends Node {
                 methodVisitor.visitFieldInsn(Opcodes.PUTFIELD, name, field.getName(), field.getDescriptor());
             }
         }
+
+
         methodVisitor.visitInsn(Opcodes.RETURN);
         methodVisitor.visitMaxs(0, 0);
         methodVisitor.visitEnd();
-
         classWriter.visitEnd();
 
+        // Generate class file
         try (FileOutputStream fos = new FileOutputStream(Node.outputPath + name + ".class")) {
             fos.write(classWriter.toByteArray());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        // Update SymbolTable
-        // Only check current block table
-        // otherwise this declaration shadows other declarations
-        SymbolTable top = Display.top();
-        if (top.contain(name)) {
-            throw new DuplicateDeclarationException(name + " declared more than one time");
+        // Update symbol table
+        if (Display.find(name).isPresent()) {
+            throw new DuplicateDeclarationException("Identifier " + name + " declared more than one time");
         }
-        // TODO size of record is: recordSize or 1 (pointer size)
-        RecordTypeDSCP recordDSCP = new RecordTypeDSCP(name, 1, fieldDSCPS);
-        top.addType(name, recordDSCP);
+        RecordTypeDSCP recordDSCP = new RecordTypeDSCP(name, 1, Display.pop());
+        SymbolTable.addType(name, recordDSCP);
     }
 }
