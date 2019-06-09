@@ -58,15 +58,15 @@ public class MethodDCL extends Node {
     @Override
     public void generateCode(ClassVisitor cv, MethodVisitor mv) {
         SymbolTable top = Display.top();
-        Optional<DSCP> fetchedDSCP = Display.find(owner + "." + name);
+        Optional<DSCP> fetchedDSCP = Display.find(name);
         MethodDSCP methodDSCP;
         if (fetchedDSCP.isPresent()) {
             if (!(fetchedDSCP.get() instanceof MethodDSCP))
-                throw new DuplicateDeclarationException("Function " + owner + "." + name + " declared more than one time");
+                throw new DuplicateDeclarationException("Function " + name + " declared more than one time");
             methodDSCP = (MethodDSCP) fetchedDSCP.get();
         } else {
             methodDSCP = new MethodDSCP(owner, name, returnType);
-            top.addSymbol(owner + "." + name, methodDSCP);
+            top.addSymbol(name, methodDSCP);
         }
 
         methodDSCP.addArguments(arguments);

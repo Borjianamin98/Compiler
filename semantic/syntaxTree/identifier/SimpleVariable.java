@@ -7,7 +7,6 @@ import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
-import semantic.symbolTable.descriptor.hastype.HasTypeDSCP;
 import semantic.symbolTable.descriptor.hastype.VariableDSCP;
 import semantic.syntaxTree.expression.Expression;
 

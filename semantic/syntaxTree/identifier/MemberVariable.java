@@ -28,7 +28,7 @@ public class MemberVariable extends Variable {
         getDSCP();
         parent.generateCode(cv, mv);
         if (!dscp.isInitialized())
-            throw new RuntimeException("Field " + memberName + " of " + dscp.getType().getName() + " is not initialized");
+            throw new RuntimeException("Field " + memberName + " of type " + dscp.getType().getName() + " is not initialized");
         mv.visitFieldInsn(Opcodes.GETFIELD, recordTypeDSCP.getName(), memberName, dscp.getDescriptor());
         setResultType(dscp.getType());
     }

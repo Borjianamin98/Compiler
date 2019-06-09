@@ -10,8 +10,8 @@ import java.util.Optional;
 
 public class Parameter {
     protected String name;
-    protected String baseType;
-    protected int dimensions;
+    private String baseType;
+    private int dimensions;
     private TypeDSCP baseTypeDSCP;
 
     public Parameter(String name, String baseType, int dimensions) {

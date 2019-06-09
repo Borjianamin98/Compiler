@@ -7,6 +7,7 @@ import semantic.exception.DuplicateDeclarationException;
 import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
+import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.hastype.FieldDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
@@ -16,14 +17,22 @@ import java.util.Optional;
 
 public class SimpleFieldDCL extends Declaration {
     private String owner;
-    private String descriptor;
     private boolean initialized;
+    private boolean beingStatic;
 
-    public SimpleFieldDCL(String owner, String name, String type, String descriptor, boolean isConstant, boolean initialized) {
+    public SimpleFieldDCL(String owner, String name, String type, boolean isConstant, boolean initialized, boolean beingStatic) {
         super(name, type, isConstant);
         this.owner = owner;
-        this.descriptor = descriptor;
         this.initialized = initialized;
+        this.beingStatic = beingStatic;
+    }
+
+    public String getDescriptor() {
+        return Utility.getDescriptor(getTypeDSCP(), 0);
+    }
+
+    public boolean isStatic() {
+        return beingStatic;
     }
 
     @Override
@@ -46,7 +55,10 @@ public class SimpleFieldDCL extends Declaration {
             throw new DuplicateDeclarationException("Field " + getName() + " declared more than one time");
 
         getTypeDSCP();
-        cv.visitField(Opcodes.ACC_PUBLIC, getName(), descriptor, null, null).visitEnd();
+        int access = Opcodes.ACC_PUBLIC;
+        access |= isConstant() ? Opcodes.ACC_FINAL : 0;
+        access |= isStatic() ? Opcodes.ACC_STATIC : 0;
+        cv.visitField(access, getName(), getDescriptor(), null, null).visitEnd();
         FieldDSCP fieldDSCP = new FieldDSCP(owner, getName(), getTypeDSCP(), isConstant(), initialized);
         top.addSymbol(getName(), fieldDSCP);
     }

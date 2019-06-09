@@ -26,20 +26,19 @@ public class RecordTypeDCL extends Node {
 
     @Override
     public void generateCode(ClassVisitor cv, MethodVisitor mv) {
-        // Generate Code
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         classWriter.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC | Opcodes.ACC_SUPER, name, null, "java/lang/Object", null);
 
-        // TODO field which are array!!!
         Display.add(false); // Record symbol table
         for (Field field : fields) {
-            Declaration fieldDCL = null;
+            field.setStatic(false);
+            Declaration fieldDCL;
             if (field.isArray()) {
-                fieldDCL = new ArrayFieldDCL(name, field.getName(), field.getBaseType(), field.getDescriptor(), field.getDimensions(),
-                        field.isConstant(), field.getDefaultValue() != null);
+                fieldDCL = new ArrayFieldDCL(name, field.getName(), field.getBaseType(), field.getDimensions(),
+                        field.isConstant(), field.getDefaultValue() != null, field.isStatic());
             } else {
-                fieldDCL = new SimpleFieldDCL(name, field.getName(), field.getBaseType(), field.getDescriptor(), field.isConstant(),
-                        field.getDefaultValue() != null);
+                fieldDCL = new SimpleFieldDCL(name, field.getName(), field.getBaseType(), field.isConstant(),
+                        field.getDefaultValue() != null, field.isStatic());
             }
             fieldDCL.generateCode(classWriter, null);
         }
