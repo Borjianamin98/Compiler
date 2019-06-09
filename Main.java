@@ -9,6 +9,7 @@ import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.declaration.record.Field;
 import semantic.syntaxTree.declaration.record.RecordTypeDCL;
 import semantic.syntaxTree.expression.Expression;
+import semantic.syntaxTree.expression.MethodCall;
 import semantic.syntaxTree.expression.NewArrayInstruction;
 import semantic.syntaxTree.expression.NewRecordInstruction;
 import semantic.syntaxTree.expression.binaryOperation.constValue.IntegerConst;
@@ -198,22 +199,28 @@ public class Main implements Opcodes {
 //        printFunction.generateCode(cw, mw);
 
 
-        Block body = new Block();
-//        body.addStatement(new DirectAssignment(new SimpleVariable("t"), new NewRecordInstruction("B")));
-//        body.addStatement(new DirectAssignment(new MemberVariable(new SimpleVariable("t"), "x"), new NewRecordInstruction("A")));
-//        body.addStatement(new PrintFunction(new MemberVariable(new MemberVariable(new SimpleVariable("t"), "x"), "x")));
-        Foreach foreach = new Foreach("t", new MemberVariable(var, "y"), body);
-        foreach.generateCode(cw, mw);
+//        Block body = new Block();
+////        body.addStatement(new DirectAssignment(new SimpleVariable("t"), new NewRecordInstruction("B")));
+////        body.addStatement(new DirectAssignment(new MemberVariable(new SimpleVariable("t"), "x"), new NewRecordInstruction("A")));
+////        body.addStatement(new PrintFunction(new MemberVariable(new MemberVariable(new SimpleVariable("t"), "x"), "x")));
+//        Foreach foreach = new Foreach("t", new MemberVariable(var, "y"), body);
+//        foreach.generateCode(cw, mw);
 
         List<Argument> args = new ArrayList<>();
         args.add(new Argument("x", "int", 0));
-        args.add(new Argument("y", "int", 2));
-        args.add(new Argument("z", "A", 1));
+        args.add(new Argument("y", "B", 2));
+//        args.add(new Argument("z", "A", 1));
         Block mBody = new Block();
         mBody.addStatement(new PrintFunction(new SimpleVariable("x")));
         mBody.addStatement(new ReturnStatement());
         MethodDCL m = new MethodDCL("Tester", "test", args, mBody);
         m.generateCode(cw, mw);
+
+        List<Expression> params = new ArrayList<>();
+        params.add(new IntegerConst(1));
+        params.add(var);
+        MethodCall methodCall = new MethodCall("Tester.test", params);
+        methodCall.generateCode(cw, mw);
 
         mw.visitInsn(RETURN);
         mw.visitMaxs(0, 0);

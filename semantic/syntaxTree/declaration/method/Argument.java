@@ -49,15 +49,11 @@ public class Argument {
         }
         return baseTypeDSCP;
     }
-//
-//    public TypeDSCP getType() {
-//        Optional<DSCP> typeDSCP = Display.find(getDescriptor());
-//        if (!typeDSCP.isPresent() || !(typeDSCP.get() instanceof TypeDSCP))
-//            throw new SymbolNotFoundException(baseType + " is not declared");
-//        return ((TypeDSCP) typeDSCP.get());
-//    }
-//
-//
-//
 
+    public TypeDSCP getType() {
+        Optional<DSCP> typeDSCP = Display.find(getDescriptor());
+        if (!typeDSCP.isPresent() || !(typeDSCP.get() instanceof TypeDSCP))
+            throw new SymbolNotFoundException(baseType + " is not declared");
+        return ((TypeDSCP) typeDSCP.get());
+    }
 }

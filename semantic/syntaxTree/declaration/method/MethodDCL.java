@@ -88,7 +88,6 @@ public class MethodDCL extends Node {
             }
         }
 
-
         body.generateCode(cv, methodVisitor);
         Display.pop();
 
