@@ -13,6 +13,7 @@ import semantic.symbolTable.descriptor.hastype.HasTypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
+import semantic.typeTree.TypeTree;
 
 import java.util.Optional;
 
@@ -39,7 +40,6 @@ public class SimpleField extends Variable {
             mv.visitVarInsn(Opcodes.ALOAD, 0); // load "this"
             mv.visitFieldInsn(Opcodes.GETFIELD, owner, name, dscp.getDescriptor());
         }
-        setResultType(dscp.getType());
     }
 
     @Override
@@ -47,10 +47,12 @@ public class SimpleField extends Variable {
         getDSCP();
         if (isStatic) {
             value.generateCode(currentClass, currentMethod, cv, mv);
+            TypeTree.widen(mv, value.getResultType(), getResultType()); // right value must be converted to type of variable
             mv.visitFieldInsn(Opcodes.PUTSTATIC, owner, name, dscp.getDescriptor());
         } else {
             mv.visitVarInsn(Opcodes.ALOAD, 0); // load "this"
             value.generateCode(currentClass, currentMethod, cv, mv);
+            TypeTree.widen(mv, value.getResultType(), getResultType()); // right value must be converted to type of variable
             mv.visitFieldInsn(Opcodes.PUTFIELD, owner, name, dscp.getDescriptor());
         }
     }

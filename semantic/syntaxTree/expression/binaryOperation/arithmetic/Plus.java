@@ -8,6 +8,7 @@ import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.expression.binaryOperation.BinaryOperation;
 import semantic.syntaxTree.program.ClassDCL;
+import semantic.typeTree.TypeTree;
 
 public class Plus extends BinaryOperation {
     public Plus(Expression firstOperand, Expression secondOperand) {
@@ -15,14 +16,24 @@ public class Plus extends BinaryOperation {
     }
 
     @Override
+    public TypeDSCP getResultType() {
+        return TypeTree.max(getFirstOperand().getResultType(), getSecondOperand().getResultType());
+    }
+
+    @Override
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
-        getFirstOperand().generateCode(currentClass, currentMethod, cv, mv);
-        getSecondOperand().generateCode(currentClass, currentMethod, cv, mv);
         // TODO check Type (must be completed)
         // TODO Think about char type
-        // TODO Think about adding two strings
-        TypeDSCP resultType = getFirstOperand().getResultType();
-        mv.visitInsn(Utility.getOpcode(resultType.getTypeCode(), "ADD"));
+        // TODO Think about multiple two strings
+        getResultType();
+
+        getFirstOperand().generateCode(currentClass, currentMethod, cv, mv);
+        TypeTree.widen(mv, getFirstOperand().getResultType(), getResultType());
+
+        getSecondOperand().generateCode(currentClass, currentMethod, cv, mv);
+        TypeTree.widen(mv, getSecondOperand().getResultType(), getResultType());
+
+        mv.visitInsn(Utility.getOpcode(getResultType().getTypeCode(), "ADD"));
     }
 
 

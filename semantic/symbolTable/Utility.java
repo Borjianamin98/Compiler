@@ -1,29 +1,27 @@
 package semantic.symbolTable;
 
 import jdk.internal.org.objectweb.asm.Opcodes;
-import semantic.exception.SymbolNotFoundException;
-import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.type.ArrayTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.Argument;
+import semantic.typeTree.TypeTree;
 
 import java.util.List;
-import java.util.Optional;
 
 public class Utility {
     private Utility() {
     }
 
     public static String getTypePrefix(int type) {
-        if (type == Constants.INTEGER_DSCP.getTypeCode() ||
-                type == Constants.BOOLEAN_DSCP.getTypeCode() ||
-                type == Constants.CHAR_DSCP.getTypeCode()) {
+        if (type == TypeTree.INTEGER_DSCP.getTypeCode() ||
+                type == TypeTree.BOOLEAN_DSCP.getTypeCode() ||
+                type == TypeTree.CHAR_DSCP.getTypeCode()) {
             return "I";
-        } else if (type == Constants.LONG_DSCP.getTypeCode()) {
+        } else if (type == TypeTree.LONG_DSCP.getTypeCode()) {
             return "L";
-        } else if (type == Constants.DOUBLE_DSCP.getTypeCode()) {
+        } else if (type == TypeTree.DOUBLE_DSCP.getTypeCode()) {
             return "D";
-        } else if (type == Constants.FLOAT_DSCP.getTypeCode()) {
+        } else if (type == TypeTree.FLOAT_DSCP.getTypeCode()) {
             return "F";
         }
         return "A";
@@ -46,21 +44,21 @@ public class Utility {
     }
 
     public static String getPrimitiveTypeDescriptor(int type) {
-        if (type == Constants.INTEGER_DSCP.getTypeCode()) {
+        if (type == TypeTree.INTEGER_DSCP.getTypeCode()) {
             return "I";
-        } else if (type == Constants.CHAR_DSCP.getTypeCode()) {
+        } else if (type == TypeTree.CHAR_DSCP.getTypeCode()) {
             return "C";
-        } else if (type == Constants.LONG_DSCP.getTypeCode()) {
+        } else if (type == TypeTree.LONG_DSCP.getTypeCode()) {
             return "J";
-        } else if (type == Constants.DOUBLE_DSCP.getTypeCode()) {
+        } else if (type == TypeTree.DOUBLE_DSCP.getTypeCode()) {
             return "D";
-        } else if (type == Constants.FLOAT_DSCP.getTypeCode()) {
+        } else if (type == TypeTree.FLOAT_DSCP.getTypeCode()) {
             return "F";
-        } else if (type == Constants.BOOLEAN_DSCP.getTypeCode()) {
+        } else if (type == TypeTree.BOOLEAN_DSCP.getTypeCode()) {
             return "Z";
-        } else if (type == Constants.VOID_DSCP.getTypeCode()) {
+        } else if (type == TypeTree.VOID_DSCP.getTypeCode()) {
             return "V";
-        } else if (type == Constants.STRING_DSCP.getTypeCode()) {
+        } else if (type == TypeTree.STRING_DSCP.getTypeCode()) {
             return "Ljava/lang/String;";
         }
         throw new RuntimeException(type + " is not a primitive type");

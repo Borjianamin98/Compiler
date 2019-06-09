@@ -38,10 +38,8 @@ public class NewRecordInstruction extends Expression {
     }
 
     @Override
-    public ArrayTypeDSCP getResultType() {
-        if (super.getResultType() == null)
-            setResultType(getTypeDSCP());
-        return (ArrayTypeDSCP) super.getResultType();
+    public RecordTypeDSCP getResultType() {
+        return getTypeDSCP();
     }
 
     @Override

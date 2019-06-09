@@ -2,17 +2,22 @@ package semantic.syntaxTree.expression.binaryOperation.constValue;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
-import semantic.symbolTable.Constants;
+import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
+import semantic.typeTree.TypeTree;
 
 public class DoubleConst extends Expression {
     public double value;
 
     public DoubleConst(double value) {
-        super(Constants.DOUBLE_DSCP);
         this.value = value;
+    }
+
+    @Override
+    public TypeDSCP getResultType() {
+        return TypeTree.DOUBLE_DSCP;
     }
 
     @Override

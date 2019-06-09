@@ -2,17 +2,22 @@ package semantic.syntaxTree.expression.binaryOperation.constValue;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
-import semantic.symbolTable.Constants;
+import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
+import semantic.typeTree.TypeTree;
 
 public class LongConst extends Expression {
     public long value;
 
     public LongConst(long value) {
-        super(Constants.LONG_DSCP);
         this.value = value;
+    }
+
+    @Override
+    public TypeDSCP getResultType() {
+        return TypeTree.LONG_DSCP;
     }
 
     @Override

@@ -4,17 +4,22 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import semantic.symbolTable.Constants;
+import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.expression.binaryOperation.BinaryOperation;
 import semantic.syntaxTree.program.ClassDCL;
+import semantic.typeTree.TypeTree;
 
 public class Less extends BinaryOperation {
 
     public Less(Expression firstOperand, Expression secondOperand) {
         super(firstOperand, secondOperand);
-        setResultType(Constants.INTEGER_DSCP);
+    }
+
+    @Override
+    public TypeDSCP getResultType() {
+        return TypeTree.INTEGER_DSCP;
     }
 
     @Override

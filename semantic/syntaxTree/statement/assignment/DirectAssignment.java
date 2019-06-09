@@ -7,6 +7,7 @@ import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.identifier.Variable;
 import semantic.syntaxTree.program.ClassDCL;
+import semantic.typeTree.TypeTree;
 
 public class DirectAssignment extends Assignment {
     public DirectAssignment(Variable variable, Expression value) {
@@ -17,7 +18,6 @@ public class DirectAssignment extends Assignment {
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
         if (getVariable().getDSCP().isConstant())
             throw new ConstantModificationException("Variable can't not modified");
-        // TODO Conversesion between types like int to double (i2d)
         getVariable().assignValue(currentClass, currentMethod, cv, mv, getValue());
         getVariable().getDSCP().setInitialized(true);
     }

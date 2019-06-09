@@ -13,6 +13,7 @@ import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
+import semantic.typeTree.TypeTree;
 
 import java.util.Optional;
 
@@ -39,6 +40,7 @@ public class ArrayVariable extends Variable {
         parent.generateCode(currentClass, currentMethod, cv, mv);
         requestedDimension.generateCode(currentClass, currentMethod, cv, mv);
         value.generateCode(currentClass, currentMethod, cv, mv);
+        TypeTree.widen(mv, value.getResultType(), getResultType()); // right value must be converted to type of variable
         mv.visitInsn(Utility.getOpcode(arrayTypeDSCP.getInternalType().getTypeCode(), "ASTORE"));
     }
 
@@ -48,7 +50,6 @@ public class ArrayVariable extends Variable {
         parent.generateCode(currentClass, currentMethod, cv, mv);
         requestedDimension.generateCode(currentClass, currentMethod, cv, mv);
         mv.visitInsn(Utility.getOpcode(arrayTypeDSCP.getInternalType().getTypeCode(), "ALOAD"));
-        setResultType(arrayTypeDSCP.getInternalType());
     }
 
     @Override

@@ -3,7 +3,6 @@ package semantic.syntaxTree.expression.instance;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import semantic.exception.SymbolNotFoundException;
-import semantic.symbolTable.Constants;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
@@ -12,6 +11,7 @@ import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
+import semantic.typeTree.TypeTree;
 
 import java.util.List;
 import java.util.Optional;
@@ -42,9 +42,7 @@ public class NewArrayInstruction extends Expression {
 
     @Override
     public ArrayTypeDSCP getResultType() {
-        if (super.getResultType() == null)
-            setResultType(Utility.addArrayType(getTypeDSCP(), dimensions.size()));
-        return (ArrayTypeDSCP) super.getResultType();
+        return Utility.addArrayType(getTypeDSCP(), dimensions.size());
     }
 
     @Override
@@ -54,7 +52,7 @@ public class NewArrayInstruction extends Expression {
 
         for (Expression dim : dimensions) {
             dim.generateCode(currentClass, currentMethod, cv, mv);
-            if (dim.getResultType().getTypeCode() != Constants.INTEGER_DSCP.getTypeCode())
+            if (dim.getResultType().getTypeCode() != TypeTree.INTEGER_DSCP.getTypeCode())
                 throw new RuntimeException("Dimension of array must be integer type");
         }
         mv.visitMultiANewArrayInsn(getDescriptor(), dimensions.size());

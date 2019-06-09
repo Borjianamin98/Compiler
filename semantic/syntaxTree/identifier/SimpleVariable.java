@@ -11,6 +11,7 @@ import semantic.symbolTable.descriptor.hastype.VariableDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
+import semantic.typeTree.TypeTree;
 
 import java.util.Optional;
 
@@ -28,13 +29,13 @@ public class SimpleVariable extends Variable {
         if (!dscp.isInitialized())
             throw new RuntimeException("Variable " + getName() + " is not initialized");
         mv.visitVarInsn(Utility.getOpcode(dscp.getType().getTypeCode(), "LOAD"), dscp.getAddress());
-        setResultType(dscp.getType());
     }
 
     @Override
     public void assignValue(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Expression value) {
         getDSCP();
         value.generateCode(currentClass, currentMethod, cv, mv);
+        TypeTree.widen(mv, value.getResultType(), getResultType()); // right value must be converted to type of variable
         mv.visitVarInsn(Utility.getOpcode(dscp.getType().getTypeCode(), "STORE"), dscp.getAddress());
     }
 

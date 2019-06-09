@@ -4,7 +4,6 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import semantic.symbolTable.Constants;
 import semantic.exception.BooleanExpressionException;
 import semantic.symbolTable.Display;
 import semantic.syntaxTree.BlockCode;
@@ -17,6 +16,7 @@ import semantic.syntaxTree.statement.assignment.Assignment;
 import semantic.syntaxTree.statement.controlflow.BreakStatement;
 import semantic.syntaxTree.statement.controlflow.ContinueStatement;
 import semantic.syntaxTree.statement.controlflow.ReturnStatement;
+import semantic.typeTree.TypeTree;
 
 public class ForLoop extends Statement {
     private Assignment initialAssignment;
@@ -56,13 +56,13 @@ public class ForLoop extends Statement {
         mv.visitLabel(conditionLabel);
         condition.generateCode(currentClass, currentMethod, cv, mv);
         int resultTypeCode = condition.getResultType().getTypeCode();
-        if (resultTypeCode == Constants.INTEGER_DSCP.getTypeCode()) {
+        if (resultTypeCode == TypeTree.INTEGER_DSCP.getTypeCode()) {
             // condition can be type int
-        } else if (resultTypeCode == Constants.LONG_DSCP.getTypeCode() ||
-                resultTypeCode == Constants.FLOAT_DSCP.getTypeCode() ||
-                resultTypeCode == Constants.DOUBLE_DSCP.getTypeCode() ||
-                resultTypeCode == Constants.CHAR_DSCP.getTypeCode() ||
-                resultTypeCode == Constants.STRING_DSCP.getTypeCode()) {
+        } else if (resultTypeCode == TypeTree.LONG_DSCP.getTypeCode() ||
+                resultTypeCode == TypeTree.FLOAT_DSCP.getTypeCode() ||
+                resultTypeCode == TypeTree.DOUBLE_DSCP.getTypeCode() ||
+                resultTypeCode == TypeTree.CHAR_DSCP.getTypeCode() ||
+                resultTypeCode == TypeTree.STRING_DSCP.getTypeCode()) {
             // TODO handle string like python
         } else {
             throw new BooleanExpressionException();
