@@ -19,13 +19,17 @@ public class MemberVariable extends Variable {
         this.memberName = memberName;
     }
 
+    public RecordTypeDSCP getRecordTypeDSCP() {
+        return recordTypeDSCP;
+    }
+
     @Override
     public void generateCode(ClassVisitor cv, MethodVisitor mv) {
         getDSCP();
         parent.generateCode(cv, mv);
         if (!dscp.isInitialized())
             throw new RuntimeException("Field " + memberName + " of " + dscp.getType().getName() + " is not initialized");
-        mv.visitFieldInsn(Opcodes.GETFIELD, recordTypeDSCP.getName(), memberName, recordTypeDSCP.getField(memberName).getDescriptor());
+        mv.visitFieldInsn(Opcodes.GETFIELD, recordTypeDSCP.getName(), memberName, dscp.getDescriptor());
         setResultType(dscp.getType());
     }
 
@@ -34,7 +38,7 @@ public class MemberVariable extends Variable {
         getDSCP();
         parent.generateCode(cv, mv);
         value.generateCode(cv, mv);
-        mv.visitFieldInsn(Opcodes.PUTFIELD, recordTypeDSCP.getName(), memberName, recordTypeDSCP.getField(memberName).getDescriptor());
+        mv.visitFieldInsn(Opcodes.PUTFIELD, recordTypeDSCP.getName(), memberName, dscp.getDescriptor());
     }
 
     @Override
@@ -43,9 +47,9 @@ public class MemberVariable extends Variable {
             if (!(parent.getDSCP().getType() instanceof RecordTypeDSCP))
                 throw new IllegalTypeException(parent.getDSCP().getName() + " is not a record");
             recordTypeDSCP = (RecordTypeDSCP) parent.getDSCP().getType();
-            if (!(recordTypeDSCP.containsField(memberName)))
+            if (!(recordTypeDSCP.getField(memberName).isPresent()))
                 throw new IllegalTypeException("Member field " + memberName + " doesn't exist");
-            dscp = recordTypeDSCP.getField(memberName);
+            dscp = recordTypeDSCP.getField(memberName).get();
         }
         return dscp;
     }

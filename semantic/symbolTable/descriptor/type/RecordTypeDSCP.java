@@ -1,30 +1,29 @@
 package semantic.symbolTable.descriptor.type;
 
-import semantic.symbolTable.descriptor.hastype.FieldDSCP;
+import semantic.symbolTable.SymbolTable;
+import semantic.symbolTable.descriptor.DSCP;
+import semantic.symbolTable.descriptor.hastype.HasTypeDSCP;
 
-import java.util.List;
+import java.util.Optional;
 
 public class RecordTypeDSCP extends TypeDSCP {
-    private List<FieldDSCP> fields;
+    private SymbolTable symbolTable;
 
-    public RecordTypeDSCP(String name, int size, List<FieldDSCP> fields) {
+    public RecordTypeDSCP(String name, int size, SymbolTable symbolTable) {
         super(name, size, 0, false);
-        this.fields = fields;
+        this.symbolTable = symbolTable;
     }
 
-    public boolean containsField(String name) {
-        for (FieldDSCP field : fields) {
-            if (field.getName().equals(name))
-                return true;
-        }
-        return false;
+    public Optional<DSCP> find(String name) {
+        return symbolTable.getDSCP(name);
     }
 
-    public FieldDSCP getField(String name) {
-        for (FieldDSCP field : fields) {
-            if (field.getName().equals(name))
-                return field;
-        }
-        return null;
+    public Optional<HasTypeDSCP> getField(String fieldName) {
+//        return symbolTable.getSymbols().values().stream()
+//                .filter(dscp -> dscp instanceof FieldDSCP)
+//                .map(dscp -> (FieldDSCP) dscp)
+//                .filter(dscp -> dscp.getName().startsWith(fieldName)) // because field can be array
+//                .findAny();
+        return symbolTable.getDSCP(fieldName).map(dscp -> (HasTypeDSCP) dscp);
     }
 }

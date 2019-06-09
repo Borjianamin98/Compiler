@@ -41,8 +41,8 @@ public class Display {
         displayList.add(symbolTable);
     }
 
-    public static void pop() {
-        displayList.remove(displayList.size() - 1);
+    public static SymbolTable pop() {
+        return displayList.remove(displayList.size() - 1);
     }
 
     public static SymbolTable top() {
@@ -52,7 +52,7 @@ public class Display {
     public static Optional<DSCP> find(String name) {
         for (int i = displayList.size() - 1; i >= 0; i--) {
             if (displayList.get(i).contain(name))
-                return Optional.of(displayList.get(i).getDSCP(name));
+                return displayList.get(i).getDSCP(name);
         }
         return Optional.empty();
     }

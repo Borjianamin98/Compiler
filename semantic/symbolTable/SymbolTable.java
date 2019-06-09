@@ -9,6 +9,7 @@ import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.symbolTable.descriptor.hastype.VariableDSCP;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 public class SymbolTable {
     public static SymbolTable symbolTable = new SymbolTable();
@@ -27,6 +28,10 @@ public class SymbolTable {
     public SymbolTable(int startAddress) {
         this();
         freeAddress = startAddress;
+    }
+
+    public HashMap<String, DSCP> getSymbols() {
+        return symbols;
     }
 
     public void addSymbol(String name, DSCP descriptor) {
@@ -55,10 +60,10 @@ public class SymbolTable {
         return symbols.containsKey(name);
     }
 
-    public DSCP getDSCP(String name) {
+    public Optional<DSCP> getDSCP(String name) {
         if (!symbols.containsKey(name))
-            throw new SymbolNotFoundException();
-        return symbols.get(name);
+            return Optional.empty();
+        return Optional.ofNullable(symbols.get(name));
     }
 
     public String getTempName() {
