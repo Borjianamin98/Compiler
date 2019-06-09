@@ -10,12 +10,19 @@ import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.MethodDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
+import semantic.syntaxTree.BlockCode;
 import semantic.syntaxTree.Node;
 import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.ArrayDCL;
 import semantic.syntaxTree.declaration.Declaration;
 import semantic.syntaxTree.declaration.VariableDCL;
+import semantic.syntaxTree.program.ClassDCL;
+import semantic.syntaxTree.statement.Statement;
+import semantic.syntaxTree.statement.controlflow.BreakStatement;
+import semantic.syntaxTree.statement.controlflow.ContinueStatement;
+import semantic.syntaxTree.statement.controlflow.ReturnStatement;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,17 +32,18 @@ public class MethodDCL extends Node {
     private TypeDSCP returnType;
     private Block body;
     private List<Argument> arguments;
+    private boolean isStatic;
 
-
-    public MethodDCL(String owner, String name, List<Argument> arguments, Block body) {
+    public MethodDCL(String owner, String name, List<Argument> arguments, Block body, boolean isStatic) {
         this.owner = owner;
         this.name = name;
         this.body = body;
         this.arguments = arguments;
+        this.isStatic = isStatic;
     }
 
-    public MethodDCL(String owner, String name, List<Argument> arguments, Block body, TypeDSCP returnType) {
-        this(owner, name, arguments, body);
+    public MethodDCL(String owner, String name, List<Argument> arguments, Block body, TypeDSCP returnType, boolean isStatic) {
+        this(owner, name, arguments, body, isStatic);
         this.returnType = returnType;
     }
 
@@ -55,8 +63,12 @@ public class MethodDCL extends Node {
         return Utility.createMethodDescriptor(arguments, hasReturn(), returnType);
     }
 
+    public TypeDSCP getReturnType() {
+        return returnType;
+    }
+
     @Override
-    public void generateCode(ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
         SymbolTable top = Display.top();
         Optional<DSCP> fetchedDSCP = Display.find(name);
         MethodDSCP methodDSCP;
@@ -69,10 +81,12 @@ public class MethodDCL extends Node {
             top.addSymbol(name, methodDSCP);
         }
 
-        methodDSCP.addArguments(arguments);
+        methodDSCP.addArguments(arguments == null ? new ArrayList<>() : arguments);
 
         // Generate Code
-        MethodVisitor methodVisitor = cv.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, name, getDescriptor(), null, null);
+        int access = Opcodes.ACC_PUBLIC;
+        access |= isStatic ? Opcodes.ACC_STATIC : 0;
+        MethodVisitor methodVisitor = cv.visitMethod(access, name, getDescriptor(), null, null);
         methodVisitor.visitCode();
 
         // Add function symbol table
@@ -84,11 +98,27 @@ public class MethodDCL extends Node {
                     argDCL = new ArrayDCL(argument.getName(), argument.getBaseType(), argument.getDimensions(), false, true);
                 else
                     argDCL = new VariableDCL(argument.getName(), argument.getBaseType(), false, true);
-                argDCL.generateCode(cv, mv);
+                argDCL.generateCode(currentClass, this, cv, mv);
             }
         }
 
-        body.generateCode(cv, methodVisitor);
+        // Generate body code
+        boolean hasReturnStatement = false;
+        for (BlockCode blockCode : body.getBlockCodes()) {
+            if (blockCode instanceof BreakStatement)
+                throw new RuntimeException("Break outside of loop");
+            else if (blockCode instanceof ContinueStatement)
+                throw new RuntimeException("Continue outside of loop");
+            else {
+                if (hasReturnStatement) // code after return statement is useless
+                    throw new RuntimeException("Unreachable statement after return of function");
+                if (blockCode instanceof ReturnStatement)
+                    hasReturnStatement = true;
+                blockCode.generateCode(currentClass, this, cv, methodVisitor);
+            }
+        }
+        if (!hasReturnStatement)
+            throw new RuntimeException("Missing return statement");
         Display.pop();
 
         methodVisitor.visitMaxs(0, 0);

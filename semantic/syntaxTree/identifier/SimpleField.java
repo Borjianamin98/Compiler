@@ -10,7 +10,9 @@ import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.hastype.ArrayDSCP;
 import semantic.symbolTable.descriptor.hastype.FieldDSCP;
 import semantic.symbolTable.descriptor.hastype.HasTypeDSCP;
+import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
+import semantic.syntaxTree.program.ClassDCL;
 
 import java.util.Optional;
 
@@ -27,7 +29,7 @@ public class SimpleField extends Variable {
     }
 
     @Override
-    public void generateCode(ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
         getDSCP();
         if (!dscp.isInitialized())
             throw new RuntimeException("Field " + name + " of type " + dscp.getType().getName() + " is not initialized");
@@ -41,14 +43,14 @@ public class SimpleField extends Variable {
     }
 
     @Override
-    public void assignValue(ClassVisitor cv, MethodVisitor mv, Expression value) {
+    public void assignValue(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Expression value) {
         getDSCP();
         if (isStatic) {
-            value.generateCode(cv, mv);
+            value.generateCode(currentClass, currentMethod, cv, mv);
             mv.visitFieldInsn(Opcodes.PUTSTATIC, owner, name, dscp.getDescriptor());
         } else {
             mv.visitVarInsn(Opcodes.ALOAD, 0); // load "this"
-            value.generateCode(cv, mv);
+            value.generateCode(currentClass, currentMethod, cv, mv);
             mv.visitFieldInsn(Opcodes.PUTFIELD, owner, name, dscp.getDescriptor());
         }
     }

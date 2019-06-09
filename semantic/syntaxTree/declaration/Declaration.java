@@ -6,12 +6,13 @@ import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
 import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
+import semantic.syntaxTree.BlockCode;
 import semantic.syntaxTree.Node;
 import semantic.syntaxTree.expression.Expression;
 
 import java.util.Optional;
 
-public abstract class Declaration extends Node {
+public abstract class Declaration extends Node implements BlockCode {
     private String name;
     private String type;
     protected TypeDSCP typeDSCP;

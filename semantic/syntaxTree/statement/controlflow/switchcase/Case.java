@@ -1,4 +1,4 @@
-package semantic.syntaxTree.statement.condition.switchcase;
+package semantic.syntaxTree.statement.controlflow.switchcase;
 
 import semantic.syntaxTree.block.Block;
 

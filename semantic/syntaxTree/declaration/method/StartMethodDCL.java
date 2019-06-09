@@ -13,6 +13,6 @@ public class StartMethodDCL extends MethodDCL {
     }
 
     public StartMethodDCL(String owner, Block body) {
-        super(owner, "main", arguments, body);
+        super(owner, "main", arguments, body, true);
     }
 }

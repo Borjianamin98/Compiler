@@ -1,4 +1,4 @@
-package semantic.syntaxTree.expression;
+package semantic.syntaxTree.expression.instance;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -9,7 +9,9 @@ import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.type.ArrayTypeDSCP;
 import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
-import semantic.symbolTable.descriptor.type.TypeDSCP;
+import semantic.syntaxTree.declaration.method.MethodDCL;
+import semantic.syntaxTree.expression.Expression;
+import semantic.syntaxTree.program.ClassDCL;
 
 import java.util.Optional;
 
@@ -43,7 +45,7 @@ public class NewRecordInstruction extends Expression {
     }
 
     @Override
-    public void generateCode(ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
         getTypeDSCP();
         mv.visitTypeInsn(Opcodes.NEW, type);
         mv.visitInsn(Opcodes.DUP);

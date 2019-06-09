@@ -10,6 +10,8 @@ import semantic.symbolTable.SymbolTable;
 import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
 import semantic.syntaxTree.Node;
 import semantic.syntaxTree.declaration.Declaration;
+import semantic.syntaxTree.declaration.method.MethodDCL;
+import semantic.syntaxTree.program.ClassDCL;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,11 +27,12 @@ public class RecordTypeDCL extends Node {
     }
 
     @Override
-    public void generateCode(ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         classWriter.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC | Opcodes.ACC_SUPER, name, null, "java/lang/Object", null);
 
-        Display.add(false); // Record symbol table
+        // Record symbol table
+        Display.add(false);
         for (Field field : fields) {
             field.setStatic(false);
             Declaration fieldDCL;
@@ -40,7 +43,7 @@ public class RecordTypeDCL extends Node {
                 fieldDCL = new SimpleFieldDCL(name, field.getName(), field.getBaseType(), field.isConstant(),
                         field.getDefaultValue() != null, field.isStatic());
             }
-            fieldDCL.generateCode(classWriter, null);
+            fieldDCL.generateCode(null, null, classWriter, null);
         }
 
         // Constructor of record
@@ -51,7 +54,7 @@ public class RecordTypeDCL extends Node {
         for (Field field : fields) {
             if (field.getDefaultValue() != null) {
                 methodVisitor.visitVarInsn(Opcodes.ALOAD, 0); // load "this"
-                field.getDefaultValue().generateCode(classWriter, methodVisitor);
+                field.getDefaultValue().generateCode(null, null, classWriter, methodVisitor);
                 methodVisitor.visitFieldInsn(Opcodes.PUTFIELD, name, field.getName(), field.getDescriptor());
             }
         }

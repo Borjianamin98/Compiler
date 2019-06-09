@@ -4,7 +4,9 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Utility;
+import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
+import semantic.syntaxTree.program.ClassDCL;
 
 public class PrintFunction extends Statement {
     private Expression value;
@@ -26,10 +28,10 @@ public class PrintFunction extends Statement {
     }
 
     @Override
-    public void generateCode(ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
         mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
         if (value != null) {
-            value.generateCode(cv, mv);
+            value.generateCode(currentClass, currentMethod, cv, mv);
             if (value.getResultType().isPrimitive())
                 mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println",
                         "(" + Utility.getPrimitiveTypeDescriptor(value.getResultType().getTypeCode()) + ")V", false);

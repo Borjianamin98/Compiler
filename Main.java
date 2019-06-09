@@ -1,26 +1,20 @@
 import java_cup.runtime.ComplexSymbolFactory;
 import org.objectweb.asm.*;
-import semantic.syntaxTree.Node;
 import semantic.syntaxTree.block.Block;
-import semantic.syntaxTree.declaration.Declaration;
+import semantic.syntaxTree.declaration.VariableDCL;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.declaration.method.StartMethodDCL;
-import semantic.syntaxTree.declaration.record.ArrayFieldDCL;
-import semantic.syntaxTree.declaration.record.Field;
-import semantic.syntaxTree.declaration.record.RecordTypeDCL;
-import semantic.syntaxTree.declaration.record.SimpleFieldDCL;
 import semantic.syntaxTree.expression.binaryOperation.constValue.IntegerConst;
 import semantic.syntaxTree.expression.binaryOperation.constValue.StringConst;
-import semantic.syntaxTree.identifier.SimpleField;
 import semantic.syntaxTree.identifier.SimpleVariable;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.syntaxTree.statement.PrintFunction;
-import semantic.syntaxTree.statement.ReturnStatement;
 import semantic.syntaxTree.statement.assignment.DirectAssignment;
-import semantic.syntaxTree.statement.loop.Foreach;
-import semantic.syntaxTree.statement.loop.RepeatUntil;
+import semantic.syntaxTree.statement.controlflow.BreakStatement;
+import semantic.syntaxTree.statement.controlflow.ContinueStatement;
+import semantic.syntaxTree.statement.controlflow.ReturnStatement;
+import semantic.syntaxTree.statement.controlflow.loop.RepeatUntil;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -160,13 +154,16 @@ public class Main implements Opcodes {
         methodDCLS.add(new StartMethodDCL("Tester", body));
 
         Block repeatBlock = new Block();
-        repeatBlock.addStatement(new PrintFunction(new StringConst("salam")));
+        repeatBlock.addBlockCode(new VariableDCL("x", "int", false, false));
+        repeatBlock.addBlockCode(new DirectAssignment(new SimpleVariable("x"), new IntegerConst(1)));
+        repeatBlock.addBlockCode(new PrintFunction(new StringConst("salam")));
+        repeatBlock.addBlockCode(new PrintFunction(new SimpleVariable("x")));
         RepeatUntil repeatUntil = new RepeatUntil(new IntegerConst(1), repeatBlock);
-        body.addStatement(repeatUntil);
-        body.addStatement(new ReturnStatement());
+        body.addBlockCode(repeatUntil);
+        body.addBlockCode(new ReturnStatement());
 
         ClassDCL clazz = new ClassDCL("Tester", null, methodDCLS , null);
-        clazz.generateCode(null, null);
+        clazz.generateCode(null, null, null, null);
     }
 
 }

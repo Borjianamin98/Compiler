@@ -12,6 +12,8 @@ import semantic.symbolTable.descriptor.hastype.ArrayDSCP;
 import semantic.symbolTable.descriptor.hastype.VariableDSCP;
 import semantic.symbolTable.descriptor.type.ArrayTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
+import semantic.syntaxTree.declaration.method.MethodDCL;
+import semantic.syntaxTree.program.ClassDCL;
 
 import java.util.Optional;
 
@@ -43,7 +45,7 @@ public class ArrayDCL extends Declaration {
     }
 
     @Override
-    public void generateCode(ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
         SymbolTable top = Display.top();
         if (top.contain(getName()))
             throw new DuplicateDeclarationException(getName() + " declared more than one time");

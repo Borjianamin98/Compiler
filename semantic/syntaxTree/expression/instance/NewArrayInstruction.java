@@ -1,4 +1,4 @@
-package semantic.syntaxTree.expression;
+package semantic.syntaxTree.expression.instance;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -9,6 +9,9 @@ import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.type.ArrayTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
+import semantic.syntaxTree.declaration.method.MethodDCL;
+import semantic.syntaxTree.expression.Expression;
+import semantic.syntaxTree.program.ClassDCL;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,12 +48,12 @@ public class NewArrayInstruction extends Expression {
     }
 
     @Override
-    public void generateCode(ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
         if (dimensions == null || dimensions.size() == 0)
             throw new RuntimeException("Array declaration must contain at least one dimension");
 
         for (Expression dim : dimensions) {
-            dim.generateCode(cv, mv);
+            dim.generateCode(currentClass, currentMethod, cv, mv);
             if (dim.getResultType().getTypeCode() != Constants.INTEGER_DSCP.getTypeCode())
                 throw new RuntimeException("Dimension of array must be integer type");
         }

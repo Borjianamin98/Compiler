@@ -1,4 +1,4 @@
-package semantic.syntaxTree.statement.loop;
+package semantic.syntaxTree.statement.controlflow.loop;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
@@ -7,10 +7,16 @@ import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Constants;
 import semantic.exception.BooleanExpressionException;
 import semantic.symbolTable.Display;
+import semantic.syntaxTree.BlockCode;
 import semantic.syntaxTree.block.Block;
+import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
+import semantic.syntaxTree.program.ClassDCL;
 import semantic.syntaxTree.statement.Statement;
 import semantic.syntaxTree.statement.assignment.Assignment;
+import semantic.syntaxTree.statement.controlflow.BreakStatement;
+import semantic.syntaxTree.statement.controlflow.ContinueStatement;
+import semantic.syntaxTree.statement.controlflow.ReturnStatement;
 
 public class ForLoop extends Statement {
     private Assignment initialAssignment;
@@ -38,12 +44,17 @@ public class ForLoop extends Statement {
     }
 
     @Override
-    public void generateCode(ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+        // Generate initial statement
         if (initialAssignment != null)
-            initialAssignment.generateCode(cv, mv);
+            initialAssignment.generateCode(currentClass, currentMethod, cv, mv);
+
         Label conditionLabel = new Label();
+        Label stepLabel = new Label();
+
+        // Generate condition expression
         mv.visitLabel(conditionLabel);
-        condition.generateCode(cv, mv);
+        condition.generateCode(currentClass, currentMethod, cv, mv);
         int resultTypeCode = condition.getResultType().getTypeCode();
         if (resultTypeCode == Constants.INTEGER_DSCP.getTypeCode()) {
             // condition can be type int
@@ -56,17 +67,36 @@ public class ForLoop extends Statement {
         } else {
             throw new BooleanExpressionException();
         }
+
+        // generate condition checking
         Label outLabel = new Label();
         mv.visitJumpInsn(Opcodes.IFEQ, outLabel);
 
+        // generate body code
         Display.add(true);
-        body.generateCode(cv, mv);
+        for (BlockCode blockCode : body.getBlockCodes()) {
+            if (blockCode instanceof BreakStatement) {
+                mv.visitJumpInsn(Opcodes.GOTO, outLabel);
+                break; // other code in this block are unnecessary
+            } else if (blockCode instanceof ContinueStatement) {
+                mv.visitJumpInsn(Opcodes.GOTO, stepLabel);
+                break; // other code in this block are unnecessary
+            } else if (blockCode instanceof ReturnStatement) {
+                blockCode.generateCode(currentClass, currentMethod, cv, mv);
+                break; // other code in this block are unnecessary
+            } else
+                blockCode.generateCode(currentClass, currentMethod, cv, mv);
+        }
         Display.pop();
 
+        // generate step assigment
+        mv.visitLabel(stepLabel);
         if (stepAssignment != null)
-            stepAssignment.generateCode(cv, mv);
+            stepAssignment.generateCode(currentClass, currentMethod, cv, mv);
         if (stepExpression != null)
-            stepExpression.generateCode(cv, mv);
+            stepExpression.generateCode(currentClass, currentMethod, cv, mv);
+
+        // generate jump for for-loop
         mv.visitJumpInsn(Opcodes.GOTO, conditionLabel);
         mv.visitLabel(outLabel);
     }

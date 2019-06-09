@@ -10,7 +10,9 @@ import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.hastype.HasTypeDSCP;
 import semantic.symbolTable.descriptor.type.ArrayTypeDSCP;
 import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
+import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
+import semantic.syntaxTree.program.ClassDCL;
 
 import java.util.Optional;
 
@@ -32,19 +34,19 @@ public class ArrayVariable extends Variable {
     }
 
     @Override
-    public void assignValue(ClassVisitor cv, MethodVisitor mv, Expression value) {
+    public void assignValue(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Expression value) {
         getDSCP();
-        parent.generateCode(cv, mv);
-        requestedDimension.generateCode(cv, mv);
-        value.generateCode(cv, mv);
+        parent.generateCode(currentClass, currentMethod, cv, mv);
+        requestedDimension.generateCode(currentClass, currentMethod, cv, mv);
+        value.generateCode(currentClass, currentMethod, cv, mv);
         mv.visitInsn(Utility.getOpcode(arrayTypeDSCP.getInternalType().getTypeCode(), "ASTORE"));
     }
 
     @Override
-    public void generateCode(ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
         getDSCP();
-        parent.generateCode(cv, mv);
-        requestedDimension.generateCode(cv, mv);
+        parent.generateCode(currentClass, currentMethod, cv, mv);
+        requestedDimension.generateCode(currentClass, currentMethod, cv, mv);
         mv.visitInsn(Utility.getOpcode(arrayTypeDSCP.getInternalType().getTypeCode(), "ALOAD"));
         setResultType(arrayTypeDSCP.getInternalType());
     }

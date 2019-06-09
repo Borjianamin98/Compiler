@@ -6,7 +6,9 @@ import org.objectweb.asm.Opcodes;
 import semantic.exception.IllegalTypeException;
 import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
 import semantic.symbolTable.descriptor.hastype.HasTypeDSCP;
+import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
+import semantic.syntaxTree.program.ClassDCL;
 
 public class MemberVariable extends Variable {
     private Variable parent;
@@ -24,9 +26,9 @@ public class MemberVariable extends Variable {
     }
 
     @Override
-    public void generateCode(ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
         getDSCP();
-        parent.generateCode(cv, mv);
+        parent.generateCode(currentClass, currentMethod, cv, mv);
         if (!dscp.isInitialized())
             throw new RuntimeException("Field " + memberName + " of type " + dscp.getType().getName() + " is not initialized");
         mv.visitFieldInsn(Opcodes.GETFIELD, recordTypeDSCP.getName(), memberName, dscp.getDescriptor());
@@ -34,10 +36,10 @@ public class MemberVariable extends Variable {
     }
 
     @Override
-    public void assignValue(ClassVisitor cv, MethodVisitor mv, Expression value) {
+    public void assignValue(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Expression value) {
         getDSCP();
-        parent.generateCode(cv, mv);
-        value.generateCode(cv, mv);
+        parent.generateCode(currentClass, currentMethod, cv, mv);
+        value.generateCode(currentClass, currentMethod, cv, mv);
         mv.visitFieldInsn(Opcodes.PUTFIELD, recordTypeDSCP.getName(), memberName, dscp.getDescriptor());
     }
 

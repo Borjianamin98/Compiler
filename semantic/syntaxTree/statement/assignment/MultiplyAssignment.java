@@ -2,11 +2,10 @@ package semantic.syntaxTree.statement.assignment;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
-import semantic.exception.ConstantModificationException;
-import semantic.symbolTable.Utility;
+import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
-import semantic.syntaxTree.identifier.SimpleVariable;
 import semantic.syntaxTree.identifier.Variable;
+import semantic.syntaxTree.program.ClassDCL;
 
 public class MultiplyAssignment extends Assignment {
     public MultiplyAssignment(Variable variable, Expression value) {
@@ -14,7 +13,7 @@ public class MultiplyAssignment extends Assignment {
     }
 
     @Override
-    public void generateCode(ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
 //        getVariable().generateCode(cv, mv);
 //        getValue().generateCode(cv, mv);
 //        if (getVariable().getDSCP().isConstant())

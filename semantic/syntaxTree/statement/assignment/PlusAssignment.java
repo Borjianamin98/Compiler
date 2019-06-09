@@ -2,8 +2,10 @@ package semantic.syntaxTree.statement.assignment;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
+import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.identifier.Variable;
+import semantic.syntaxTree.program.ClassDCL;
 
 public class PlusAssignment extends Assignment {
     public PlusAssignment(Variable variable, Expression value) {
@@ -11,7 +13,7 @@ public class PlusAssignment extends Assignment {
     }
 
     @Override
-    public void generateCode(ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
 //        getVariable().generateCode(cv, mv);
 //        getValue().generateCode(cv, mv);
 //        mv.visitInsn(Utility.getOpcode(getVariable().getDSCP().getBaseType().getTypeCode(), "ADD"));
