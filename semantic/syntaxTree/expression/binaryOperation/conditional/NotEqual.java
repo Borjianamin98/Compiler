@@ -7,16 +7,13 @@ import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
-import semantic.syntaxTree.expression.MethodCall;
 import semantic.syntaxTree.expression.binaryOperation.BinaryOperation;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.typeTree.TypeTree;
 
-import java.lang.reflect.Method;
+public class NotEqual extends BinaryOperation {
 
-public class Less extends BinaryOperation {
-
-    public Less(Expression firstOperand, Expression secondOperand) {
+    public NotEqual(Expression firstOperand, Expression secondOperand) {
         super(firstOperand, secondOperand);
     }
 
@@ -39,19 +36,19 @@ public class Less extends BinaryOperation {
         Label outLabel = new Label();
 
         if (compareType.getTypeCode() == TypeTree.INTEGER_DSCP.getTypeCode())
-            mv.visitJumpInsn(Opcodes.IF_ICMPGE, setFalseLabel);
+            mv.visitJumpInsn(Opcodes.IF_ICMPEQ, setFalseLabel);
         else if (compareType.getTypeCode() == TypeTree.LONG_DSCP.getTypeCode()) {
-            mv.visitInsn(Opcodes.DCMPG);
-            mv.visitJumpInsn(Opcodes.IFGE, setFalseLabel);
+            mv.visitInsn(Opcodes.LCMP);
+            mv.visitJumpInsn(Opcodes.IFEQ, setFalseLabel);
         } else if (compareType.getTypeCode() == TypeTree.FLOAT_DSCP.getTypeCode()) {
-            mv.visitInsn(Opcodes.FCMPG);
-            mv.visitJumpInsn(Opcodes.IFGE, setFalseLabel);
+            mv.visitInsn(Opcodes.FCMPL);
+            mv.visitJumpInsn(Opcodes.IFEQ, setFalseLabel);
         } else if (compareType.getTypeCode() == TypeTree.DOUBLE_DSCP.getTypeCode()) {
-            mv.visitInsn(Opcodes.DCMPG);
-            mv.visitJumpInsn(Opcodes.IFGE, setFalseLabel);
+            mv.visitInsn(Opcodes.DCMPL);
+            mv.visitJumpInsn(Opcodes.IFEQ, setFalseLabel);
         } else if (compareType.getTypeCode() == TypeTree.STRING_DSCP.getTypeCode()) {
             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/String", "compareTo", "(Ljava/lang/String;)I", false);
-            mv.visitJumpInsn(Opcodes.IFGE, setFalseLabel);
+            mv.visitJumpInsn(Opcodes.IFEQ, setFalseLabel);
         }
 
         mv.visitInsn(Opcodes.ICONST_1); // false

@@ -4,9 +4,14 @@ import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.VariableDCL;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.declaration.method.StartMethodDCL;
+import semantic.syntaxTree.expression.binaryOperation.conditional.And;
+import semantic.syntaxTree.expression.binaryOperation.conditional.Equal;
 import semantic.syntaxTree.expression.binaryOperation.conditional.Less;
+import semantic.syntaxTree.expression.binaryOperation.conditional.NotEqual;
 import semantic.syntaxTree.expression.constValue.DoubleConst;
+import semantic.syntaxTree.expression.constValue.FloatConst;
 import semantic.syntaxTree.expression.constValue.IntegerConst;
+import semantic.syntaxTree.expression.constValue.StringConst;
 import semantic.syntaxTree.expression.identifier.SimpleVariable;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.syntaxTree.statement.assignment.DirectAssignment;
@@ -58,7 +63,8 @@ public class Main implements Opcodes {
 //        body.addBlockCode(vara);
         DirectAssignment assignment = new DirectAssignment(new SimpleVariable("a"), new IntegerConst(1));
 
-        ForLoop forLoop = new ForLoop(null, new Less(new IntegerConst(1), new IntegerConst(2)), null, null);
+        ForLoop forLoop = new ForLoop(null, new And(new IntegerConst(1), new FloatConst(1.5f)), null, null);
+//        ForLoop forLoop = new ForLoop(null, new NotEqual(new StringConst("a"), new StringConst("b")), null, null);
         body.addBlockCode(forLoop);
 
         body.addBlockCode(new ReturnStatement());

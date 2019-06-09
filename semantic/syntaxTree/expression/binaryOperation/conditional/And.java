@@ -8,6 +8,7 @@ import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.expression.binaryOperation.BinaryOperation;
+import semantic.syntaxTree.expression.constValue.IntegerConst;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.typeTree.TypeTree;
 
@@ -23,14 +24,21 @@ public class And extends BinaryOperation {
 
     @Override
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
-        getFirstOperand().generateCode(currentClass, currentMethod, cv, mv);
         Label falseLabel = new Label();
         Label outLabel = new Label();
+
+        NotEqual firstCondition = new NotEqual(getFirstOperand(), new IntegerConst(0));
+        firstCondition.generateCode(currentClass, currentMethod, cv, mv);
         mv.visitJumpInsn(Opcodes.IFEQ, falseLabel);
-        getSecondOperand().generateCode(currentClass, currentMethod, cv, mv);
+
+        NotEqual secondCondition = new NotEqual(getSecondOperand(), new IntegerConst(0));
+        secondCondition.generateCode(currentClass, currentMethod, cv, mv);
         mv.visitJumpInsn(Opcodes.GOTO, outLabel);
+
+        // false result of operation
         mv.visitLabel(falseLabel);
         mv.visitInsn(Opcodes.ICONST_0);
+
         mv.visitLabel(outLabel);
     }
 }
