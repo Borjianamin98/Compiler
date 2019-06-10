@@ -1,8 +1,8 @@
-package semantic.syntaxTree.expression.binaryOperation.arithmetic;
+package semantic.syntaxTree.expression.binaryoperation.arithmetic;
 
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.expression.Expression;
-import semantic.syntaxTree.expression.binaryOperation.BinaryOperation;
+import semantic.syntaxTree.expression.binaryoperation.BinaryOperation;
 import semantic.typeTree.TypeTree;
 
 public abstract class Arithmetic extends BinaryOperation {

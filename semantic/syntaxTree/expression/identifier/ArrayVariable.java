@@ -40,7 +40,7 @@ public class ArrayVariable extends Variable {
         parent.generateCode(currentClass, currentMethod, cv, mv);
         requestedDimension.generateCode(currentClass, currentMethod, cv, mv);
         value.generateCode(currentClass, currentMethod, cv, mv);
-        TypeTree.widen(mv, getResultType(), value.getResultType()); // right value must be converted to type of variable
+        TypeTree.widen(mv, value.getResultType(), getResultType()); // right value must be converted to type of variable
         mv.visitInsn(Utility.getOpcode(arrayTypeDSCP.getInternalType().getTypeCode(), "ASTORE"));
     }
 

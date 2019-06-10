@@ -1,13 +1,10 @@
-package semantic.syntaxTree.expression.binaryOperation.bitwise;
+package semantic.syntaxTree.expression.binaryoperation.bitwise;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Utility;
-import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
-import semantic.syntaxTree.expression.binaryOperation.arithmetic.Arithmetic;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.typeTree.TypeTree;
 

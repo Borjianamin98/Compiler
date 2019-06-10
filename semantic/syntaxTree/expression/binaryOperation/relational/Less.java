@@ -1,4 +1,4 @@
-package semantic.syntaxTree.expression.binaryOperation.relational;
+package semantic.syntaxTree.expression.binaryoperation.relational;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;

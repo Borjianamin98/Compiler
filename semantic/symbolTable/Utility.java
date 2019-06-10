@@ -1,10 +1,15 @@
 package semantic.symbolTable;
 
 import jdk.internal.org.objectweb.asm.Opcodes;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
 import semantic.symbolTable.descriptor.type.ArrayTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.Argument;
+import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
+import semantic.syntaxTree.program.ClassDCL;
 import semantic.typeTree.TypeTree;
 
 import java.util.List;
@@ -129,5 +134,77 @@ public class Utility {
         }
         argumentDescriptor.append(")");
         return argumentDescriptor.toString();
+    }
+
+    /**
+     * generate a code which evaluate booleanExpr and a jump code to jump to falseJumpLabel
+     * if boolean expression result is false
+     * @param currentClass current class which booleanExpr is a part of it
+     * @param currentMethod current method which booleanExpr is a part of it
+     * @param cv current class visitor
+     * @param mv current method visitor
+     * @param booleanExpr expression which is evaluated as boolean
+     * @param falseJumpLabel jump label for (booleanExpr == false)
+     * @throws RuntimeException if expression is not a boolean expression
+     */
+    public static void evaluateBooleanExpressionFalse(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv,
+                                                      Expression booleanExpr, Label falseJumpLabel) {
+        TypeDSCP booleanExprType = booleanExpr.getResultType();
+        booleanExpr.generateCode(currentClass, currentMethod, cv, mv);
+        if (booleanExprType.getTypeCode() == TypeTree.INTEGER_DSCP.getTypeCode()) {
+            mv.visitJumpInsn(org.objectweb.asm.Opcodes.IFEQ, falseJumpLabel);
+        } else if (booleanExprType.getTypeCode() == TypeTree.LONG_DSCP.getTypeCode()) {
+            mv.visitInsn(org.objectweb.asm.Opcodes.LCONST_0);
+            mv.visitInsn(org.objectweb.asm.Opcodes.LCMP);
+            mv.visitJumpInsn(org.objectweb.asm.Opcodes.IFEQ, falseJumpLabel);
+        } else if (booleanExprType.getTypeCode() == TypeTree.FLOAT_DSCP.getTypeCode()) {
+            mv.visitInsn(org.objectweb.asm.Opcodes.FCONST_0);
+            mv.visitInsn(org.objectweb.asm.Opcodes.FCMPL);
+            mv.visitJumpInsn(org.objectweb.asm.Opcodes.IFEQ, falseJumpLabel);
+        } else if (booleanExprType.getTypeCode() == TypeTree.DOUBLE_DSCP.getTypeCode()) {
+            mv.visitInsn(org.objectweb.asm.Opcodes.DCONST_0);
+            mv.visitInsn(org.objectweb.asm.Opcodes.DCMPL);
+            mv.visitJumpInsn(org.objectweb.asm.Opcodes.IFEQ, falseJumpLabel);
+        } else if (booleanExprType.getTypeCode() == TypeTree.STRING_DSCP.getTypeCode()) {
+            mv.visitMethodInsn(org.objectweb.asm.Opcodes.INVOKEVIRTUAL, "java/lang/String", "isEmpty", "()Z", false);
+            mv.visitJumpInsn(org.objectweb.asm.Opcodes.IFNE, falseJumpLabel);
+        } else
+            throw new RuntimeException("Invalid boolean expression: " + booleanExpr.getResultType().getName());
+    }
+
+    /**
+     * generate a code which evaluate booleanExpr and a jump code to jump to falseJumpLabel
+     * if boolean expression result is true
+     * @param currentClass current class which booleanExpr is a part of it
+     * @param currentMethod current method which booleanExpr is a part of it
+     * @param cv current class visitor
+     * @param mv current method visitor
+     * @param booleanExpr expression which is evaluated as boolean
+     * @param trueJumpLabel jump label for (booleanExpr == true)
+     * @throws RuntimeException if expression is not a boolean expression
+     */
+    public static void evaluateBooleanExpressionTrue(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv,
+                                                      Expression booleanExpr, Label trueJumpLabel) {
+        TypeDSCP booleanExprType = booleanExpr.getResultType();
+        booleanExpr.generateCode(currentClass, currentMethod, cv, mv);
+        if (booleanExprType.getTypeCode() == TypeTree.INTEGER_DSCP.getTypeCode()) {
+            mv.visitJumpInsn(org.objectweb.asm.Opcodes.IFNE, trueJumpLabel);
+        } else if (booleanExprType.getTypeCode() == TypeTree.LONG_DSCP.getTypeCode()) {
+            mv.visitInsn(org.objectweb.asm.Opcodes.LCONST_0);
+            mv.visitInsn(org.objectweb.asm.Opcodes.LCMP);
+            mv.visitJumpInsn(org.objectweb.asm.Opcodes.IFNE, trueJumpLabel);
+        } else if (booleanExprType.getTypeCode() == TypeTree.FLOAT_DSCP.getTypeCode()) {
+            mv.visitInsn(org.objectweb.asm.Opcodes.FCONST_0);
+            mv.visitInsn(org.objectweb.asm.Opcodes.FCMPL);
+            mv.visitJumpInsn(org.objectweb.asm.Opcodes.IFNE, trueJumpLabel);
+        } else if (booleanExprType.getTypeCode() == TypeTree.DOUBLE_DSCP.getTypeCode()) {
+            mv.visitInsn(org.objectweb.asm.Opcodes.DCONST_0);
+            mv.visitInsn(org.objectweb.asm.Opcodes.DCMPL);
+            mv.visitJumpInsn(org.objectweb.asm.Opcodes.IFNE, trueJumpLabel);
+        } else if (booleanExprType.getTypeCode() == TypeTree.STRING_DSCP.getTypeCode()) {
+            mv.visitMethodInsn(org.objectweb.asm.Opcodes.INVOKEVIRTUAL, "java/lang/String", "isEmpty", "()Z", false);
+            mv.visitJumpInsn(org.objectweb.asm.Opcodes.IFEQ, trueJumpLabel);
+        } else
+            throw new RuntimeException("Invalid boolean expression: " + booleanExpr.getResultType().getName());
     }
 }

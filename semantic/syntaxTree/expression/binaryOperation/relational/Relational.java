@@ -1,8 +1,8 @@
-package semantic.syntaxTree.expression.binaryOperation.relational;
+package semantic.syntaxTree.expression.binaryoperation.relational;
 
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.expression.Expression;
-import semantic.syntaxTree.expression.binaryOperation.BinaryOperation;
+import semantic.syntaxTree.expression.binaryoperation.BinaryOperation;
 import semantic.typeTree.TypeTree;
 
 public abstract class Relational extends BinaryOperation {

@@ -1,4 +1,4 @@
-package semantic.syntaxTree.expression.binaryOperation.relational;
+package semantic.syntaxTree.expression.binaryoperation.relational;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
@@ -7,7 +7,6 @@ import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
-import semantic.syntaxTree.expression.binaryOperation.BinaryOperation;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.typeTree.TypeTree;
 

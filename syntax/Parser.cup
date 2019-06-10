@@ -4,7 +4,7 @@ import semantic.syntaxTree.Node;
 import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.expression.constValue.*;
-import semantic.syntaxTree.expression.binaryOperation.arithmetic.*;
+import semantic.syntaxTree.expression.binaryoperation.arithmetic.*;
 import semantic.symbolTable.SymbolTable;
 import semantic.symbolTable.descriptor.DSCP;
 

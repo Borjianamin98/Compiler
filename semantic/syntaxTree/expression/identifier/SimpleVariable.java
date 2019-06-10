@@ -35,7 +35,7 @@ public class SimpleVariable extends Variable {
     public void assignValue(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Expression value) {
         getDSCP();
         value.generateCode(currentClass, currentMethod, cv, mv);
-        TypeTree.widen(mv, getResultType(), value.getResultType()); // right value must be converted to type of variable
+        TypeTree.widen(mv, value.getResultType(), getResultType()); // right value must be converted to type of variable
         mv.visitVarInsn(Utility.getOpcode(dscp.getType().getTypeCode(), "STORE"), dscp.getAddress());
     }
 
