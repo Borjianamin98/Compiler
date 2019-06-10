@@ -6,9 +6,15 @@ import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.declaration.method.StartMethodDCL;
 import semantic.syntaxTree.declaration.record.Field;
 import semantic.syntaxTree.declaration.record.RecordTypeDCL;
+import semantic.syntaxTree.declaration.record.SimpleFieldDCL;
+import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.expression.constValue.IntegerConst;
+import semantic.syntaxTree.expression.identifier.ArrayVariable;
+import semantic.syntaxTree.expression.identifier.MemberVariable;
 import semantic.syntaxTree.expression.identifier.SimpleVariable;
+import semantic.syntaxTree.expression.instance.NewArrayInstruction;
 import semantic.syntaxTree.expression.instance.NewRecordInstruction;
+import semantic.syntaxTree.expression.operation.unary.MinusMinusPostfix;
 import semantic.syntaxTree.expression.operation.unary.MinusMinusPrefix;
 import semantic.syntaxTree.expression.operation.unary.PlusPlusPostfix;
 import semantic.syntaxTree.expression.operation.unary.PlusPlusPrefix;
@@ -127,12 +133,19 @@ public class Main implements Opcodes {
 //        body.addBlockCode(new MethodCall("test", parms));
 
         List<Field> fields = new ArrayList<>();
-        fields.add(new Field("x", TypeTree.INTEGER_NAME, 2, false, false));
+        List<Expression> dim = new ArrayList<>();
+        dim.add(new IntegerConst(10));
+        fields.add(new Field("x", TypeTree.INTEGER_NAME, 1, new NewArrayInstruction(TypeTree.INTEGER_NAME, dim), false, false));
         body.addBlockCode(new RecordTypeDCL("A", fields));
         body.addBlockCode(new VariableDCL("a", "A", false, false));
 //        body.addBlockCode(new ScannerFunction(TypeTree.INTEGER_DSCP));
         body.addBlockCode(new DirectAssignment(new SimpleVariable("a"), new NewRecordInstruction("A")));
-        body.addBlockCode(new PrintFunction(new MinusMinusPrefix(new SimpleVariable("a"))));
+//        body.addBlockCode(new DirectAssignment(new MemberVariable(new SimpleVariable("a"), "x"), new IntegerConst(1)));
+        body.addBlockCode(new PrintFunction(new PlusPlusPrefix(
+                new ArrayVariable(new MemberVariable(new SimpleVariable("a"), "x"), new IntegerConst(1))
+        )));
+
+        body.addBlockCode(new SimpleFieldDCL("Tester", "name", TypeTree.STRING_NAME, false, false, true));
 
         body.addBlockCode(new ReturnStatement());
         ClassDCL clazz = new ClassDCL("Tester", null, methodDCLS, null);

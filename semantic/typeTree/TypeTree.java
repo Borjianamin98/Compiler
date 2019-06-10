@@ -49,7 +49,8 @@ public class TypeTree {
      * @param type1 type 1
      * @param type2 type 2
      * @return top type which type1 and type2 can be converted (widened) to it, otherwise throw exception
-     * @throws RuntimeException
+     * @throws RuntimeException if types are not convertible to each other
+     *                          (this is recognized if one of type are not in widen tree)
      */
     public static TypeDSCP max(TypeDSCP type1, TypeDSCP type2) {
         if (type1.getTypeCode() == type2.getTypeCode())

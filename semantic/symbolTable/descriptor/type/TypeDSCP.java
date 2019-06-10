@@ -42,7 +42,7 @@ public abstract class TypeDSCP extends DSCP {
     }
 
     public String getConventionalName() {
-        StringBuilder name = new StringBuilder(getName());
+        StringBuilder name = new StringBuilder(getDescriptor());
         StringBuilder convName = new StringBuilder();
         while (name.charAt(0) == '[') {
             convName.append("[]");
@@ -66,7 +66,7 @@ public abstract class TypeDSCP extends DSCP {
         else if (nameString.equals(TypeTree.VOID_NAME))
             convName.insert(0, "void");
         else
-            convName.insert(0, name.substring(1)); // first part of name is 'L'
+            convName.insert(0, name.substring(1, name.length() - 1)); // name is like: L(type);
         return convName.toString();
     }
 }

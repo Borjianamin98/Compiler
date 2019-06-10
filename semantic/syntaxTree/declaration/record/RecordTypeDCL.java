@@ -15,6 +15,7 @@ import semantic.syntaxTree.Node;
 import semantic.syntaxTree.declaration.Declaration;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.program.ClassDCL;
+import semantic.typeTree.TypeTree;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -59,6 +60,7 @@ public class RecordTypeDCL extends Declaration {
             if (field.getDefaultValue() != null) {
                 methodVisitor.visitVarInsn(Opcodes.ALOAD, 0); // load "this"
                 field.getDefaultValue().generateCode(null, null, classWriter, methodVisitor);
+                TypeTree.widen(mv, field.getDefaultValue().getResultType(), field.getType()); // right value must be converted to type of variable
                 methodVisitor.visitFieldInsn(Opcodes.PUTFIELD, getName(), field.getName(), field.getDescriptor());
             }
         }

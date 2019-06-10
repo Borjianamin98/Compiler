@@ -28,7 +28,6 @@ import java.util.Optional;
 
 public class MethodDCL extends Declaration {
     private String owner;
-    private MethodDSCP typeDSCP;
     private TypeDSCP returnType;
     private Block body;
     private List<Argument> arguments;
