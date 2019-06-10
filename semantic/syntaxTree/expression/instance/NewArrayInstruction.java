@@ -20,6 +20,7 @@ public class NewArrayInstruction extends Expression {
     private String type;
     private TypeDSCP typeDSCP;
     private List<Expression> dimensions;
+    private ArrayTypeDSCP resultType;
 
     public NewArrayInstruction(String type, List<Expression> dimensions) {
         this.type = type;
@@ -42,7 +43,9 @@ public class NewArrayInstruction extends Expression {
 
     @Override
     public ArrayTypeDSCP getResultType() {
-        return Utility.addArrayType(getTypeDSCP(), dimensions.size());
+        if (resultType == null)
+            resultType = Utility.addArrayType(getTypeDSCP(), dimensions.size());
+        return resultType;
     }
 
     @Override

@@ -109,4 +109,6 @@ public class TypeTree {
     public static boolean isInteger(TypeDSCP type) {
         return type.getTypeCode() == INTEGER_DSCP.getTypeCode() || type.getTypeCode() == LONG_DSCP.getTypeCode();
     }
+
+    
 }

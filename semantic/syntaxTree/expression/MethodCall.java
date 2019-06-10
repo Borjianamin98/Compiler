@@ -5,9 +5,11 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.Display;
+import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.MethodDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
+import semantic.syntaxTree.BlockCode;
 import semantic.syntaxTree.declaration.method.Argument;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.program.ClassDCL;
@@ -15,8 +17,9 @@ import semantic.typeTree.TypeTree;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-public class MethodCall extends Expression {
+public class MethodCall extends Expression implements BlockCode {
     private String methodName;
     private List<Expression> parameters;
     private MethodDSCP methodDSCP;
@@ -45,11 +48,20 @@ public class MethodCall extends Expression {
         return methodDSCP;
     }
 
+    private String getMethodUserDescriptor() {
+        return Utility.createMethodCallDescriptor(methodName, parameters);
+    }
+
     @Override
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
         getTypeDSCP();
         // TODO Choose best overloading method
-        List<Argument> argumentsDSCP = getTypeDSCP().getArguments(0);
+        List<List<Argument>> argumentsDSCP = getTypeDSCP().getAllArguments();
+        List<List<Argument>> collectedArguments = argumentsDSCP.stream().filter(arguments -> arguments.size() == parameters.size()).collect(Collectors.toList());
+        if (collectedArguments.isEmpty())
+            throw new RuntimeException(String.format("No suitable method found for %s\n  actual and formal argument lists differ in length",
+                    getMethodUserDescriptor()));
+
 //        if (parameters.size() != argumentsDSCP.size())
 //            throw new RuntimeException("There is no method " + methodName + " with " + parameters.size() + " arguments");
         for (int i = 0; i < parameters.size(); i++) {

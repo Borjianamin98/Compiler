@@ -4,6 +4,7 @@ import jdk.internal.org.objectweb.asm.Opcodes;
 import semantic.symbolTable.descriptor.type.ArrayTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.Argument;
+import semantic.syntaxTree.expression.Expression;
 import semantic.typeTree.TypeTree;
 
 import java.util.List;
@@ -102,6 +103,22 @@ public class Utility {
         } else
             methodDescriptor.append("V");
         return methodDescriptor.toString();
+    }
+
+    /**
+     * create a string which represent method call with passed arguments to it
+     * @param functionName name of function
+     * @param parameters parameters passed for method call
+     * @return string which represent method call: function(parm1, parm2, ...)
+     */
+    public static String createMethodCallDescriptor(String functionName, List<Expression> parameters) {
+        StringBuilder methodCallDescriptor = new StringBuilder(functionName).append("(");
+        if (parameters != null) {
+            for (Expression parameter : parameters)
+                methodCallDescriptor.append(parameter.getResultType().getName());
+        }
+        methodCallDescriptor.append(")");
+        return methodCallDescriptor.toString();
     }
 
     public static String createArgumentDescriptor(List<Argument> arguments) {

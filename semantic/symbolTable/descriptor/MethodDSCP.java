@@ -59,4 +59,8 @@ public class MethodDSCP extends DSCP {
             throw new RuntimeException("Can't find method");
         return arguments.get(indexOfOverloadedMethod);
     }
+
+    public List<List<Argument>> getAllArguments() {
+        return arguments;
+    }
 }

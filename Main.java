@@ -5,6 +5,8 @@ import semantic.syntaxTree.declaration.VariableDCL;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.declaration.method.StartMethodDCL;
 import semantic.syntaxTree.declaration.record.RecordTypeDCL;
+import semantic.syntaxTree.expression.Expression;
+import semantic.syntaxTree.expression.MethodCall;
 import semantic.syntaxTree.expression.binaryOperation.bitwise.BitwiseAnd;
 import semantic.syntaxTree.expression.constValue.IntegerConst;
 import semantic.syntaxTree.expression.constValue.LongConst;
@@ -56,15 +58,21 @@ public class Main implements Opcodes {
 //        Plus p2 = new Plus(m2, new IntegerConst(2));
 //        VariableDCL vara = new VariableDCL("a", "double", false, false);
 //        body.addBlockCode(vara);
-        body.addBlockCode(new RecordTypeDCL("A", new ArrayList<>()));
-        body.addBlockCode(new VariableDCL("a", "long", false, false));
-        body.addBlockCode(new VariableDCL("b", "A", false, false));
-        DirectAssignment assignment = new DirectAssignment(new SimpleVariable("a"), new BitwiseAnd(new IntegerConst(1), new LongConst(2)));
-        body.addBlockCode(assignment);
+//        body.addBlockCode(new RecordTypeDCL("A", new ArrayList<>()));
+//        body.addBlockCode(new VariableDCL("a", "long", false, false));
+//        body.addBlockCode(new VariableDCL("b", "A", false, false));
+//        DirectAssignment assignment = new DirectAssignment(new SimpleVariable("a"), new BitwiseAnd(new IntegerConst(1), new LongConst(2)));
+//        body.addBlockCode(assignment);
 
+        Block bodyM = new Block();
+        bodyM.addBlockCode(new ReturnStatement());
+        body.addBlockCode(new MethodDCL("Tester", "test", null, bodyM, true));
 //        ForLoop forLoop = new ForLoop(null, new And(new FloatConst(1.5f), new StringConst("b")), null, null);
 //        ForLoop forLoop = new ForLoop(null, new NotEqual(new StringConst("a"), new StringConst("b")), null, null);
 //        body.addBlockCode(forLoop);
+        List<Expression> parms = new ArrayList<>();
+        parms.add(new IntegerConst(1));
+        body.addBlockCode(new MethodCall("test", parms));
 
         body.addBlockCode(new ReturnStatement());
         ClassDCL clazz = new ClassDCL("Tester", null, methodDCLS, null);
