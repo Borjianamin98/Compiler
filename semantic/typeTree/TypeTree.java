@@ -104,7 +104,7 @@ public class TypeTree {
     }
 
     private static void throwIncompatibleTypeException(TypeDSCP type1, TypeDSCP type2) {
-        throw new RuntimeException("Incompatible types: " + type2.getName() + " cannot be converted to " + type1.getName());
+        throw new RuntimeException("Incompatible types: " + type2.getConventionalName() + " cannot be converted to " + type1.getConventionalName());
     }
 
     public static boolean isString(TypeDSCP type) {

@@ -1,8 +1,8 @@
-package semantic.syntaxTree.expression.binaryoperation.arithmetic;
+package semantic.syntaxTree.expression.operation.arithmetic;
 
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.expression.Expression;
-import semantic.syntaxTree.expression.binaryoperation.BinaryOperation;
+import semantic.syntaxTree.expression.operation.BinaryOperation;
 import semantic.typeTree.TypeTree;
 
 public abstract class Arithmetic extends BinaryOperation {
@@ -20,8 +20,8 @@ public abstract class Arithmetic extends BinaryOperation {
             if (!getFirstOperand().getResultType().isPrimitive() || !getSecondOperand().getResultType().isPrimitive() ||
                     TypeTree.isString(getFirstOperand().getResultType()) || TypeTree.isString(getSecondOperand().getResultType()))
                 throw new RuntimeException(String.format("Bad operand types for binary operator '%s'\n  first type: %s\n  second type: %s",
-                        getArithmeticSign(), getFirstOperand().getResultType().getName(), getSecondOperand().getResultType().getName()));
-            resultType = TypeTree.max(getFirstOperand().getResultType(), getSecondOperand().getResultType());;
+                        getArithmeticSign(), getFirstOperand().getResultType().getConventionalName(), getSecondOperand().getResultType().getConventionalName()));
+            resultType = TypeTree.max(getFirstOperand().getResultType(), getSecondOperand().getResultType());
         }
         return resultType;
     }

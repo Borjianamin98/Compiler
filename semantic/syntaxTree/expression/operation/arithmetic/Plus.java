@@ -1,4 +1,4 @@
-package semantic.syntaxTree.expression.binaryoperation.arithmetic;
+package semantic.syntaxTree.expression.operation.arithmetic;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -19,13 +19,17 @@ public class Plus extends Arithmetic {
     public TypeDSCP getResultType() {
         if (!getFirstOperand().getResultType().isPrimitive() || !getSecondOperand().getResultType().isPrimitive())
             throw new RuntimeException(String.format("Bad operand types for binary operator '%s'\n  first type: %s\n  second type: %s",
-                    getArithmeticSign(), getFirstOperand().getResultType().getName(), getSecondOperand().getResultType().getName()));
-        return TypeTree.max(getFirstOperand().getResultType(), getSecondOperand().getResultType());
+                    getArithmeticSign(), getFirstOperand().getResultType().getConventionalName(), getSecondOperand().getResultType().getConventionalName()));
+        // handle special case which one of operand is string
+        if (getFirstOperand().getResultType().getTypeCode() == TypeTree.STRING_DSCP.getTypeCode() ||
+                getSecondOperand().getResultType().getTypeCode() == TypeTree.STRING_DSCP.getTypeCode())
+            return TypeTree.STRING_DSCP;
+        else
+            return TypeTree.max(getFirstOperand().getResultType(), getSecondOperand().getResultType());
     }
 
     @Override
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
-        // TODO Think about char type
         if (getResultType().getTypeCode() == TypeTree.STRING_DSCP.getTypeCode()) {
             /**
              * firstOperand:String + secondOperand:String
@@ -37,12 +41,14 @@ public class Plus extends Arithmetic {
             mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false);
 
             getFirstOperand().generateCode(currentClass, currentMethod, cv, mv);
-            TypeTree.widen(mv, getFirstOperand().getResultType(), getResultType());
-            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
+//            TypeTree.widen(mv, getFirstOperand().getResultType(), getResultType());
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(" +
+                    Utility.getDescriptor(getFirstOperand().getResultType(), 0) + ")Ljava/lang/StringBuilder;", false);
 
             getSecondOperand().generateCode(currentClass, currentMethod, cv, mv);
-            TypeTree.widen(mv, getSecondOperand().getResultType(), getResultType());
-            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
+//            TypeTree.widen(mv, getSecondOperand().getResultType(), getResultType());
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(" +
+                    Utility.getDescriptor(getSecondOperand().getResultType(), 0) + ")Ljava/lang/StringBuilder;", false);
 
             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false);
         } else {

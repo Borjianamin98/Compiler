@@ -35,12 +35,12 @@ public class ForLoop extends Statement {
         this.body = body;
     }
 
-//    public ForLoop(Assignment initialAssignment, Expression condition, Expression stepExpression, Block body) {
-//        this.initialAssignment = initialAssignment;
-//        this.condition = condition;
-//        this.stepExpression = stepExpression;
-//        this.body = body;
-//    }
+    public ForLoop(Assignment initialAssignment, Expression condition, Expression stepExpression, Block body) {
+        this.initialAssignment = initialAssignment;
+        this.condition = condition;
+        this.stepExpression = stepExpression;
+        this.body = body;
+    }
 
     @Override
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {

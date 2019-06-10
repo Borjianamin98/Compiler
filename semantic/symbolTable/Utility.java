@@ -169,7 +169,7 @@ public class Utility {
             mv.visitMethodInsn(org.objectweb.asm.Opcodes.INVOKEVIRTUAL, "java/lang/String", "isEmpty", "()Z", false);
             mv.visitJumpInsn(org.objectweb.asm.Opcodes.IFNE, falseJumpLabel);
         } else
-            throw new RuntimeException("Invalid boolean expression: " + booleanExpr.getResultType().getName());
+            throw new RuntimeException("Invalid boolean expression: " + booleanExpr.getResultType().getConventionalName());
     }
 
     /**

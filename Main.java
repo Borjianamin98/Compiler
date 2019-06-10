@@ -4,15 +4,16 @@ import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.VariableDCL;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.declaration.method.StartMethodDCL;
-import semantic.syntaxTree.expression.binaryoperation.relational.NotEqual;
+import semantic.syntaxTree.expression.operation.Not;
+import semantic.syntaxTree.expression.operation.arithmetic.Plus;
 import semantic.syntaxTree.expression.constValue.IntegerConst;
+import semantic.syntaxTree.expression.constValue.StringConst;
 import semantic.syntaxTree.expression.identifier.SimpleVariable;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.syntaxTree.statement.PrintFunction;
 import semantic.syntaxTree.statement.assignment.DirectAssignment;
-import semantic.syntaxTree.statement.assignment.PlusAssignment;
 import semantic.syntaxTree.statement.controlflow.ReturnStatement;
-import semantic.syntaxTree.statement.controlflow.loop.RepeatUntil;
+import semantic.syntaxTree.statement.controlflow.ifelse.IfElseThen;
 import semantic.typeTree.TypeTree;
 
 import java.io.IOException;
@@ -91,14 +92,18 @@ public class Main implements Opcodes {
 //        parms.add(new IntegerConst(1));
 //        body.addBlockCode(new MethodCall("test", parms));
 
-        body.addBlockCode(new VariableDCL("a", TypeTree.LONG_NAME, false, false));
-        body.addBlockCode(new DirectAssignment(new SimpleVariable("a"), new IntegerConst(-10)));
-//        body.addBlockCode(new VariableDCL("b", "A", false, false));
+        body.addBlockCode(new VariableDCL("a", TypeTree.STRING_NAME, false, false));
+        body.addBlockCode(new DirectAssignment(new SimpleVariable("a"), new StringConst("ali")));
+////        body.addBlockCode(new VariableDCL("b", "A", false, false));
         Block body1 = new Block();
-        body1.addBlockCode(new PrintFunction(new SimpleVariable("a")));
-        body1.addBlockCode(new PlusAssignment(new SimpleVariable("a"), new IntegerConst(1)));
-        RepeatUntil forLoop = new RepeatUntil(new NotEqual(new SimpleVariable("a"), new IntegerConst(0)), body1);
-        body.addBlockCode(forLoop);
+        body1.addBlockCode(new PrintFunction(new IntegerConst(1)));
+        Block body2 = new Block();
+        body2.addBlockCode(new PrintFunction(new IntegerConst(2)));
+//        body1.addBlockCode(new PlusAssignment(new SimpleVariable("a"), new IntegerConst(1)));
+//        RepeatUntil forLoop = new RepeatUntil(new NotEqual(new SimpleVariable("a"), new IntegerConst(0)), body1);
+//        body.addBlockCode(forLoop);
+
+        body.addBlockCode(new IfElseThen(new Not(new SimpleVariable("a")), body1, body2));
 
         body.addBlockCode(new ReturnStatement());
         ClassDCL clazz = new ClassDCL("Tester", null, methodDCLS, null);

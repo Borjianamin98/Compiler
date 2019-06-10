@@ -2,6 +2,7 @@ package semantic.symbolTable.descriptor.type;
 
 import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
+import semantic.typeTree.TypeTree;
 
 public abstract class TypeDSCP extends DSCP {
     private int typeCode;
@@ -38,5 +39,34 @@ public abstract class TypeDSCP extends DSCP {
 
     public int getDimensions() {
         return dimensions;
+    }
+
+    public String getConventionalName() {
+        StringBuilder name = new StringBuilder(getName());
+        StringBuilder convName = new StringBuilder();
+        while (name.charAt(0) == '[') {
+            convName.append("[]");
+            name.deleteCharAt(0);
+        }
+        String nameString = name.toString();
+        if (nameString.equals(TypeTree.INTEGER_NAME))
+            convName.insert(0, "int");
+        else if (nameString.equals(TypeTree.BOOLEAN_NAME))
+            convName.insert(0, "bool");
+        else if (nameString.equals(TypeTree.LONG_NAME))
+            convName.insert(0, "long");
+        else if (nameString.equals(TypeTree.FLOAT_NAME))
+            convName.insert(0, "float");
+        else if (nameString.equals(TypeTree.DOUBLE_NAME))
+            convName.insert(0, "double");
+        else if (nameString.equals(TypeTree.CHAR_NAME))
+            convName.insert(0, "char");
+        else if (nameString.equals(TypeTree.STRING_NAME))
+            convName.insert(0, "string");
+        else if (nameString.equals(TypeTree.VOID_NAME))
+            convName.insert(0, "void");
+        else
+            convName.insert(0, name.substring(1)); // first part of name is 'L'
+        return convName.toString();
     }
 }

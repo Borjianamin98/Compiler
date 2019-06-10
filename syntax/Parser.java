@@ -7,7 +7,7 @@ package syntax;
 
 import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.expression.Expression;
-import semantic.syntaxTree.expression.binaryoperation.arithmetic.*;
+import semantic.syntaxTree.expression.operation.arithmetic.*;
 import semantic.symbolTable.SymbolTable;
 import semantic.symbolTable.descriptor.DSCP;
 import java.util.ArrayDeque;
