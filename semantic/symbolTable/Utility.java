@@ -120,7 +120,7 @@ public class Utility {
         StringBuilder methodCallDescriptor = new StringBuilder(functionName).append("(");
         if (parameters != null) {
             for (Expression parameter : parameters)
-                methodCallDescriptor.append(parameter.getResultType().getName());
+                methodCallDescriptor.append(parameter.getResultType().getConventionalName());
         }
         methodCallDescriptor.append(")");
         return methodCallDescriptor.toString();
