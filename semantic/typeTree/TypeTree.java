@@ -1,5 +1,6 @@
 package semantic.typeTree;
 
+
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.descriptor.type.SimpleTypeDSCP;
@@ -10,14 +11,23 @@ import java.util.Map;
 
 public class TypeTree {
     private static Map<TypeDSCP, TypeNode> typeMapping = new HashMap<>();
-    public static final SimpleTypeDSCP INTEGER_DSCP = new SimpleTypeDSCP("int", semantic.typeTree.TypeTree.INTEGER_SIZE);
-    public static final SimpleTypeDSCP BOOLEAN_DSCP = new SimpleTypeDSCP("bool", semantic.typeTree.TypeTree.INTEGER_SIZE);
-    public static final SimpleTypeDSCP LONG_DSCP = new SimpleTypeDSCP("long", semantic.typeTree.TypeTree.LONG_SIZE);
-    public static final SimpleTypeDSCP FLOAT_DSCP = new SimpleTypeDSCP("float", semantic.typeTree.TypeTree.FLOAT_SIZE);
-    public static final SimpleTypeDSCP DOUBLE_DSCP = new SimpleTypeDSCP("double", semantic.typeTree.TypeTree.DOUBLE_SIZE);
-    public static final SimpleTypeDSCP CHAR_DSCP = new SimpleTypeDSCP("char", semantic.typeTree.TypeTree.CHAR_SIZE);
-    public static final SimpleTypeDSCP STRING_DSCP = new SimpleTypeDSCP("string", semantic.typeTree.TypeTree.STRING_SIZE);
-    public static final SimpleTypeDSCP VOID_DSCP = new SimpleTypeDSCP("void", 0);
+    public static final SimpleTypeDSCP INTEGER_DSCP = new SimpleTypeDSCP(TypeTree.INTEGER_NAME, TypeTree.INTEGER_SIZE);
+    public static final SimpleTypeDSCP BOOLEAN_DSCP = new SimpleTypeDSCP(TypeTree.BOOLEAN_NAME, TypeTree.INTEGER_SIZE);
+    public static final SimpleTypeDSCP LONG_DSCP = new SimpleTypeDSCP(TypeTree.LONG_NAME, TypeTree.LONG_SIZE);
+    public static final SimpleTypeDSCP FLOAT_DSCP = new SimpleTypeDSCP(TypeTree.FLOAT_NAME, TypeTree.FLOAT_SIZE);
+    public static final SimpleTypeDSCP DOUBLE_DSCP = new SimpleTypeDSCP(TypeTree.DOUBLE_NAME,TypeTree.DOUBLE_SIZE);
+    public static final SimpleTypeDSCP CHAR_DSCP = new SimpleTypeDSCP(TypeTree.CHAR_NAME, TypeTree.CHAR_SIZE);
+    public static final SimpleTypeDSCP STRING_DSCP = new SimpleTypeDSCP(TypeTree.STRING_NAME, TypeTree.STRING_SIZE);
+    public static final SimpleTypeDSCP VOID_DSCP = new SimpleTypeDSCP(TypeTree.VOID_NAME, 0);
+
+    public static final String INTEGER_NAME = "I";
+    public static final String BOOLEAN_NAME = "Z";
+    public static final String LONG_NAME = "J";
+    public static final String FLOAT_NAME = "F";
+    public static final String DOUBLE_NAME = "D";
+    public static final String CHAR_NAME = "C";
+    public static final String STRING_NAME = "Ljava/lang/String;";
+    public static final String VOID_NAME = "V";
 
     private static final int INTEGER_SIZE = 1;
     private static final int LONG_SIZE = 2;

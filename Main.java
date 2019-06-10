@@ -9,6 +9,7 @@ import semantic.syntaxTree.expression.call.MethodCall;
 import semantic.syntaxTree.expression.constValue.IntegerConst;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.syntaxTree.statement.controlflow.ReturnStatement;
+import semantic.typeTree.TypeTree;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -62,22 +63,22 @@ public class Main implements Opcodes {
         Block bodyM1 = new Block();
         bodyM1.addBlockCode(new ReturnStatement());
         List<Argument> argsM1 = new ArrayList<>();
-        argsM1.add(new Argument("x", "float", 0));
-        argsM1.add(new Argument("y", "int", 0));
+        argsM1.add(new Argument("x", TypeTree.FLOAT_NAME, 0));
+        argsM1.add(new Argument("y", TypeTree.INTEGER_NAME, 0));
         body.addBlockCode(new MethodDCL("Tester", "test", argsM1, bodyM1, true));
 
         Block bodyM2 = new Block();
         bodyM2.addBlockCode(new ReturnStatement());
         List<Argument> argsM2 = new ArrayList<>();
-        argsM2.add(new Argument("x", "long", 0));
-        argsM2.add(new Argument("y", "long", 0));
+        argsM2.add(new Argument("x", TypeTree.LONG_NAME, 0));
+        argsM2.add(new Argument("y", TypeTree.LONG_NAME, 0));
         body.addBlockCode(new MethodDCL("Tester", "test", argsM2, bodyM2, true));
 
         Block bodyM3 = new Block();
         bodyM3.addBlockCode(new ReturnStatement());
         List<Argument> argsM3 = new ArrayList<>();
-        argsM3.add(new Argument("x", "int", 0));
-        argsM3.add(new Argument("y", "int", 0));
+        argsM3.add(new Argument("x", TypeTree.INTEGER_NAME, 0));
+        argsM3.add(new Argument("y", TypeTree.INTEGER_NAME, 0));
 //        body.addBlockCode(new MethodDCL("Tester", "test", argsM3, bodyM3, true));
 //        ForLoop forLoop = new ForLoop(null, new And(new FloatConst(1.5f), new StringConst("b")), null, null);
 //        ForLoop forLoop = new ForLoop(null, new NotEqual(new StringConst("a"), new StringConst("b")), null, null);

@@ -130,36 +130,4 @@ public class Utility {
         argumentDescriptor.append(")");
         return argumentDescriptor.toString();
     }
-
-//    public static int checkType(int type1, int type2) {
-//        if (type1 != type2)
-//            throw new TypeMismatchException(type1 + " doesn't match with " + type2);
-//        return type1;
-////        if (type1.equals(Integer.class)) {
-////            if (type2.equals(Double.class) || type2.equals(Float.class) ||
-////                    type2.equals(Long.class) || type2.equals(Integer.class))
-////                return type2;
-////        } else if (type1.equals(Long.class)) {
-////            if (type2.equals(Double.class) || type2.equals(Float.class) ||
-////                    type2.equals(Long.class))
-////                return type2;
-////            else if (type2.equals(Integer.class))
-////                return type1;
-////        } else if (type1.equals(Float.class)) {
-////            if (type2.equals(Double.class) || type2.equals(Float.class))
-////                return type2;
-////            else if (type2.equals(Integer.class) || type2.equals(Long.class))
-////                return type1;
-////        } else if (type1.equals(Double.class)) {
-////            if (type2.equals(Double.class))
-////                return type2;
-////            else if (type2.equals(Integer.class) || type2.equals(Long.class) ||
-////                    type2.equals(Float.class))
-////                return type1;
-////        } else if (type1.equals(String.class)) {
-////            if (type2.equals(String.class))
-////                return String.class;
-////        }
-////        throw new TypeMismatchException();
-//    }
 }

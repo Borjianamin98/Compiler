@@ -12,14 +12,14 @@ public class Display {
     static SymbolTable mainSymbolTable = new SymbolTable();
 
     static {
-        SymbolTable.addType("int", TypeTree.INTEGER_DSCP);
-        SymbolTable.addType("bool", TypeTree.BOOLEAN_DSCP);
-        SymbolTable.addType("long", TypeTree.LONG_DSCP);
-        SymbolTable.addType("float", TypeTree.FLOAT_DSCP);
-        SymbolTable.addType("double", TypeTree.DOUBLE_DSCP);
-        SymbolTable.addType("char", TypeTree.CHAR_DSCP);
-        SymbolTable.addType("string", TypeTree.STRING_DSCP);
-        SymbolTable.addType("void", TypeTree.VOID_DSCP);
+        SymbolTable.addType(TypeTree.INTEGER_NAME, TypeTree.INTEGER_DSCP);
+        SymbolTable.addType(TypeTree.BOOLEAN_NAME, TypeTree.BOOLEAN_DSCP);
+        SymbolTable.addType(TypeTree.LONG_NAME, TypeTree.LONG_DSCP);
+        SymbolTable.addType(TypeTree.FLOAT_NAME, TypeTree.FLOAT_DSCP);
+        SymbolTable.addType(TypeTree.DOUBLE_NAME, TypeTree.DOUBLE_DSCP);
+        SymbolTable.addType(TypeTree.CHAR_NAME, TypeTree.CHAR_DSCP);
+        SymbolTable.addType(TypeTree.STRING_NAME, TypeTree.STRING_DSCP);
+        SymbolTable.addType(TypeTree.VOID_NAME, TypeTree.VOID_DSCP);
         displayList.add(mainSymbolTable);
     }
 

@@ -62,6 +62,8 @@ public class MethodCall extends Expression implements BlockCode {
         if (collectedArguments.isEmpty())
             throw new RuntimeException(String.format("No suitable method found for %s: actual and formal argument lists differ in length",
                     getMethodUserDescriptor()));
+
+        // Give rank to each potential method
         List<MethodRank> methodRanks = new ArrayList<>();
         outer:
         for (int indexOfOverload = 0; indexOfOverload < collectedArguments.size(); indexOfOverload++) {
@@ -72,7 +74,7 @@ public class MethodCall extends Expression implements BlockCode {
                 if (TypeTree.canWiden(parameterType, argumentType)) {
                     methodRank.addSumOfDiffLevel(TypeTree.diffLevel(parameterType, argumentType));
                 } else
-                    continue outer;
+                    continue outer; // this method is not possible to call
             }
             methodRanks.add(methodRank);
         }
@@ -80,13 +82,18 @@ public class MethodCall extends Expression implements BlockCode {
             throw new RuntimeException(String.format("No suitable method found for %s: argument mismatch", getMethodUserDescriptor()));
         methodRanks.sort(MethodRank.comparator);
 
-        int indexOfOverloadMethod = methodRanks.get(0).getOverloadMethodIndex(); // method which is chosen
-        List<Argument> overloadMethodArguments = methodRanks.get(0).getArguments(); // method which is chosen
+        // Extract method which is chosen among overloaded method
+        int indexOfOverloadMethod = methodRanks.get(0).getOverloadMethodIndex();
+        List<Argument> overloadMethodArguments = methodRanks.get(0).getArguments();
+
+        // Generate call expression code and do type conversion
         for (int i = 0; i < parameters.size(); i++) {
             Expression parameter = parameters.get(i);
             parameter.generateCode(currentClass, currentMethod, cv, mv);
             TypeTree.widen(mv, parameter.getResultType(), overloadMethodArguments.get(i).getType());
         }
+
+        // invoke method
         mv.visitMethodInsn(Opcodes.INVOKESTATIC, getTypeDSCP().getOwner(), getTypeDSCP().getName(),
                 methodDSCP.getDescriptor(indexOfOverloadMethod), false);
     }
