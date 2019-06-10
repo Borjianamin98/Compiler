@@ -2,6 +2,8 @@ package semantic.syntaxTree;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
+import semantic.syntaxTree.declaration.method.MethodDCL;
+import semantic.syntaxTree.program.ClassDCL;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,5 +21,5 @@ public abstract class Node {
         }
     }
 
-    public abstract void generateCode(ClassVisitor cv, MethodVisitor mv);
+    public abstract void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv);
 }

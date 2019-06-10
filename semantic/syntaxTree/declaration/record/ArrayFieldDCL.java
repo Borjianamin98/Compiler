@@ -14,19 +14,24 @@ import semantic.symbolTable.descriptor.hastype.FieldDSCP;
 import semantic.symbolTable.descriptor.type.ArrayTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.Declaration;
+import semantic.syntaxTree.declaration.method.MethodDCL;
+import semantic.syntaxTree.program.ClassDCL;
 
 import java.util.Optional;
 
 public class ArrayFieldDCL extends Declaration {
     private String owner;
+    private String type;
+    private TypeDSCP typeDSCP;
     private int dimensions;
     private TypeDSCP baseTypeDSCP;
     private boolean initialized;
     private boolean beingStatic;
 
     public ArrayFieldDCL(String owner, String name, String type, int dimensions, boolean isConstant, boolean initialized, boolean beingStatic) {
-        super(name, type, isConstant);
+        super(name, isConstant);
         this.owner = owner;
+        this.type = type;
         this.dimensions = dimensions;
         this.initialized = initialized;
         this.beingStatic = beingStatic;
@@ -40,12 +45,11 @@ public class ArrayFieldDCL extends Declaration {
         return beingStatic;
     }
 
-    @Override
     public ArrayTypeDSCP getTypeDSCP() {
         if (typeDSCP == null) {
-            Optional<DSCP> fetchedDSCP = Display.find(getType());
+            Optional<DSCP> fetchedDSCP = Display.find(type);
             if (!fetchedDSCP.isPresent() || !(fetchedDSCP.get() instanceof TypeDSCP))
-                throw new SymbolNotFoundException("Type " + getType() + " not found");
+                throw new SymbolNotFoundException("Type " + type + " not found");
             baseTypeDSCP = (TypeDSCP) fetchedDSCP.get();
             typeDSCP = Utility.addArrayType(baseTypeDSCP, dimensions);
         }
@@ -53,7 +57,7 @@ public class ArrayFieldDCL extends Declaration {
     }
 
     @Override
-    public void generateCode(ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
         SymbolTable top = Display.top();
         if (top.contain(getName()))
             throw new DuplicateDeclarationException("Field " + getName() + " declared more than one time");

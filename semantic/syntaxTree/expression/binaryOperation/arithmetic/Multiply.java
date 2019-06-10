@@ -3,24 +3,30 @@ package semantic.syntaxTree.expression.binaryOperation.arithmetic;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import semantic.symbolTable.Utility;
-import semantic.symbolTable.descriptor.type.TypeDSCP;
+import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
-import semantic.syntaxTree.expression.binaryOperation.BinaryOperation;
+import semantic.syntaxTree.program.ClassDCL;
+import semantic.typeTree.TypeTree;
 
-public class Multiply extends BinaryOperation {
+public class Multiply extends Arithmetic {
     public Multiply(Expression firstOperand, Expression secondOperand) {
-        super(firstOperand, secondOperand);
+        super("*", firstOperand, secondOperand);
     }
 
     @Override
-    public void generateCode(ClassVisitor cv, MethodVisitor mv) {
-        getFirstOperand().generateCode(cv, mv);
-        getSecondOperand().generateCode(cv, mv);
-        // TODO check Type (must be completed)
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
         // TODO Think about char type
-        // TODO Think about multiple two strings
-        TypeDSCP resultType = getFirstOperand().getResultType();
-        mv.visitInsn(Utility.getOpcode(resultType.getTypeCode(), "MUL"));
+        if (getResultType().getTypeCode() == TypeTree.STRING_DSCP.getTypeCode())
+            throw new RuntimeException(String.format("Bad operand types for binary operator '%s'\n  first type: %s\n  second type: %s",
+                    getArithmeticSign(), getFirstOperand().getResultType().getName(), getSecondOperand().getResultType().getName()));
+
+        getFirstOperand().generateCode(currentClass, currentMethod, cv, mv);
+        TypeTree.widen(mv, getFirstOperand().getResultType(), getResultType());
+
+        getSecondOperand().generateCode(currentClass, currentMethod, cv, mv);
+        TypeTree.widen(mv, getSecondOperand().getResultType(), getResultType());
+
+        mv.visitInsn(Utility.getOpcode(getResultType().getTypeCode(), "MUL"));
     }
 
 

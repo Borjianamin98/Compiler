@@ -5,42 +5,49 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import semantic.exception.DuplicateDeclarationException;
+import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
+import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
+import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.Node;
 import semantic.syntaxTree.declaration.Declaration;
+import semantic.syntaxTree.declaration.method.MethodDCL;
+import semantic.syntaxTree.program.ClassDCL;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
-public class RecordTypeDCL extends Node {
-    private String name;
+public class RecordTypeDCL extends Declaration {
+    private RecordTypeDSCP typeDSCP;
     private List<Field> fields;
 
     public RecordTypeDCL(String name, List<Field> fields) {
-        this.name = name;
+        super(name, false);
         this.fields = fields;
     }
 
     @Override
-    public void generateCode(ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-        classWriter.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC | Opcodes.ACC_SUPER, name, null, "java/lang/Object", null);
+        classWriter.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC | Opcodes.ACC_SUPER, getName(), null, "java/lang/Object", null);
 
-        Display.add(false); // Record symbol table
+        // Record symbol table
+        Display.add(false);
         for (Field field : fields) {
             field.setStatic(false);
             Declaration fieldDCL;
             if (field.isArray()) {
-                fieldDCL = new ArrayFieldDCL(name, field.getName(), field.getBaseType(), field.getDimensions(),
+                fieldDCL = new ArrayFieldDCL(getName(), field.getName(), field.getBaseType(), field.getDimensions(),
                         field.isConstant(), field.getDefaultValue() != null, field.isStatic());
             } else {
-                fieldDCL = new SimpleFieldDCL(name, field.getName(), field.getBaseType(), field.isConstant(),
+                fieldDCL = new SimpleFieldDCL(getName(), field.getName(), field.getBaseType(), field.isConstant(),
                         field.getDefaultValue() != null, field.isStatic());
             }
-            fieldDCL.generateCode(classWriter, null);
+            fieldDCL.generateCode(null, null, classWriter, null);
         }
 
         // Constructor of record
@@ -51,8 +58,8 @@ public class RecordTypeDCL extends Node {
         for (Field field : fields) {
             if (field.getDefaultValue() != null) {
                 methodVisitor.visitVarInsn(Opcodes.ALOAD, 0); // load "this"
-                field.getDefaultValue().generateCode(classWriter, methodVisitor);
-                methodVisitor.visitFieldInsn(Opcodes.PUTFIELD, name, field.getName(), field.getDescriptor());
+                field.getDefaultValue().generateCode(null, null, classWriter, methodVisitor);
+                methodVisitor.visitFieldInsn(Opcodes.PUTFIELD, getName(), field.getName(), field.getDescriptor());
             }
         }
 
@@ -63,17 +70,17 @@ public class RecordTypeDCL extends Node {
         classWriter.visitEnd();
 
         // Generate class file
-        try (FileOutputStream fos = new FileOutputStream(Node.outputPath + name + ".class")) {
+        try (FileOutputStream fos = new FileOutputStream(Node.outputPath + getName() + ".class")) {
             fos.write(classWriter.toByteArray());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         // Update symbol table
-        if (Display.find(name).isPresent()) {
-            throw new DuplicateDeclarationException("Identifier " + name + " declared more than one time");
+        if (Display.find(getName()).isPresent()) {
+            throw new DuplicateDeclarationException("Identifier " + getName() + " declared more than one time");
         }
-        RecordTypeDSCP recordDSCP = new RecordTypeDSCP(name, 1, Display.pop());
-        SymbolTable.addType(name, recordDSCP);
+        RecordTypeDSCP recordDSCP = new RecordTypeDSCP(getName(), 1, Display.pop());
+        SymbolTable.addType(getName(), recordDSCP);
     }
 }

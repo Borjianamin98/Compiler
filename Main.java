@@ -1,26 +1,16 @@
 import java_cup.runtime.ComplexSymbolFactory;
-import org.objectweb.asm.*;
-import semantic.syntaxTree.Node;
+import org.objectweb.asm.Opcodes;
 import semantic.syntaxTree.block.Block;
-import semantic.syntaxTree.declaration.Declaration;
+import semantic.syntaxTree.declaration.method.Argument;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.declaration.method.StartMethodDCL;
-import semantic.syntaxTree.declaration.record.ArrayFieldDCL;
-import semantic.syntaxTree.declaration.record.Field;
-import semantic.syntaxTree.declaration.record.RecordTypeDCL;
-import semantic.syntaxTree.declaration.record.SimpleFieldDCL;
-import semantic.syntaxTree.expression.binaryOperation.constValue.IntegerConst;
-import semantic.syntaxTree.expression.binaryOperation.constValue.StringConst;
-import semantic.syntaxTree.identifier.SimpleField;
-import semantic.syntaxTree.identifier.SimpleVariable;
+import semantic.syntaxTree.expression.Expression;
+import semantic.syntaxTree.expression.call.MethodCall;
+import semantic.syntaxTree.expression.constValue.IntegerConst;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.syntaxTree.statement.PrintFunction;
-import semantic.syntaxTree.statement.ReturnStatement;
-import semantic.syntaxTree.statement.assignment.DirectAssignment;
-import semantic.syntaxTree.statement.loop.Foreach;
-import semantic.syntaxTree.statement.loop.RepeatUntil;
+import semantic.syntaxTree.statement.controlflow.ReturnStatement;
+import semantic.typeTree.TypeTree;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,129 +34,63 @@ public class Main implements Opcodes {
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
-//        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-//
-//        cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC | Opcodes.ACC_SUPER, "Tester", null, "java/lang/Object", null);
-//        MethodVisitor mw = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
-//        mw.visitCode();
-//        mw.visitVarInsn(ALOAD, 0);
-//        mw.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
-//        mw.visitInsn(RETURN);
-//        mw.visitMaxs(0, 0);
-//        mw.visitEnd();
-//
-//
-//        mw = cw.visitMethod(ACC_PUBLIC | ACC_STATIC, "main", "([Ljava/lang/String;)V", null, null);
-//        mw.visitCode();
-//
-//        List<Field> f1 = new ArrayList<>();
-//        f1.add(new Field("x", "int", 0, new IntegerConst(1), false, false));
-//        f1.add(new Field("y", "double", 0, false, false));
-//        RecordTypeDCL r1 = new RecordTypeDCL("A", f1);
-//        r1.generateCode(cw, mw);
-//
-//        List<Field> f2 = new ArrayList<>();
-//        f2.add(new Field("x", "A", 2, false, false));
-//        f2.add(new Field("y", "int", 1, false, false));
-//        RecordTypeDCL r2 = new RecordTypeDCL("B", f2);
-//        r2.generateCode(cw, mw);
-//
-////        VariableDCL varaDCL = new VariableDCL("a", "B", false, false);
-////        varaDCL.generateCode(cw, mw);
-////        SimpleVariable vara = new SimpleVariable("a");
-////        DirectAssignment ass = new DirectAssignment(vara, new NewRecordInstruction("B"));
-////        ass.generateCode(cw, mw);
-//
-////        MemberVariable vara$1 = new MemberVariable(vara, "x");
-////        List<Expression> dims = new ArrayList<>();
-////        dims.add(new IntegerConst(5));
-////        dims.add(new IntegerConst(5));
-////        ass = new DirectAssignment(vara$1, new NewArrayInstruction("A", dims));
-////        ass.generateCode(cw, mw);
-////        ArrayVariable vara$2 = new ArrayVariable(vara$1, new IntegerConst(1));
-////        ArrayVariable vara$3 = new ArrayVariable(vara$2, new IntegerConst(2));
-////        ass = new DirectAssignment(vara$3, new NewRecordInstruction("A"));
-////        ass.generateCode(cw, mw);
-////        MemberVariable vara$4 = new MemberVariable(vara$3, "y");
-////        DirectAssignment ass2 = new DirectAssignment(vara$4, new DoubleConst(1));
-////        ass2.generateCode(cw, mw);
-////        PrintFunction printFunction = new PrintFunction(vara$4);
-////        printFunction.generateCode(cw, mw);
-////
-////        List<Expression> d = new ArrayList<>();
-////        d.add(new IntegerConst(2));
-////        d.add(new IntegerConst(3));
-//////        d.add(new IntegerConst(4));
-//////        ArrayDCL arrayDCL = new ArrayDCL("x", "B", 2, false, false);
-//////        arrayDCL.generateCode(cw, mw);
-////        VariableDCL varDCL = new VariableDCL("x", "B", false, false);
-////        varDCL.generateCode(cw, mw);
-////        Variable var = new SimpleVariable("x");
-////        NewRecordInstruction newIns = new NewRecordInstruction("B");
-////        DirectAssignment ass = new DirectAssignment(var, newIns);
-////        ass.generateCode(cw, mw);
-//////        ArrayVariable vary$2 = new ArrayVariable(vary$1, new IntegerConst(2));
-//////        PrintFunction printFunction = new PrintFunction(vary$2);
-//////        printFunction.generateCode(cw, mw);
-////
-////
-//
-////
-////        Declaration s = new ArrayFieldDCL("Tester", "ab", "int", 2, false, false, true);
-////        s.generateCode(cw, mw);
-////
-//////        DirectAssignment ass3 = new DirectAssignment(, new IntegerConst(1));
-//////        ass3.generateCode(cw, mw);
-//////        new PrintFunction(new SimpleField("Tester", "ab", true)).generateCode(cw, mw);
-////
-////        Block body = new Block();
-////        Block body2 = new Block();
-////        Block body3 = new Block();
-////        Foreach foreach2 = new Foreach("i", new SimpleVariable("t"), body2);
-//////        Foreach foreach3 = new Foreach("m", new SimpleVariable("i"), body3);
-//////        body2.addStatement(foreach3);
-////        body.addStatement(foreach2);
-////        Foreach foreach = new Foreach("t", new SimpleField("Tester", "ab", true), body);
-////        foreach.generateCode(cw, mw);
-//
-////
-////        List<Argument> args = new ArrayList<>();
-////        args.add(new Argument("x", "int", 0));
-////        args.add(new Argument("y", "B", 2));
-//////        args.add(new Argument("z", "A", 1));
-////        Block mBody = new Block();
-////        mBody.addStatement(new PrintFunction(new SimpleVariable("x")));
-////        mBody.addStatement(new ReturnStatement());
-////        MethodDCL m = new MethodDCL("Tester", "test", args, mBody);
-////        m.generateCode(cw, mw);
-////
-////        List<Expression> params = new ArrayList<>();
-////        params.add(new IntegerConst(1));
-////        params.add(var);
-////        MethodCall methodCall = new MethodCall("Tester.test", params);
-////        methodCall.generateCode(cw, mw);
-//
-//        mw.visitInsn(RETURN);
-//        mw.visitMaxs(0, 0);
-//        mw.visitEnd();
-//        cw.visitEnd();
-//
-//        FileOutputStream fos = new FileOutputStream(Node.outputPath + "Tester.class");
-//        fos.write(cw.toByteArray());
-//        fos.close();
+
 
         List<MethodDCL> methodDCLS = new ArrayList<>();
         Block body = new Block();
         methodDCLS.add(new StartMethodDCL("Tester", body));
 
-        Block repeatBlock = new Block();
-        repeatBlock.addStatement(new PrintFunction(new StringConst("salam")));
-        RepeatUntil repeatUntil = new RepeatUntil(new IntegerConst(1), repeatBlock);
-        body.addStatement(repeatUntil);
-        body.addStatement(new ReturnStatement());
+//        Block repeatBlock = new Block();
+//        repeatBlock.addBlockCode(new VariableDCL("x", "int", false, false));
+//        repeatBlock.addBlockCode(new DirectAssignment(new SimpleVariable("x"), new IntegerConst(1)));
+//        repeatBlock.addBlockCode(new PrintFunction(new StringConst("salam")));
+//        repeatBlock.addBlockCode(new PrintFunction(new SimpleVariable("x")));
+//        RepeatUntil repeatUntil = new RepeatUntil(new IntegerConst(1), repeatBlock);
+//        body.addBlockCode(repeatUntil);
 
-        ClassDCL clazz = new ClassDCL("Tester", null, methodDCLS , null);
-        clazz.generateCode(null, null);
+//        Multiply m = new Multiply(new IntegerConst(6), new IntegerConst(3));
+//        Plus p = new Plus(new FloatConst(2.5), m);
+//        Multiply m2 = new Multiply(new IntegerConst(3), p);
+//        Plus p2 = new Plus(m2, new IntegerConst(2));
+//        VariableDCL vara = new VariableDCL("a", "double", false, false);
+//        body.addBlockCode(vara);
+//        body.addBlockCode(new RecordTypeDCL("A", new ArrayList<>()));
+//        body.addBlockCode(new VariableDCL("a", "long", false, false));
+//        body.addBlockCode(new VariableDCL("b", "A", false, false));
+//        DirectAssignment assignment = new DirectAssignment(new SimpleVariable("a"), new BitwiseAnd(new IntegerConst(1), new LongConst(2)));
+//        body.addBlockCode(assignment);
+
+        Block bodyM1 = new Block();
+        bodyM1.addBlockCode(new ReturnStatement());
+        List<Argument> argsM1 = new ArrayList<>();
+        argsM1.add(new Argument("x", TypeTree.FLOAT_NAME, 0));
+        argsM1.add(new Argument("y", TypeTree.INTEGER_NAME, 0));
+        body.addBlockCode(new MethodDCL("Tester", "test", argsM1, bodyM1, true));
+
+        Block bodyM2 = new Block();
+        bodyM2.addBlockCode(new ReturnStatement());
+        List<Argument> argsM2 = new ArrayList<>();
+        argsM2.add(new Argument("x", TypeTree.LONG_NAME, 0));
+        argsM2.add(new Argument("y", TypeTree.LONG_NAME, 0));
+        body.addBlockCode(new MethodDCL("Tester", "test", argsM2, bodyM2, true));
+
+        Block bodyM3 = new Block();
+        bodyM3.addBlockCode(new ReturnStatement());
+        List<Argument> argsM3 = new ArrayList<>();
+        argsM3.add(new Argument("x", TypeTree.INTEGER_NAME, 0));
+        argsM3.add(new Argument("y", TypeTree.INTEGER_NAME, 0));
+//        body.addBlockCode(new MethodDCL("Tester", "test", argsM3, bodyM3, true));
+//        ForLoop forLoop = new ForLoop(null, new And(new FloatConst(1.5f), new StringConst("b")), null, null);
+//        ForLoop forLoop = new ForLoop(null, new NotEqual(new StringConst("a"), new StringConst("b")), null, null);
+//        body.addBlockCode(forLoop);
+        List<Expression> parms = new ArrayList<>();
+        parms.add(new IntegerConst(1));
+        parms.add(new IntegerConst(1));
+        body.addBlockCode(new MethodCall("test", parms));
+
+        body.addBlockCode(new ReturnStatement());
+        ClassDCL clazz = new ClassDCL("Tester", null, methodDCLS, null);
+        clazz.generateCode(null, null, null, null);
     }
 
 }

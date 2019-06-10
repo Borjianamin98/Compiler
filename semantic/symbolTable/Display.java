@@ -1,6 +1,7 @@
 package semantic.symbolTable;
 
 import semantic.symbolTable.descriptor.DSCP;
+import semantic.typeTree.TypeTree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,14 +12,14 @@ public class Display {
     static SymbolTable mainSymbolTable = new SymbolTable();
 
     static {
-        SymbolTable.addType("int", Constants.INTEGER_DSCP);
-        SymbolTable.addType("bool", Constants.BOOLEAN_DSCP);
-        SymbolTable.addType("long", Constants.LONG_DSCP);
-        SymbolTable.addType("float", Constants.FLOAT_DSCP);
-        SymbolTable.addType("double", Constants.DOUBLE_DSCP);
-        SymbolTable.addType("char", Constants.CHAR_DSCP);
-        SymbolTable.addType("string", Constants.STRING_DSCP);
-        SymbolTable.addType("void", Constants.VOID_DSCP);
+        SymbolTable.addType(TypeTree.INTEGER_NAME, TypeTree.INTEGER_DSCP);
+        SymbolTable.addType(TypeTree.BOOLEAN_NAME, TypeTree.BOOLEAN_DSCP);
+        SymbolTable.addType(TypeTree.LONG_NAME, TypeTree.LONG_DSCP);
+        SymbolTable.addType(TypeTree.FLOAT_NAME, TypeTree.FLOAT_DSCP);
+        SymbolTable.addType(TypeTree.DOUBLE_NAME, TypeTree.DOUBLE_DSCP);
+        SymbolTable.addType(TypeTree.CHAR_NAME, TypeTree.CHAR_DSCP);
+        SymbolTable.addType(TypeTree.STRING_NAME, TypeTree.STRING_DSCP);
+        SymbolTable.addType(TypeTree.VOID_NAME, TypeTree.VOID_DSCP);
         displayList.add(mainSymbolTable);
     }
 

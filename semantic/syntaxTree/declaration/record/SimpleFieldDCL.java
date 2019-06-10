@@ -12,17 +12,22 @@ import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.hastype.FieldDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.Declaration;
+import semantic.syntaxTree.declaration.method.MethodDCL;
+import semantic.syntaxTree.program.ClassDCL;
 
 import java.util.Optional;
 
 public class SimpleFieldDCL extends Declaration {
     private String owner;
+    private String type;
+    private TypeDSCP typeDSCP;
     private boolean initialized;
     private boolean beingStatic;
 
     public SimpleFieldDCL(String owner, String name, String type, boolean isConstant, boolean initialized, boolean beingStatic) {
-        super(name, type, isConstant);
+        super(name, isConstant);
         this.owner = owner;
+        this.type = type;
         this.initialized = initialized;
         this.beingStatic = beingStatic;
     }
@@ -35,19 +40,18 @@ public class SimpleFieldDCL extends Declaration {
         return beingStatic;
     }
 
-    @Override
     public TypeDSCP getTypeDSCP() {
         if (typeDSCP == null) {
-            Optional<DSCP> fetchedDSCP = Display.find(getType());
+            Optional<DSCP> fetchedDSCP = Display.find(type);
             if (!fetchedDSCP.isPresent() || !(fetchedDSCP.get() instanceof TypeDSCP))
-                throw new SymbolNotFoundException("Type " + getType() + " not found");
+                throw new SymbolNotFoundException("Type " + type + " not found");
             typeDSCP = (TypeDSCP) fetchedDSCP.get();
         }
         return typeDSCP;
     }
 
     @Override
-    public void generateCode(ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
         // Only check current block table
         // otherwise this declaration shadows other declarations
         SymbolTable top = Display.top();

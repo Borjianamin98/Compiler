@@ -1,29 +1,28 @@
 package semantic.symbolTable;
 
 import jdk.internal.org.objectweb.asm.Opcodes;
-import semantic.exception.SymbolNotFoundException;
-import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.type.ArrayTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.Argument;
+import semantic.syntaxTree.expression.Expression;
+import semantic.typeTree.TypeTree;
 
 import java.util.List;
-import java.util.Optional;
 
 public class Utility {
     private Utility() {
     }
 
     public static String getTypePrefix(int type) {
-        if (type == Constants.INTEGER_DSCP.getTypeCode() ||
-                type == Constants.BOOLEAN_DSCP.getTypeCode() ||
-                type == Constants.CHAR_DSCP.getTypeCode()) {
+        if (type == TypeTree.INTEGER_DSCP.getTypeCode() ||
+                type == TypeTree.BOOLEAN_DSCP.getTypeCode() ||
+                type == TypeTree.CHAR_DSCP.getTypeCode()) {
             return "I";
-        } else if (type == Constants.LONG_DSCP.getTypeCode()) {
+        } else if (type == TypeTree.LONG_DSCP.getTypeCode()) {
             return "L";
-        } else if (type == Constants.DOUBLE_DSCP.getTypeCode()) {
+        } else if (type == TypeTree.DOUBLE_DSCP.getTypeCode()) {
             return "D";
-        } else if (type == Constants.FLOAT_DSCP.getTypeCode()) {
+        } else if (type == TypeTree.FLOAT_DSCP.getTypeCode()) {
             return "F";
         }
         return "A";
@@ -46,21 +45,21 @@ public class Utility {
     }
 
     public static String getPrimitiveTypeDescriptor(int type) {
-        if (type == Constants.INTEGER_DSCP.getTypeCode()) {
+        if (type == TypeTree.INTEGER_DSCP.getTypeCode()) {
             return "I";
-        } else if (type == Constants.CHAR_DSCP.getTypeCode()) {
+        } else if (type == TypeTree.CHAR_DSCP.getTypeCode()) {
             return "C";
-        } else if (type == Constants.LONG_DSCP.getTypeCode()) {
+        } else if (type == TypeTree.LONG_DSCP.getTypeCode()) {
             return "J";
-        } else if (type == Constants.DOUBLE_DSCP.getTypeCode()) {
+        } else if (type == TypeTree.DOUBLE_DSCP.getTypeCode()) {
             return "D";
-        } else if (type == Constants.FLOAT_DSCP.getTypeCode()) {
+        } else if (type == TypeTree.FLOAT_DSCP.getTypeCode()) {
             return "F";
-        } else if (type == Constants.BOOLEAN_DSCP.getTypeCode()) {
+        } else if (type == TypeTree.BOOLEAN_DSCP.getTypeCode()) {
             return "Z";
-        } else if (type == Constants.VOID_DSCP.getTypeCode()) {
+        } else if (type == TypeTree.VOID_DSCP.getTypeCode()) {
             return "V";
-        } else if (type == Constants.STRING_DSCP.getTypeCode()) {
+        } else if (type == TypeTree.STRING_DSCP.getTypeCode()) {
             return "Ljava/lang/String;";
         }
         throw new RuntimeException(type + " is not a primitive type");
@@ -106,6 +105,22 @@ public class Utility {
         return methodDescriptor.toString();
     }
 
+    /**
+     * create a string which represent method call with passed arguments to it
+     * @param functionName name of function
+     * @param parameters parameters passed for method call
+     * @return string which represent method call: function(parm1, parm2, ...)
+     */
+    public static String createMethodCallDescriptor(String functionName, List<Expression> parameters) {
+        StringBuilder methodCallDescriptor = new StringBuilder(functionName).append("(");
+        if (parameters != null) {
+            for (Expression parameter : parameters)
+                methodCallDescriptor.append(parameter.getResultType().getName());
+        }
+        methodCallDescriptor.append(")");
+        return methodCallDescriptor.toString();
+    }
+
     public static String createArgumentDescriptor(List<Argument> arguments) {
         StringBuilder argumentDescriptor = new StringBuilder("(");
         if (arguments != null) {
@@ -115,36 +130,4 @@ public class Utility {
         argumentDescriptor.append(")");
         return argumentDescriptor.toString();
     }
-
-//    public static int checkType(int type1, int type2) {
-//        if (type1 != type2)
-//            throw new TypeMismatchException(type1 + " doesn't match with " + type2);
-//        return type1;
-////        if (type1.equals(Integer.class)) {
-////            if (type2.equals(Double.class) || type2.equals(Float.class) ||
-////                    type2.equals(Long.class) || type2.equals(Integer.class))
-////                return type2;
-////        } else if (type1.equals(Long.class)) {
-////            if (type2.equals(Double.class) || type2.equals(Float.class) ||
-////                    type2.equals(Long.class))
-////                return type2;
-////            else if (type2.equals(Integer.class))
-////                return type1;
-////        } else if (type1.equals(Float.class)) {
-////            if (type2.equals(Double.class) || type2.equals(Float.class))
-////                return type2;
-////            else if (type2.equals(Integer.class) || type2.equals(Long.class))
-////                return type1;
-////        } else if (type1.equals(Double.class)) {
-////            if (type2.equals(Double.class))
-////                return type2;
-////            else if (type2.equals(Integer.class) || type2.equals(Long.class) ||
-////                    type2.equals(Float.class))
-////                return type1;
-////        } else if (type1.equals(String.class)) {
-////            if (type2.equals(String.class))
-////                return String.class;
-////        }
-////        throw new TypeMismatchException();
-//    }
 }

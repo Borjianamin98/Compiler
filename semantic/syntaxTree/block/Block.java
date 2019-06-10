@@ -1,28 +1,22 @@
 package semantic.syntaxTree.block;
 
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.MethodVisitor;
-import semantic.syntaxTree.Node;
-import semantic.syntaxTree.statement.Statement;
+import semantic.syntaxTree.BlockCode;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Block extends Node {
-    private List<Statement> statements;
+public class Block {
+    private List<BlockCode> blockCodes;
 
     public Block() {
-        this.statements = new ArrayList<>();
+        this.blockCodes = new ArrayList<>();
     }
 
-    public void addStatement(Statement statement) {
-        statements.add(statement);
+    public void addBlockCode(BlockCode blockCode) {
+        blockCodes.add(blockCode);
     }
 
-    @Override
-    public void generateCode(ClassVisitor cv, MethodVisitor mv) {
-        for (Statement statement : statements) {
-            statement.generateCode(cv, mv);
-        }
+    public List<BlockCode> getBlockCodes() {
+        return blockCodes;
     }
 }

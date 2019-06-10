@@ -1,8 +1,7 @@
 package semantic.syntaxTree.statement.assignment;
 
 import semantic.syntaxTree.expression.Expression;
-import semantic.syntaxTree.identifier.SimpleVariable;
-import semantic.syntaxTree.identifier.Variable;
+import semantic.syntaxTree.expression.identifier.Variable;
 import semantic.syntaxTree.statement.Statement;
 
 public abstract class Assignment extends Statement {

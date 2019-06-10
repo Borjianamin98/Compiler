@@ -9,30 +9,34 @@ import semantic.symbolTable.SymbolTable;
 import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.hastype.VariableDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
+import semantic.syntaxTree.declaration.method.MethodDCL;
+import semantic.syntaxTree.program.ClassDCL;
 
 import java.util.Optional;
 
 public class VariableDCL extends Declaration {
+    private String type;
+    private TypeDSCP typeDSCP;
     private boolean initialized;
 
     public VariableDCL(String name, String type, boolean isConstant, boolean initialized) {
-        super(name, type, isConstant);
+        super(name, isConstant);
+        this.type = type;
         this.initialized = initialized;
     }
 
-    @Override
     public TypeDSCP getTypeDSCP() {
         if (typeDSCP == null) {
-            Optional<DSCP> fetchedDSCP = Display.find(getType());
+            Optional<DSCP> fetchedDSCP = Display.find(type);
             if (!fetchedDSCP.isPresent() || !(fetchedDSCP.get() instanceof TypeDSCP))
-                throw new SymbolNotFoundException("Type " + getType() + " not found");
+                throw new SymbolNotFoundException("Type " + type + " not found");
             typeDSCP = (TypeDSCP) fetchedDSCP.get();
         }
         return typeDSCP;
     }
 
     @Override
-    public void generateCode(ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
         // Only check current block table
         // otherwise this declaration shadows other declarations
         SymbolTable top = Display.top();
