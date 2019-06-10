@@ -76,8 +76,8 @@ precedence left PLUS, MINUS;
 precedence left MULTIPLY, DIVIDE, MOD;
 precedence left UNARY_MINUS;
 precedence right BITWISE_NOT, NOT;
-precedence right MINUSMINUS, PLUSPLUS;
-precedence left MINUSMINUS_POSTFIX, PLUSPLUS_POSTFIX;
+precedence nonassoc MINUSMINUS, PLUSPLUS;
+precedence nonassoc MINUSMINUS_POSTFIX, PLUSPLUS_POSTFIX;
 
 /* The grammar */
 start with expr;
@@ -188,7 +188,17 @@ statement       ::= assignment SEMICOLON
 
 assignment      ::= simpleVariable assign_mark expr;
 
-assign_mark     ::= DIRECT_ASSIGN | SUM_ASSIGN | DIFF_ASSIGN | MULT_ASSIGN | DIVIDE_ASSIGN | MOD_ASSIGN;
+assign_mark     ::= DIRECT_ASSIGN
+                    |
+                    SUM_ASSIGN
+                    |
+                    DIFF_ASSIGN
+                    |
+                    MULT_ASSIGN
+                    |
+                    DIVIDE_ASSIGN
+                    |
+                    MOD_ASSIGN;
 
 method_cal      ::= IDENTIFIER LPAREN parameters RPAREN
                     {: System.out.println("method call"); :}
@@ -289,6 +299,14 @@ expr            ::= expr:e1 PLUS expr:e2
                     simpleVariable
                     {: System.out.println("simpleVariable"); :}
                     |
+                    MINUSMINUS simpleVariable
+                    |
+                    PLUSPLUS simpleVariable
+                    |
+                    simpleVariable MINUSMINUS %prec MINUSMINUS_POSTFIX
+                    |
+                    simpleVariable PLUSPLUS %prec PLUSPLUS_POSTFIX
+                    |
                     method_cal
                     {: System.out.println("method call"); :}
                     |
@@ -320,19 +338,11 @@ baseType            ::= INT
                     | IDENTIFIER:name
                     ;
 
-simpleVariable        ::= IDENTIFIER
+simpleVariable      ::= IDENTIFIER
                     |
                     IDENTIFIER array_part
                     |
                     simpleVariable DOT IDENTIFIER
-                    |
-                    MINUSMINUS simpleVariable
-                    |
-                    PLUSPLUS simpleVariable
-                    |
-                    simpleVariable MINUSMINUS %prec MINUSMINUS_POSTFIX
-                    |
-                    simpleVariable PLUSPLUS %prec PLUSPLUS_POSTFIX
                     ;
 
 array_part      ::= LBRACKET expr RBRACKET

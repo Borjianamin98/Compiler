@@ -2,23 +2,20 @@ import java_cup.runtime.ComplexSymbolFactory;
 import org.objectweb.asm.Opcodes;
 import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.VariableDCL;
-import semantic.syntaxTree.declaration.method.Argument;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.declaration.method.StartMethodDCL;
-import semantic.syntaxTree.expression.Expression;
-import semantic.syntaxTree.expression.ScannerFunction;
-import semantic.syntaxTree.expression.call.MethodCall;
-import semantic.syntaxTree.expression.instance.NewArrayInstruction;
-import semantic.syntaxTree.expression.operation.Not;
-import semantic.syntaxTree.expression.operation.arithmetic.Plus;
+import semantic.syntaxTree.declaration.record.Field;
+import semantic.syntaxTree.declaration.record.RecordTypeDCL;
 import semantic.syntaxTree.expression.constValue.IntegerConst;
-import semantic.syntaxTree.expression.constValue.StringConst;
 import semantic.syntaxTree.expression.identifier.SimpleVariable;
+import semantic.syntaxTree.expression.instance.NewRecordInstruction;
+import semantic.syntaxTree.expression.operation.unary.MinusMinusPrefix;
+import semantic.syntaxTree.expression.operation.unary.PlusPlusPostfix;
+import semantic.syntaxTree.expression.operation.unary.PlusPlusPrefix;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.syntaxTree.statement.PrintFunction;
 import semantic.syntaxTree.statement.assignment.DirectAssignment;
 import semantic.syntaxTree.statement.controlflow.ReturnStatement;
-import semantic.syntaxTree.statement.controlflow.ifelse.IfElseThen;
 import semantic.typeTree.TypeTree;
 
 import java.io.IOException;
@@ -129,10 +126,13 @@ public class Main implements Opcodes {
 //        parms.add(new NewArrayInstruction(TypeTree.LONG_NAME, dims));
 //        body.addBlockCode(new MethodCall("test", parms));
 
-        body.addBlockCode(new VariableDCL("a", TypeTree.STRING_NAME, false, false));
+        List<Field> fields = new ArrayList<>();
+        fields.add(new Field("x", TypeTree.INTEGER_NAME, 2, false, false));
+        body.addBlockCode(new RecordTypeDCL("A", fields));
+        body.addBlockCode(new VariableDCL("a", "A", false, false));
 //        body.addBlockCode(new ScannerFunction(TypeTree.INTEGER_DSCP));
-        body.addBlockCode(new DirectAssignment(new SimpleVariable("a"), new ScannerFunction()));
-        body.addBlockCode(new PrintFunction(new SimpleVariable("a")));
+        body.addBlockCode(new DirectAssignment(new SimpleVariable("a"), new NewRecordInstruction("A")));
+        body.addBlockCode(new PrintFunction(new MinusMinusPrefix(new SimpleVariable("a"))));
 
         body.addBlockCode(new ReturnStatement());
         ClassDCL clazz = new ClassDCL("Tester", null, methodDCLS, null);

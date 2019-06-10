@@ -1,4 +1,4 @@
-package semantic.syntaxTree.expression.operation;
+package semantic.syntaxTree.expression.operation.unary;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;

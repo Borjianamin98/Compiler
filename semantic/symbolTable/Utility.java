@@ -9,6 +9,10 @@ import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.Argument;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
+import semantic.syntaxTree.expression.constValue.DoubleConst;
+import semantic.syntaxTree.expression.constValue.FloatConst;
+import semantic.syntaxTree.expression.constValue.IntegerConst;
+import semantic.syntaxTree.expression.constValue.LongConst;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.typeTree.TypeTree;
 
@@ -206,5 +210,28 @@ public class Utility {
             mv.visitJumpInsn(org.objectweb.asm.Opcodes.IFEQ, trueJumpLabel);
         } else
             throw new RuntimeException("Invalid boolean expression: " + booleanExpr.getResultType().getName());
+    }
+
+    /**
+     * create a expression which is a constant with requested value
+     * @param type type of expression
+     * @param value value of expression
+     * @return expression of type with constant value
+     * @throws IllegalArgumentException if value is not zero (0) or one (1)
+     *                                  or type is not a primitive type (except void and string type)
+     */
+    public static Expression getSimpleConstant(TypeDSCP type, int value) {
+        if (value != 0 && value != 1)
+            throw new IllegalArgumentException("Value must be 0 or 1");
+        if (type.getTypeCode() == TypeTree.INTEGER_DSCP.getTypeCode())
+            return new IntegerConst(value);
+        else if (type.getTypeCode() == TypeTree.LONG_DSCP.getTypeCode()) {
+            return new LongConst(value);
+        } else if (type.getTypeCode() == TypeTree.FLOAT_DSCP.getTypeCode()) {
+            return new FloatConst(value);
+        } else if (type.getTypeCode() == TypeTree.DOUBLE_DSCP.getTypeCode()) {
+            return new DoubleConst(value);
+        } else
+            throw new IllegalArgumentException("Type must be a primitive type: " + type.getConventionalName());
     }
 }
