@@ -35,6 +35,12 @@ public class TypeTree {
         typeMapping.put(BOOLEAN_DSCP, new TypeNode(typeMapping.get(INTEGER_DSCP), BOOLEAN_DSCP));
     }
 
+    /**
+     * @param type1 type 1
+     * @param type2 type 2
+     * @return top type which type1 and type2 can be converted (widened) to it, otherwise throw exception
+     * @throws RuntimeException
+     */
     public static TypeDSCP max(TypeDSCP type1, TypeDSCP type2) {
         if (type1.getTypeCode() == type2.getTypeCode())
             return type1;
@@ -89,5 +95,18 @@ public class TypeTree {
 
     private static void throwIncompatibleTypeException(TypeDSCP type1, TypeDSCP type2) {
         throw new RuntimeException("Incompatible types: " + type2.getName() + " cannot be converted to " + type1.getName());
+    }
+
+    public static boolean isString(TypeDSCP type) {
+        return type.getTypeCode() == STRING_DSCP.getTypeCode();
+    }
+
+    /**
+     * check type is integer or long
+     * @param type type
+     * @return true if type is integer or long
+     */
+    public static boolean isInteger(TypeDSCP type) {
+        return type.getTypeCode() == INTEGER_DSCP.getTypeCode() || type.getTypeCode() == LONG_DSCP.getTypeCode();
     }
 }

@@ -4,20 +4,20 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import semantic.exception.DuplicateDeclarationException;
+import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
 import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.MethodDSCP;
+import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.BlockCode;
-import semantic.syntaxTree.Node;
 import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.ArrayDCL;
 import semantic.syntaxTree.declaration.Declaration;
 import semantic.syntaxTree.declaration.VariableDCL;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.syntaxTree.statement.Statement;
 import semantic.syntaxTree.statement.controlflow.BreakStatement;
 import semantic.syntaxTree.statement.controlflow.ContinueStatement;
 import semantic.syntaxTree.statement.controlflow.ReturnStatement;
@@ -26,17 +26,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class MethodDCL extends Node {
+public class MethodDCL extends Declaration {
     private String owner;
-    private String name;
+    private MethodDSCP typeDSCP;
     private TypeDSCP returnType;
     private Block body;
     private List<Argument> arguments;
     private boolean isStatic;
 
     public MethodDCL(String owner, String name, List<Argument> arguments, Block body, boolean isStatic) {
+        super(name, false);
         this.owner = owner;
-        this.name = name;
         this.body = body;
         this.arguments = arguments;
         this.isStatic = isStatic;
@@ -49,10 +49,6 @@ public class MethodDCL extends Node {
 
     public boolean hasReturn() {
         return returnType != null;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public String getOwner() {
@@ -70,15 +66,15 @@ public class MethodDCL extends Node {
     @Override
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
         SymbolTable top = Display.top();
-        Optional<DSCP> fetchedDSCP = Display.find(name);
+        Optional<DSCP> fetchedDSCP = Display.find(getName());
         MethodDSCP methodDSCP;
         if (fetchedDSCP.isPresent()) {
             if (!(fetchedDSCP.get() instanceof MethodDSCP))
-                throw new DuplicateDeclarationException("Function " + name + " declared more than one time");
+                throw new DuplicateDeclarationException("Function " + getName() + " declared more than one time");
             methodDSCP = (MethodDSCP) fetchedDSCP.get();
         } else {
-            methodDSCP = new MethodDSCP(owner, name, returnType);
-            top.addSymbol(name, methodDSCP);
+            methodDSCP = new MethodDSCP(owner, getName(), returnType);
+            top.addSymbol(getName(), methodDSCP);
         }
 
         methodDSCP.addArguments(arguments == null ? new ArrayList<>() : arguments);
@@ -86,7 +82,7 @@ public class MethodDCL extends Node {
         // Generate Code
         int access = Opcodes.ACC_PUBLIC;
         access |= isStatic ? Opcodes.ACC_STATIC : 0;
-        MethodVisitor methodVisitor = cv.visitMethod(access, name, getDescriptor(), null, null);
+        MethodVisitor methodVisitor = cv.visitMethod(access, getName(), getDescriptor(), null, null);
         methodVisitor.visitCode();
 
         // Add function symbol table

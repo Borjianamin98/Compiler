@@ -1,22 +1,17 @@
 import java_cup.runtime.ComplexSymbolFactory;
-import org.objectweb.asm.*;
+import org.objectweb.asm.Opcodes;
 import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.VariableDCL;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.declaration.method.StartMethodDCL;
-import semantic.syntaxTree.expression.binaryOperation.conditional.And;
-import semantic.syntaxTree.expression.binaryOperation.conditional.Equal;
-import semantic.syntaxTree.expression.binaryOperation.conditional.Less;
-import semantic.syntaxTree.expression.binaryOperation.conditional.NotEqual;
-import semantic.syntaxTree.expression.constValue.DoubleConst;
-import semantic.syntaxTree.expression.constValue.FloatConst;
+import semantic.syntaxTree.declaration.record.RecordTypeDCL;
+import semantic.syntaxTree.expression.binaryOperation.bitwise.BitwiseAnd;
 import semantic.syntaxTree.expression.constValue.IntegerConst;
-import semantic.syntaxTree.expression.constValue.StringConst;
+import semantic.syntaxTree.expression.constValue.LongConst;
 import semantic.syntaxTree.expression.identifier.SimpleVariable;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.syntaxTree.statement.assignment.DirectAssignment;
 import semantic.syntaxTree.statement.controlflow.ReturnStatement;
-import semantic.syntaxTree.statement.controlflow.loop.ForLoop;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -61,11 +56,15 @@ public class Main implements Opcodes {
 //        Plus p2 = new Plus(m2, new IntegerConst(2));
 //        VariableDCL vara = new VariableDCL("a", "double", false, false);
 //        body.addBlockCode(vara);
-        DirectAssignment assignment = new DirectAssignment(new SimpleVariable("a"), new IntegerConst(1));
+        body.addBlockCode(new RecordTypeDCL("A", new ArrayList<>()));
+        body.addBlockCode(new VariableDCL("a", "long", false, false));
+        body.addBlockCode(new VariableDCL("b", "A", false, false));
+        DirectAssignment assignment = new DirectAssignment(new SimpleVariable("a"), new BitwiseAnd(new IntegerConst(1), new LongConst(2)));
+        body.addBlockCode(assignment);
 
-        ForLoop forLoop = new ForLoop(null, new And(new IntegerConst(1), new FloatConst(1.5f)), null, null);
+//        ForLoop forLoop = new ForLoop(null, new And(new FloatConst(1.5f), new StringConst("b")), null, null);
 //        ForLoop forLoop = new ForLoop(null, new NotEqual(new StringConst("a"), new StringConst("b")), null, null);
-        body.addBlockCode(forLoop);
+//        body.addBlockCode(forLoop);
 
         body.addBlockCode(new ReturnStatement());
         ClassDCL clazz = new ClassDCL("Tester", null, methodDCLS, null);

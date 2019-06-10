@@ -47,12 +47,12 @@ public class SimpleField extends Variable {
         getDSCP();
         if (isStatic) {
             value.generateCode(currentClass, currentMethod, cv, mv);
-            TypeTree.widen(mv, value.getResultType(), getResultType()); // right value must be converted to type of variable
+            TypeTree.widen(mv, getResultType(), value.getResultType()); // right value must be converted to type of variable
             mv.visitFieldInsn(Opcodes.PUTSTATIC, owner, name, dscp.getDescriptor());
         } else {
             mv.visitVarInsn(Opcodes.ALOAD, 0); // load "this"
             value.generateCode(currentClass, currentMethod, cv, mv);
-            TypeTree.widen(mv, value.getResultType(), getResultType()); // right value must be converted to type of variable
+            TypeTree.widen(mv, getResultType(), value.getResultType()); // right value must be converted to type of variable
             mv.visitFieldInsn(Opcodes.PUTFIELD, owner, name, dscp.getDescriptor());
         }
     }

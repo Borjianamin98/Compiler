@@ -18,12 +18,15 @@ import semantic.syntaxTree.program.ClassDCL;
 import java.util.Optional;
 
 public class ArrayDCL extends Declaration {
+    private String type;
+    private TypeDSCP typeDSCP;
     private int dimensions;
     private TypeDSCP baseType;
     private boolean initialized;
 
     public ArrayDCL(String name, String type, int dimensions, boolean isConstant, boolean initialized) {
-        super(name, type, isConstant);
+        super(name, isConstant);
+        this.type = type;
         this.dimensions = dimensions;
         this.initialized = initialized;
     }
@@ -32,12 +35,11 @@ public class ArrayDCL extends Declaration {
         return Utility.getDescriptor(getTypeDSCP(), dimensions);
     }
 
-    @Override
     public ArrayTypeDSCP getTypeDSCP() {
         if (typeDSCP == null) {
-            Optional<DSCP> fetchedDSCP = Display.find(getType());
+            Optional<DSCP> fetchedDSCP = Display.find(type);
             if (!fetchedDSCP.isPresent() || !(fetchedDSCP.get() instanceof TypeDSCP))
-                throw new SymbolNotFoundException("Type " + getType() + " not found");
+                throw new SymbolNotFoundException("Type " + type + " not found");
             baseType = (TypeDSCP) fetchedDSCP.get();
             typeDSCP = Utility.addArrayType(baseType, dimensions);
         }
