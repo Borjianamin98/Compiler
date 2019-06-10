@@ -7,7 +7,10 @@ import semantic.syntaxTree.declaration.method.StartMethodDCL;
 import semantic.syntaxTree.declaration.record.Field;
 import semantic.syntaxTree.declaration.record.RecordTypeDCL;
 import semantic.syntaxTree.declaration.record.SimpleFieldDCL;
+import semantic.syntaxTree.expression.Cast;
 import semantic.syntaxTree.expression.Expression;
+import semantic.syntaxTree.expression.constValue.BooleanConst;
+import semantic.syntaxTree.expression.constValue.DoubleConst;
 import semantic.syntaxTree.expression.constValue.IntegerConst;
 import semantic.syntaxTree.expression.identifier.ArrayVariable;
 import semantic.syntaxTree.expression.identifier.MemberVariable;
@@ -132,20 +135,23 @@ public class Main implements Opcodes {
 //        parms.add(new NewArrayInstruction(TypeTree.LONG_NAME, dims));
 //        body.addBlockCode(new MethodCall("test", parms));
 
-        List<Field> fields = new ArrayList<>();
-        List<Expression> dim = new ArrayList<>();
-        dim.add(new IntegerConst(10));
-        fields.add(new Field("x", TypeTree.INTEGER_NAME, 1, new NewArrayInstruction(TypeTree.INTEGER_NAME, dim), false, false));
-        body.addBlockCode(new RecordTypeDCL("A", fields));
-        body.addBlockCode(new VariableDCL("a", "A", false, false));
-//        body.addBlockCode(new ScannerFunction(TypeTree.INTEGER_DSCP));
-        body.addBlockCode(new DirectAssignment(new SimpleVariable("a"), new NewRecordInstruction("A")));
-//        body.addBlockCode(new DirectAssignment(new MemberVariable(new SimpleVariable("a"), "x"), new IntegerConst(1)));
-        body.addBlockCode(new PrintFunction(new PlusPlusPrefix(
-                new ArrayVariable(new MemberVariable(new SimpleVariable("a"), "x"), new IntegerConst(1))
-        )));
+//        List<Field> fields = new ArrayList<>();
+//        List<Expression> dim = new ArrayList<>();
+//        dim.add(new IntegerConst(10));
+//        fields.add(new Field("x", TypeTree.INTEGER_NAME, 1, new NewArrayInstruction(TypeTree.INTEGER_NAME, dim), false, false));
+//        body.addBlockCode(new RecordTypeDCL("A", fields));
+//        body.addBlockCode(new VariableDCL("a", "A", false, false));
+////        body.addBlockCode(new ScannerFunction(TypeTree.INTEGER_DSCP));
+//        body.addBlockCode(new DirectAssignment(new SimpleVariable("a"), new NewRecordInstruction("A")));
+////        body.addBlockCode(new DirectAssignment(new MemberVariable(new SimpleVariable("a"), "x"), new IntegerConst(1)));
+//        body.addBlockCode(new PrintFunction(new PlusPlusPrefix(
+//                new ArrayVariable(new MemberVariable(new SimpleVariable("a"), "x"), new IntegerConst(1))
+//        )));
+//
+//        body.addBlockCode(new SimpleFieldDCL("Tester", "name", TypeTree.STRING_NAME, false, false, true));
 
-        body.addBlockCode(new SimpleFieldDCL("Tester", "name", TypeTree.STRING_NAME, false, false, true));
+        body.addBlockCode(new VariableDCL("a", TypeTree.LONG_NAME, false, false));
+        body.addBlockCode(new DirectAssignment(new SimpleVariable("a"), new Cast(TypeTree.LONG_NAME ,new IntegerConst(2))));
 
         body.addBlockCode(new ReturnStatement());
         ClassDCL clazz = new ClassDCL("Tester", null, methodDCLS, null);

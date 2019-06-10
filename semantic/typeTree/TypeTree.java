@@ -6,11 +6,14 @@ import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.descriptor.type.SimpleTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class TypeTree {
-    private static Map<TypeDSCP, TypeNode> typeMapping = new HashMap<>();
+    /**
+     * a map from each type to its node in widening tree
+     * if a type is not present in tree, it means that type can only converted to same type (nothing else)
+     */
+    private static Map<TypeDSCP, TypeNode> wideningTree = new HashMap<>();
     public static final SimpleTypeDSCP INTEGER_DSCP = new SimpleTypeDSCP(TypeTree.INTEGER_NAME, TypeTree.INTEGER_SIZE);
     public static final SimpleTypeDSCP BOOLEAN_DSCP = new SimpleTypeDSCP(TypeTree.BOOLEAN_NAME, TypeTree.INTEGER_SIZE);
     public static final SimpleTypeDSCP LONG_DSCP = new SimpleTypeDSCP(TypeTree.LONG_NAME, TypeTree.LONG_SIZE);
@@ -37,12 +40,12 @@ public class TypeTree {
     private static final int STRING_SIZE = -1;
 
     static {
-        typeMapping.put(DOUBLE_DSCP, new TypeNode(null, DOUBLE_DSCP, 0));
-        typeMapping.put(FLOAT_DSCP, new TypeNode(typeMapping.get(DOUBLE_DSCP), FLOAT_DSCP));
-        typeMapping.put(LONG_DSCP, new TypeNode(typeMapping.get(FLOAT_DSCP), LONG_DSCP));
-        typeMapping.put(INTEGER_DSCP, new TypeNode(typeMapping.get(LONG_DSCP), INTEGER_DSCP));
-        typeMapping.put(CHAR_DSCP, new TypeNode(typeMapping.get(INTEGER_DSCP), CHAR_DSCP));
-        typeMapping.put(BOOLEAN_DSCP, new TypeNode(typeMapping.get(INTEGER_DSCP), BOOLEAN_DSCP));
+        wideningTree.put(DOUBLE_DSCP, new TypeNode(null, DOUBLE_DSCP, 0));
+        wideningTree.put(FLOAT_DSCP, new TypeNode(wideningTree.get(DOUBLE_DSCP), FLOAT_DSCP));
+        wideningTree.put(LONG_DSCP, new TypeNode(wideningTree.get(FLOAT_DSCP), LONG_DSCP));
+        wideningTree.put(INTEGER_DSCP, new TypeNode(wideningTree.get(LONG_DSCP), INTEGER_DSCP));
+        wideningTree.put(CHAR_DSCP, new TypeNode(wideningTree.get(INTEGER_DSCP), CHAR_DSCP));
+        wideningTree.put(BOOLEAN_DSCP, new TypeNode(wideningTree.get(INTEGER_DSCP), BOOLEAN_DSCP));
     }
 
     /**
@@ -55,8 +58,8 @@ public class TypeTree {
     public static TypeDSCP max(TypeDSCP type1, TypeDSCP type2) {
         if (type1.getTypeCode() == type2.getTypeCode())
             return type1;
-        TypeNode typeNode1 = typeMapping.get(type1);
-        TypeNode typeNode2 = typeMapping.get(type2);
+        TypeNode typeNode1 = wideningTree.get(type1);
+        TypeNode typeNode2 = wideningTree.get(type2);
         if (typeNode1 == null || typeNode2 == null)
             throwIncompatibleTypeException(type1, type2);
         while (typeNode1.getLevel() > typeNode2.getLevel())
@@ -72,9 +75,9 @@ public class TypeTree {
 
     /**
      * generate byte code to convert (widen) type1 to type2
-     *
      * @param type1 real type of operand on top of operand stack
      * @param type2 type to which operand stack will converted (widened)
+     * @throws RuntimeException if type1 can not widen to type2
      */
     public static void widen(MethodVisitor mv, TypeDSCP type1, TypeDSCP type2) {
         if (type1.getTypeCode() == type2.getTypeCode())
@@ -104,8 +107,50 @@ public class TypeTree {
             throwIncompatibleTypeException(type1, type2);
     }
 
+    /**
+     * generate byte code to convert (narrow) type1 to type2
+     * @param type1 real type of operand on top of operand stack
+     * @param type2 type to which operand stack will converted (narrowed)
+     * @throws RuntimeException if type1 can not narrow to type2
+     */
+    public static void narrow(MethodVisitor mv, TypeDSCP type1, TypeDSCP type2) {
+        if (type1.getTypeCode() == type2.getTypeCode())
+            return;
+        if (!type1.isPrimitive() || !type2.isPrimitive())
+            throw new RuntimeException("Narrow cast is only for primitive types: " + type1.getConventionalName() + " and " + type2.getConventionalName());
+        if (type1.getTypeCode() == DOUBLE_DSCP.getTypeCode()) {
+            if (type2.getTypeCode() == FLOAT_DSCP.getTypeCode())
+                mv.visitInsn(Opcodes.D2F);
+            else if (type2.getTypeCode() == LONG_DSCP.getTypeCode())
+                mv.visitInsn(Opcodes.D2L);
+            else if (type2.getTypeCode() == INTEGER_DSCP.getTypeCode() ||
+                    type2.getTypeCode() == CHAR_DSCP.getTypeCode() ||
+                    type2.getTypeCode() == BOOLEAN_DSCP.getTypeCode())
+                mv.visitInsn(Opcodes.D2I);
+            else
+                throwIncompatibleTypeException(type1, type2);
+        } else if (type1.getTypeCode() == FLOAT_DSCP.getTypeCode()) {
+           if (type2.getTypeCode() == LONG_DSCP.getTypeCode())
+                mv.visitInsn(Opcodes.F2L);
+            else if (type2.getTypeCode() == INTEGER_DSCP.getTypeCode() ||
+                    type2.getTypeCode() == CHAR_DSCP.getTypeCode() ||
+                    type2.getTypeCode() == BOOLEAN_DSCP.getTypeCode())
+                mv.visitInsn(Opcodes.F2I);
+            else
+                throwIncompatibleTypeException(type1, type2);
+        } else if (type1.getTypeCode() == LONG_DSCP.getTypeCode()) {
+            if (type2.getTypeCode() == INTEGER_DSCP.getTypeCode() ||
+                    type2.getTypeCode() == CHAR_DSCP.getTypeCode() ||
+                    type2.getTypeCode() == BOOLEAN_DSCP.getTypeCode())
+                mv.visitInsn(Opcodes.F2I);
+            else
+                throwIncompatibleTypeException(type1, type2);
+        } else
+            throwIncompatibleTypeException(type1, type2);
+    }
+
     private static void throwIncompatibleTypeException(TypeDSCP type1, TypeDSCP type2) {
-        throw new RuntimeException("Incompatible types: " + type2.getConventionalName() + " cannot be converted to " + type1.getConventionalName());
+        throw new RuntimeException("Incompatible types: " + type1.getConventionalName() + " cannot be converted to " + type2.getConventionalName());
     }
 
     public static boolean isString(TypeDSCP type) {
@@ -130,8 +175,8 @@ public class TypeTree {
     public static boolean canWiden(TypeDSCP type1, TypeDSCP type2) {
         if (type1.getTypeCode() == type2.getTypeCode())
             return true;
-        TypeNode typeNode1 = typeMapping.get(type1);
-        TypeNode typeNode2 = typeMapping.get(type2);
+        TypeNode typeNode1 = wideningTree.get(type1);
+        TypeNode typeNode2 = wideningTree.get(type2);
         if (typeNode1 == null || typeNode2 == null)
             return false;
         while (typeNode1.getLevel() != 0 && typeNode1.getType().getTypeCode() != type2.getTypeCode()) {
@@ -150,9 +195,9 @@ public class TypeTree {
     public static int diffLevel(TypeDSCP type1, TypeDSCP type2) {
         if (type1.getTypeCode() == type2.getTypeCode())
             return 0;
-        TypeNode typeNode1 = typeMapping.get(type1);
-        TypeNode typeNode2 = typeMapping.get(type2);
-        TypeNode typeNode1Copy = typeMapping.get(type1);
+        TypeNode typeNode1 = wideningTree.get(type1);
+        TypeNode typeNode2 = wideningTree.get(type2);
+        TypeNode typeNode1Copy = wideningTree.get(type1);
         if (typeNode1 == null || typeNode2 == null)
             throwIncompatibleTypeException(type1, type2);
         while (typeNode1.getLevel() != 0 && typeNode1.getType().getTypeCode() != type2.getTypeCode()) {

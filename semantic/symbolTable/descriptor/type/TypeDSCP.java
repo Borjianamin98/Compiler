@@ -4,6 +4,8 @@ import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
 import semantic.typeTree.TypeTree;
 
+import java.util.Objects;
+
 public abstract class TypeDSCP extends DSCP {
     private int typeCode;
     private int size;
@@ -68,5 +70,18 @@ public abstract class TypeDSCP extends DSCP {
         else
             convName.insert(0, name.substring(1, name.length() - 1)); // name is like: L(type);
         return convName.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TypeDSCP typeDSCP = (TypeDSCP) o;
+        return typeCode == typeDSCP.typeCode;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(typeCode);
     }
 }
