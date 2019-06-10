@@ -110,5 +110,49 @@ public class TypeTree {
         return type.getTypeCode() == INTEGER_DSCP.getTypeCode() || type.getTypeCode() == LONG_DSCP.getTypeCode();
     }
 
-    
+    /**
+     * check whether type1 can be converted (widened) to type2
+     * @param type1 type1
+     * @param type2 type2
+     * @return true if convert (widen) can happen
+     */
+    public static boolean canWiden(TypeDSCP type1, TypeDSCP type2) {
+        if (type1.getTypeCode() == type2.getTypeCode())
+            return true;
+        TypeNode typeNode1 = typeMapping.get(type1);
+        TypeNode typeNode2 = typeMapping.get(type2);
+        if (typeNode1 == null || typeNode2 == null)
+            return false;
+        while (typeNode1.getLevel() != 0 && typeNode1.getType().getTypeCode() != type2.getTypeCode()) {
+            typeNode1 = typeNode1.getParent();
+        }
+        return typeNode1.getType().getTypeCode() == type2.getTypeCode();
+    }
+
+    /**
+     * return level difference of two type in tree (0 if two type are equal)
+     * @param type1 type1
+     * @param type2 type2
+     * @return level(type2) - level(type1)
+     * @throws RuntimeException if type1 can not converted (widened) to type2
+     */
+    public static int diffLevel(TypeDSCP type1, TypeDSCP type2) {
+        if (type1.getTypeCode() == type2.getTypeCode())
+            return 0;
+        TypeNode typeNode1 = typeMapping.get(type1);
+        TypeNode typeNode2 = typeMapping.get(type2);
+        TypeNode typeNode1Copy = typeMapping.get(type1);
+        if (typeNode1 == null || typeNode2 == null)
+            throwIncompatibleTypeException(type1, type2);
+        while (typeNode1.getLevel() != 0 && typeNode1.getType().getTypeCode() != type2.getTypeCode()) {
+            typeNode1 = typeNode1.getParent();
+        }
+        if (typeNode1.getType().getTypeCode() == type2.getTypeCode())
+            return typeNode1Copy.getLevel() - typeNode2.getLevel();
+        else
+            throwIncompatibleTypeException(type1, type2);
+        throw new AssertionError("doesn't happen");
+    }
+
+
 }

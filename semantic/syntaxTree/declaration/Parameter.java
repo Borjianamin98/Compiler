@@ -51,9 +51,13 @@ public class Parameter {
     }
 
     public TypeDSCP getType() {
-        Optional<DSCP> typeDSCP = Display.find(getDescriptor());
+        Optional<DSCP> typeDSCP;
+        if (getBaseTypeDSCP().isPrimitive() && !isArray())
+            typeDSCP = Display.find(getBaseTypeDSCP().getName());
+        else
+            typeDSCP = Display.find(getDescriptor());
         if (!typeDSCP.isPresent() || !(typeDSCP.get() instanceof TypeDSCP))
-            throw new SymbolNotFoundException(baseType + " is not declared");
+            throw new SymbolNotFoundException(getDescriptor() + " is not declared");
         return ((TypeDSCP) typeDSCP.get());
     }
 }

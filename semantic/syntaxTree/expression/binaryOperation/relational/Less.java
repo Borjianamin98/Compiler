@@ -7,12 +7,8 @@ import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
-import semantic.syntaxTree.expression.MethodCall;
-import semantic.syntaxTree.expression.binaryOperation.BinaryOperation;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.typeTree.TypeTree;
-
-import java.lang.reflect.Method;
 
 public class Less extends Relational {
 

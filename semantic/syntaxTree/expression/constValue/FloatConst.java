@@ -24,7 +24,7 @@ public class FloatConst extends Expression {
     @Override
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
         if (Float.compare(value, 0) == 0 || Float.compare(value, 1) == 0 || Float.compare(value, 2) == 0)
-            mv.visitInsn(Utility.getOpcode("F", "CONST", "_" + value));
+            mv.visitInsn(Utility.getOpcode("F", "CONST", "_" + (int)value));
         else
             mv.visitLdcInsn(value);
     }

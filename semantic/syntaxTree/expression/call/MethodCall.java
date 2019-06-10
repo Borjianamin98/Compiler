@@ -1,4 +1,4 @@
-package semantic.syntaxTree.expression;
+package semantic.syntaxTree.expression.call;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -12,9 +12,11 @@ import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.BlockCode;
 import semantic.syntaxTree.declaration.method.Argument;
 import semantic.syntaxTree.declaration.method.MethodDCL;
+import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.typeTree.TypeTree;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -55,22 +57,37 @@ public class MethodCall extends Expression implements BlockCode {
     @Override
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
         getTypeDSCP();
-        // TODO Choose best overloading method
         List<List<Argument>> argumentsDSCP = getTypeDSCP().getAllArguments();
         List<List<Argument>> collectedArguments = argumentsDSCP.stream().filter(arguments -> arguments.size() == parameters.size()).collect(Collectors.toList());
         if (collectedArguments.isEmpty())
-            throw new RuntimeException(String.format("No suitable method found for %s\n  actual and formal argument lists differ in length",
+            throw new RuntimeException(String.format("No suitable method found for %s: actual and formal argument lists differ in length",
                     getMethodUserDescriptor()));
+        List<MethodRank> methodRanks = new ArrayList<>();
+        outer:
+        for (int indexOfOverload = 0; indexOfOverload < collectedArguments.size(); indexOfOverload++) {
+            MethodRank methodRank = new MethodRank(collectedArguments.get(indexOfOverload), indexOfOverload);
+            for (int i = 0; i < parameters.size(); i++) {
+                TypeDSCP parameterType = parameters.get(i).getResultType();
+                TypeDSCP argumentType = collectedArguments.get(indexOfOverload).get(i).getType();
+                if (TypeTree.canWiden(parameterType, argumentType)) {
+                    methodRank.addSumOfDiffLevel(TypeTree.diffLevel(parameterType, argumentType));
+                } else
+                    continue outer;
+            }
+            methodRanks.add(methodRank);
+        }
+        if (methodRanks.isEmpty())
+            throw new RuntimeException(String.format("No suitable method found for %s: argument mismatch", getMethodUserDescriptor()));
+        methodRanks.sort(MethodRank.comparator);
 
-//        if (parameters.size() != argumentsDSCP.size())
-//            throw new RuntimeException("There is no method " + methodName + " with " + parameters.size() + " arguments");
+        int indexOfOverloadMethod = methodRanks.get(0).getOverloadMethodIndex(); // method which is chosen
+        List<Argument> overloadMethodArguments = methodRanks.get(0).getArguments(); // method which is chosen
         for (int i = 0; i < parameters.size(); i++) {
             Expression parameter = parameters.get(i);
             parameter.generateCode(currentClass, currentMethod, cv, mv);
-//            if (parameter.getResultType().getTypeCode() != argumentsDSCP.get(i).getBaseType().getTypeCode())
-//                throw new TypeMismatchException((i + 1) + "-th parameter (" + parameter.getResultType().getDescriptor() + ") doesn't match with "
-//                        + (i + 1) + "-th argument (" + argumentsDSCP.get(i).getBaseType().getDescriptor() + ") of " + methodName);
+            TypeTree.widen(mv, parameter.getResultType(), overloadMethodArguments.get(i).getType());
         }
-        mv.visitMethodInsn(Opcodes.INVOKESTATIC, getTypeDSCP().getOwner(), getTypeDSCP().getName(), methodDSCP.getDescriptor(0), false);
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, getTypeDSCP().getOwner(), getTypeDSCP().getName(),
+                methodDSCP.getDescriptor(indexOfOverloadMethod), false);
     }
 }

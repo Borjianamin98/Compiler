@@ -24,7 +24,7 @@ public class DoubleConst extends Expression {
     @Override
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
         if (Double.compare(value, 0) == 0 || Double.compare(value, 1) == 0)
-            mv.visitInsn(Utility.getOpcode("D", "CONST", "_" + value));
+            mv.visitInsn(Utility.getOpcode("D", "CONST", "_" + (int)value));
         else
             mv.visitLdcInsn(value);
     }

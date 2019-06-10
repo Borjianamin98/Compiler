@@ -1,18 +1,13 @@
 import java_cup.runtime.ComplexSymbolFactory;
 import org.objectweb.asm.Opcodes;
 import semantic.syntaxTree.block.Block;
-import semantic.syntaxTree.declaration.VariableDCL;
+import semantic.syntaxTree.declaration.method.Argument;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.declaration.method.StartMethodDCL;
-import semantic.syntaxTree.declaration.record.RecordTypeDCL;
 import semantic.syntaxTree.expression.Expression;
-import semantic.syntaxTree.expression.MethodCall;
-import semantic.syntaxTree.expression.binaryOperation.bitwise.BitwiseAnd;
+import semantic.syntaxTree.expression.call.MethodCall;
 import semantic.syntaxTree.expression.constValue.IntegerConst;
-import semantic.syntaxTree.expression.constValue.LongConst;
-import semantic.syntaxTree.expression.identifier.SimpleVariable;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.syntaxTree.statement.assignment.DirectAssignment;
 import semantic.syntaxTree.statement.controlflow.ReturnStatement;
 
 import java.io.IOException;
@@ -64,13 +59,31 @@ public class Main implements Opcodes {
 //        DirectAssignment assignment = new DirectAssignment(new SimpleVariable("a"), new BitwiseAnd(new IntegerConst(1), new LongConst(2)));
 //        body.addBlockCode(assignment);
 
-        Block bodyM = new Block();
-        bodyM.addBlockCode(new ReturnStatement());
-        body.addBlockCode(new MethodDCL("Tester", "test", null, bodyM, true));
+        Block bodyM1 = new Block();
+        bodyM1.addBlockCode(new ReturnStatement());
+        List<Argument> argsM1 = new ArrayList<>();
+        argsM1.add(new Argument("x", "float", 0));
+        argsM1.add(new Argument("y", "int", 0));
+        body.addBlockCode(new MethodDCL("Tester", "test", argsM1, bodyM1, true));
+
+        Block bodyM2 = new Block();
+        bodyM2.addBlockCode(new ReturnStatement());
+        List<Argument> argsM2 = new ArrayList<>();
+        argsM2.add(new Argument("x", "long", 0));
+        argsM2.add(new Argument("y", "long", 0));
+        body.addBlockCode(new MethodDCL("Tester", "test", argsM2, bodyM2, true));
+
+        Block bodyM3 = new Block();
+        bodyM3.addBlockCode(new ReturnStatement());
+        List<Argument> argsM3 = new ArrayList<>();
+        argsM3.add(new Argument("x", "int", 0));
+        argsM3.add(new Argument("y", "int", 0));
+//        body.addBlockCode(new MethodDCL("Tester", "test", argsM3, bodyM3, true));
 //        ForLoop forLoop = new ForLoop(null, new And(new FloatConst(1.5f), new StringConst("b")), null, null);
 //        ForLoop forLoop = new ForLoop(null, new NotEqual(new StringConst("a"), new StringConst("b")), null, null);
 //        body.addBlockCode(forLoop);
         List<Expression> parms = new ArrayList<>();
+        parms.add(new IntegerConst(1));
         parms.add(new IntegerConst(1));
         body.addBlockCode(new MethodCall("test", parms));
 
