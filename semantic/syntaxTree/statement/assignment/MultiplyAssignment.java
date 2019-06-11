@@ -4,7 +4,7 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
-import semantic.syntaxTree.expression.binaryOperation.arithmetic.Multiply;
+import semantic.syntaxTree.expression.operation.arithmetic.Multiply;
 import semantic.syntaxTree.expression.identifier.Variable;
 import semantic.syntaxTree.program.ClassDCL;
 

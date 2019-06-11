@@ -4,8 +4,8 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import semantic.exception.BooleanExpressionException;
 import semantic.symbolTable.Display;
+import semantic.symbolTable.Utility;
 import semantic.syntaxTree.BlockCode;
 import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.method.MethodDCL;
@@ -15,7 +15,6 @@ import semantic.syntaxTree.statement.Statement;
 import semantic.syntaxTree.statement.controlflow.BreakStatement;
 import semantic.syntaxTree.statement.controlflow.ContinueStatement;
 import semantic.syntaxTree.statement.controlflow.ReturnStatement;
-import semantic.typeTree.TypeTree;
 
 public class RepeatUntil extends Statement {
     private Expression condition;
@@ -49,21 +48,10 @@ public class RepeatUntil extends Statement {
         }
         Display.pop();
 
+        // generate condition
         mv.visitLabel(conditionLabel);
-        condition.generateCode(currentClass, currentMethod, cv, mv);
-        int resultTypeCode = condition.getResultType().getTypeCode();
-        if (resultTypeCode == TypeTree.INTEGER_DSCP.getTypeCode()) {
-            // condition can be type int
-        } else if (resultTypeCode == TypeTree.LONG_DSCP.getTypeCode() ||
-                resultTypeCode == TypeTree.FLOAT_DSCP.getTypeCode() ||
-                resultTypeCode == TypeTree.DOUBLE_DSCP.getTypeCode() ||
-                resultTypeCode == TypeTree.CHAR_DSCP.getTypeCode() ||
-                resultTypeCode == TypeTree.STRING_DSCP.getTypeCode()) {
-            // TODO handle string like python
-        } else {
-            throw new BooleanExpressionException();
-        }
-        mv.visitJumpInsn(Opcodes.IFNE, bodyLabel);
+        Utility.evaluateBooleanExpressionTrue(currentClass, currentMethod, cv, mv, condition, bodyLabel);
+
         mv.visitLabel(outLabel);
     }
 }

@@ -2,8 +2,6 @@ package semantic.syntaxTree.expression.identifier;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
-import semantic.exception.IllegalTypeException;
-import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
@@ -29,50 +27,69 @@ public class ArrayVariable extends Variable {
     private RecordTypeDSCP parentRecordDSCP;
 
     public ArrayVariable(Variable parent, Expression requestedDimension) {
+        super(parent.getChainName() + "[]");
         this.parent = parent;
         this.requestedDimension = requestedDimension;
 
     }
 
     @Override
-    public void assignValue(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Expression value) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
         getDSCP();
+        if (!getDSCP().isInitialized())
+            throw new RuntimeException(String.format("Variable %s might not have been initialized", getChainName()));
+
         parent.generateCode(currentClass, currentMethod, cv, mv);
+
         requestedDimension.generateCode(currentClass, currentMethod, cv, mv);
-        value.generateCode(currentClass, currentMethod, cv, mv);
-        TypeTree.widen(mv, getResultType(), value.getResultType()); // right value must be converted to type of variable
-        mv.visitInsn(Utility.getOpcode(arrayTypeDSCP.getInternalType().getTypeCode(), "ASTORE"));
+        TypeTree.widen(mv, requestedDimension.getResultType(), TypeTree.INTEGER_DSCP);
+
+        mv.visitInsn(Utility.getOpcode(arrayTypeDSCP.getInternalType(), "ALOAD"));
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void assignValue(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Expression value) {
         getDSCP();
+        if (getDSCP().isConstant() && getDSCP().isInitialized())
+            throw new RuntimeException(String.format("Cannot assign a value to const variable %s. Variable %s already have been assigned",
+                    getChainName(), getChainName()));
+
         parent.generateCode(currentClass, currentMethod, cv, mv);
+
         requestedDimension.generateCode(currentClass, currentMethod, cv, mv);
-        mv.visitInsn(Utility.getOpcode(arrayTypeDSCP.getInternalType().getTypeCode(), "ALOAD"));
+        TypeTree.widen(mv, requestedDimension.getResultType(), TypeTree.INTEGER_DSCP);
+
+        value.generateCode(currentClass, currentMethod, cv, mv);
+        TypeTree.widen(mv, value.getResultType(), getResultType()); // right value must be converted to type of variable
+
+        mv.visitInsn(Utility.getOpcode(arrayTypeDSCP.getInternalType(), "ASTORE"));
+        getDSCP().setInitialized(true);
     }
 
     @Override
     public HasTypeDSCP getDSCP() {
         if (dscp == null) {
-            if (!(parent.getDSCP().getType() instanceof ArrayTypeDSCP))
-                throw new IllegalTypeException("Variable " + parent.getDSCP().getName() + " is not a array");
-            arrayTypeDSCP = (ArrayTypeDSCP) parent.getDSCP().getType();
+            // handle index subscription for array type
+            if (parent.getDSCP().getType() instanceof ArrayTypeDSCP) {
+                arrayTypeDSCP = (ArrayTypeDSCP) parent.getDSCP().getType();
 
-            if (parent instanceof MemberVariable)
-                parentRecordDSCP = ((MemberVariable) parent).getRecordTypeDSCP();
-            else if (parent instanceof ArrayVariable)
-                parentRecordDSCP = ((ArrayVariable) parent).parentRecordDSCP;
+                if (parent instanceof MemberVariable)
+                    parentRecordDSCP = ((MemberVariable) parent).getRecordTypeDSCP();
+                else if (parent instanceof ArrayVariable)
+                    parentRecordDSCP = ((ArrayVariable) parent).parentRecordDSCP;
 
-            Optional<DSCP> fetchedDSCP;
-            if (parentRecordDSCP == null)
-                fetchedDSCP = Display.find(parent.getDSCP().getName() + "[]");
-            else
-                fetchedDSCP = parentRecordDSCP.find(parent.getDSCP().getName() + "[]");
+                Optional<DSCP> fetchedDSCP;
+                if (parentRecordDSCP == null)
+                    fetchedDSCP = Display.find(parent.getDSCP().getName() + "[]");
+                else
+                    fetchedDSCP = parentRecordDSCP.find(parent.getDSCP().getName() + "[]");
 
-            if (!fetchedDSCP.isPresent() || !(fetchedDSCP.get() instanceof HasTypeDSCP))
-                throw new SymbolNotFoundException(parent.getDSCP().getName() + "[]" + " is not declared");
-            dscp = (HasTypeDSCP) fetchedDSCP.get();
+                if (!fetchedDSCP.isPresent() || !(fetchedDSCP.get() instanceof HasTypeDSCP))
+                    throw new RuntimeException(parent.getDSCP().getName() + "[]" + " is not declared");
+                dscp = (HasTypeDSCP) fetchedDSCP.get();
+            } else
+                throw new RuntimeException("Call subscript is only for array: " + parent.getChainName());
+
         }
         return dscp;
     }

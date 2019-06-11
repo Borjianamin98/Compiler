@@ -4,7 +4,6 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import semantic.exception.DuplicateDeclarationException;
 import semantic.symbolTable.Display;
 import semantic.syntaxTree.Node;
 import semantic.syntaxTree.declaration.Declaration;
@@ -99,7 +98,7 @@ public class ClassDCL extends Node {
 
         // Update symbol table
         if (Display.find(name).isPresent()) {
-            throw new DuplicateDeclarationException("Identifier " + name + " declared more than one time");
+            throw new RuntimeException("Identifier " + name + " declared more than one time");
         }
     }
 }

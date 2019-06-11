@@ -13,7 +13,8 @@ public class ParserSym {
   public static final int BOOL = 34;
   public static final int MOD_ASSIGN = 51;
   public static final int CONST = 69;
-  public static final int BOOL_CONST = 73;
+  public static final int BOOL_CONST = 74;
+  public static final int FLOAT_CONST = 73;
   public static final int UNTIL = 65;
   public static final int BITWISE_OR = 9;
   public static final int SIZEOF = 68;
@@ -22,16 +23,16 @@ public class ParserSym {
   public static final int RPAREN = 23;
   public static final int UNARY_MINUS = 21;
   public static final int DOUBLE = 33;
-  public static final int STRING_CONST = 75;
+  public static final int STRING_CONST = 76;
   public static final int LPAREN = 22;
   public static final int PLUSPLUS_POSTFIX = 44;
   public static final int NOT = 18;
   public static final int BITWISE_NOT = 11;
   public static final int FLOAT = 32;
+  public static final int DOUBLE_CONST = 72;
   public static final int RECORD = 27;
   public static final int MOD = 7;
   public static final int MULTIPLY = 5;
-  public static final int REAL_CONST = 72;
   public static final int DIFF_ASSIGN = 48;
   public static final int MINUSMINUS_POSTFIX = 45;
   public static final int LONG = 31;
@@ -61,7 +62,7 @@ public class ParserSym {
   public static final int MINUS = 4;
   public static final int IN = 67;
   public static final int OR = 20;
-  public static final int CHAR_CONST = 74;
+  public static final int CHAR_CONST = 75;
   public static final int error = 1;
   public static final int NOT_EQUAL = 13;
   public static final int CONTINUE = 56;
@@ -157,7 +158,8 @@ public class ParserSym {
   "CONST",
   "INT_CONST",
   "LONG_CONST",
-  "REAL_CONST",
+  "DOUBLE_CONST",
+  "FLOAT_CONST",
   "BOOL_CONST",
   "CHAR_CONST",
   "STRING_CONST"

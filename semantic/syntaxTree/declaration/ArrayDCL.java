@@ -2,8 +2,6 @@ package semantic.syntaxTree.declaration;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
-import semantic.exception.DuplicateDeclarationException;
-import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
 import semantic.symbolTable.Utility;
@@ -39,7 +37,7 @@ public class ArrayDCL extends Declaration {
         if (typeDSCP == null) {
             Optional<DSCP> fetchedDSCP = Display.find(type);
             if (!fetchedDSCP.isPresent() || !(fetchedDSCP.get() instanceof TypeDSCP))
-                throw new SymbolNotFoundException("Type " + type + " not found");
+                throw new RuntimeException("Type " + type + " not found");
             baseType = (TypeDSCP) fetchedDSCP.get();
             typeDSCP = Utility.addArrayType(baseType, dimensions);
         }
@@ -50,7 +48,7 @@ public class ArrayDCL extends Declaration {
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
         SymbolTable top = Display.top();
         if (top.contain(getName()))
-            throw new DuplicateDeclarationException(getName() + " declared more than one time");
+            throw new RuntimeException(getName() + " declared more than one time");
         if (dimensions == 0)
             throw new RuntimeException("Array declaration must contain at least one dimension");
 

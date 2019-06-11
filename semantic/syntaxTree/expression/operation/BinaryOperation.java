@@ -1,4 +1,4 @@
-package semantic.syntaxTree.expression.binaryOperation;
+package semantic.syntaxTree.expression.operation;
 
 import semantic.syntaxTree.expression.Expression;
 

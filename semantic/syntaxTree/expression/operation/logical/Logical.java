@@ -1,13 +1,13 @@
-package semantic.syntaxTree.expression.binaryOperation.relational;
+package semantic.syntaxTree.expression.operation.logical;
 
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.expression.Expression;
-import semantic.syntaxTree.expression.binaryOperation.BinaryOperation;
+import semantic.syntaxTree.expression.operation.BinaryOperation;
 import semantic.typeTree.TypeTree;
 
-public abstract class Relational extends BinaryOperation {
+public abstract class Logical extends BinaryOperation {
 
-    public Relational(Expression firstOperand, Expression secondOperand) {
+    public Logical(Expression firstOperand, Expression secondOperand) {
         super(firstOperand, secondOperand);
     }
 
@@ -15,5 +15,6 @@ public abstract class Relational extends BinaryOperation {
     public TypeDSCP getResultType() {
         return TypeTree.INTEGER_DSCP;
     }
+
 
 }

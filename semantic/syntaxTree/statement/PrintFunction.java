@@ -34,9 +34,9 @@ public class PrintFunction extends Statement {
             value.generateCode(currentClass, currentMethod, cv, mv);
             if (value.getResultType().isPrimitive())
                 mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println",
-                        "(" + Utility.getPrimitiveTypeDescriptor(value.getResultType().getTypeCode()) + ")V", false);
+                        "(" + Utility.getPrimitiveTypeName(value.getResultType()) + ")V", false);
             else
-                throw new RuntimeException("Print a non-primitive value is not possible: " + value.getResultType().getName());
+                throw new RuntimeException("Print a non-primitive value is not possible: " + value.getResultType().getConventionalName());
         } else
             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "()V", false);
     }

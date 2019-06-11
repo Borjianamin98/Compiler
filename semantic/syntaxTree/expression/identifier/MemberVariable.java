@@ -3,7 +3,6 @@ package semantic.syntaxTree.expression.identifier;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import semantic.exception.IllegalTypeException;
 import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
 import semantic.symbolTable.descriptor.hastype.HasTypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
@@ -18,6 +17,7 @@ public class MemberVariable extends Variable {
     private RecordTypeDSCP recordTypeDSCP;
 
     public MemberVariable(Variable parent, String memberName) {
+        super(parent.getChainName() + "." + memberName);
         this.parent = parent;
         this.memberName = memberName;
     }
@@ -29,29 +29,33 @@ public class MemberVariable extends Variable {
     @Override
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
         getDSCP();
+        if (!getDSCP().isInitialized())
+            throw new RuntimeException(String.format("Variable %s might not have been initialized", getChainName()));
         parent.generateCode(currentClass, currentMethod, cv, mv);
-        if (!dscp.isInitialized())
-            throw new RuntimeException("Field " + memberName + " of type " + dscp.getType().getName() + " is not initialized");
         mv.visitFieldInsn(Opcodes.GETFIELD, recordTypeDSCP.getName(), memberName, dscp.getDescriptor());
     }
 
     @Override
     public void assignValue(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Expression value) {
         getDSCP();
+        if (getDSCP().isConstant() && getDSCP().isInitialized())
+            throw new RuntimeException(String.format("Cannot assign a value to const variable %s. Variable %s already have been assigned",
+                    getChainName(), getChainName()));
         parent.generateCode(currentClass, currentMethod, cv, mv);
         value.generateCode(currentClass, currentMethod, cv, mv);
-        TypeTree.widen(mv, getResultType(), value.getResultType()); // right value must be converted to type of variable
+        TypeTree.widen(mv, value.getResultType(), getResultType()); // right value must be converted to type of variable
         mv.visitFieldInsn(Opcodes.PUTFIELD, recordTypeDSCP.getName(), memberName, dscp.getDescriptor());
+        getDSCP().setInitialized(true);
     }
 
     @Override
     public HasTypeDSCP getDSCP() {
         if (dscp == null) {
             if (!(parent.getDSCP().getType() instanceof RecordTypeDSCP))
-                throw new IllegalTypeException(parent.getDSCP().getName() + " is not a record");
+                throw new RuntimeException(parent.getChainName() + " is not a record");
             recordTypeDSCP = (RecordTypeDSCP) parent.getDSCP().getType();
             if (!(recordTypeDSCP.getField(memberName).isPresent()))
-                throw new IllegalTypeException("Member field " + memberName + " doesn't exist");
+                throw new RuntimeException("Member field " + getChainName() + " doesn't exist");
             dscp = recordTypeDSCP.getField(memberName).get();
         }
         return dscp;
