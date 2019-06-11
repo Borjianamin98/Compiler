@@ -24,21 +24,34 @@ public class Utility {
     private Utility() {
     }
 
-    private static String getTypePrefix(int type) {
-        if (type == TypeTree.INTEGER_DSCP.getTypeCode() ||
-                type == TypeTree.BOOLEAN_DSCP.getTypeCode() ||
-                type == TypeTree.CHAR_DSCP.getTypeCode()) {
+    /**
+     * return prefix appropriate for a opcode of a type
+     * @param type type
+     * @return appropriate prefix
+     */
+    private static String getTypePrefix(TypeDSCP type) {
+        if (type.getTypeCode() == TypeTree.INTEGER_DSCP.getTypeCode() ||
+                type.getTypeCode() == TypeTree.BOOLEAN_DSCP.getTypeCode() ||
+                type.getTypeCode() == TypeTree.CHAR_DSCP.getTypeCode()) {
             return "I";
-        } else if (type == TypeTree.LONG_DSCP.getTypeCode()) {
+        } else if (type.getTypeCode() == TypeTree.LONG_DSCP.getTypeCode()) {
             return "L";
-        } else if (type == TypeTree.DOUBLE_DSCP.getTypeCode()) {
+        } else if (type.getTypeCode() == TypeTree.DOUBLE_DSCP.getTypeCode()) {
             return "D";
-        } else if (type == TypeTree.FLOAT_DSCP.getTypeCode()) {
+        } else if (type.getTypeCode() == TypeTree.FLOAT_DSCP.getTypeCode()) {
             return "F";
-        }
-        return "A";
+        } else
+            return "A";
     }
 
+    /**
+     * return opcode created by prefix + instruction + postfix
+     * @param prefix prefix of opcode
+     * @param instruction main instruction
+     * @param postfix postfix of opcode
+     * @return appropriate opcode
+     * @throws RuntimeException if opcode not found
+     */
     public static int getOpcode(String prefix, String instruction, String postfix) {
         try {
             return (int) Opcodes.class.getDeclaredField(prefix + instruction + postfix).get(null);
@@ -47,7 +60,14 @@ public class Utility {
         }
     }
 
-    public static int getOpcode(int type, String instruction) {
+    /**
+     * return opcode created by prefix + instruction based on type
+     * @param type type of opcode
+     * @param instruction main instruction
+     * @return appropriate opcode
+     * @throws RuntimeException if opcode not found
+     */
+    public static int getOpcode(TypeDSCP type, String instruction) {
         try {
             return (int) Opcodes.class.getDeclaredField(getTypePrefix(type) + instruction).get(null);
         } catch (ReflectiveOperationException e) {
@@ -81,7 +101,7 @@ public class Utility {
 
     /**
      * create descriptor of a type with requested dimensions
-     * @param type type
+     * @param type       type
      * @param dimensions dimensions
      * @return descriptor of requested type
      */
