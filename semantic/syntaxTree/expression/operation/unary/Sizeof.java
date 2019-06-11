@@ -2,49 +2,60 @@ package semantic.syntaxTree.expression.operation.unary;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
-import semantic.symbolTable.descriptor.type.ArrayTypeDSCP;
+import semantic.symbolTable.Display;
+import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.type.SimpleTypeDSCP;
+import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.expression.constValue.IntegerConst;
-import semantic.syntaxTree.expression.identifier.SimpleType;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.typeTree.TypeTree;
 
-public class Sizeof extends Expression {
-    private SimpleType type;
+import java.util.Optional;
 
-    public Sizeof(SimpleType type) {
-        this.type = type;
+public class Sizeof extends Expression {
+    private String typeName;
+
+    public Sizeof(String typeName) {
+        this.typeName = typeName;
     }
 
     @Override
     public SimpleTypeDSCP getResultType() {
-        type.getTypeDSCP();
         return TypeTree.INTEGER_DSCP;
     }
 
     @Override
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+        // find type
+        TypeDSCP typeDSCP;
+        Optional<DSCP> fetchedDSCP = Display.find(typeName);
+        if (!fetchedDSCP.isPresent())
+            throw new RuntimeException("Type " + typeName + " is not declared");
+        if (fetchedDSCP.get() instanceof TypeDSCP) {
+            typeDSCP = (TypeDSCP) fetchedDSCP.get();
+        } else
+            throw new RuntimeException(typeName + " is not a type");
+
         int size;
-        if (type.getTypeDSCP().isPrimitive()) {
-            if (type.getTypeDSCP().getTypeCode() == TypeTree.INTEGER_DSCP.getTypeCode()) {
+        if (typeDSCP.isPrimitive()) {
+            if (typeDSCP.getTypeCode() == TypeTree.INTEGER_DSCP.getTypeCode()) {
                 size = Integer.BYTES;
-            } else if (type.getTypeDSCP().getTypeCode() == TypeTree.BOOLEAN_DSCP.getTypeCode()) {
+            } else if (typeDSCP.getTypeCode() == TypeTree.BOOLEAN_DSCP.getTypeCode()) {
                 size = Short.BYTES;
-            } else if (type.getTypeDSCP().getTypeCode() == TypeTree.CHAR_DSCP.getTypeCode()) {
+            } else if (typeDSCP.getTypeCode() == TypeTree.CHAR_DSCP.getTypeCode()) {
                 size = Character.BYTES;
-            } else if (type.getTypeDSCP().getTypeCode() == TypeTree.LONG_DSCP.getTypeCode()) {
+            } else if (typeDSCP.getTypeCode() == TypeTree.LONG_DSCP.getTypeCode()) {
                 size = Long.BYTES;
-            } else if (type.getTypeDSCP().getTypeCode() == TypeTree.DOUBLE_DSCP.getTypeCode()) {
+            } else if (typeDSCP.getTypeCode() == TypeTree.DOUBLE_DSCP.getTypeCode()) {
                 size = Double.BYTES;
-            } else if (type.getTypeDSCP().getTypeCode() == TypeTree.FLOAT_DSCP.getTypeCode()) {
+            } else if (typeDSCP.getTypeCode() == TypeTree.FLOAT_DSCP.getTypeCode()) {
                 size = Float.BYTES;
-            } else if (type.getTypeDSCP().getTypeCode() == TypeTree.STRING_DSCP.getTypeCode()) {
+            } else if (typeDSCP.getTypeCode() == TypeTree.STRING_DSCP.getTypeCode()) {
                 size = Integer.BYTES; // a pointer/reference
             } else
-                size = 0; // void type
+                size = 0; // void typeName
         } else
             size = Integer.BYTES; // a pointer/reference
         new IntegerConst(size).generateCode(currentClass, currentMethod, cv, mv);

@@ -24,19 +24,19 @@ import syntax.ParserSym;
     ComplexSymbolFactory symbolFactory;
 
     private Symbol symbol(String name, int sym) {
-        return symbolFactory.newSymbol(name, sym, new Location(yyline + 1, yycolumn + 1, yychar), new Location(yyline + 1, yycolumn + yylength(), yychar + yylength()));
+        return symbolFactory.newSymbol(name + " " + ParserSym.terminalNames[sym], sym, new Location(yyline + 1, yycolumn + 1, yychar), new Location(yyline + 1, yycolumn + yylength(), yychar + yylength()));
     }
 
     private Symbol symbol(String name, int sym, Object val) {
         Location left = new Location(yyline + 1, yycolumn + 1, yychar);
         Location right = new Location(yyline + 1, yycolumn + yylength(), yychar + yylength());
-        return symbolFactory.newSymbol(name, sym, left, right, val);
+        return symbolFactory.newSymbol(name + " " + ParserSym.terminalNames[sym] + " " + val, sym, left, right, val);
     }
 
     private Symbol symbol(String name, int sym, Object val, int buflength) {
         Location left = new Location(yyline + 1, yycolumn + yylength() - buflength, yychar + yylength() - buflength);
         Location right = new Location(yyline + 1, yycolumn + yylength(), yychar + yylength());
-        return symbolFactory.newSymbol(name, sym, left, right, val);
+        return symbolFactory.newSymbol(name + " " + ParserSym.terminalNames[sym] + " " + val, sym, left, right, val);
     }
 %}
 
@@ -57,7 +57,7 @@ Identifier = [:jletter:] [:jletterdigit:]*
 Operator = "="|"!="|">"|">="|"<"|"<="|"="|"+="|"-="|"*="|"/="|"%="|"+"|"-"|"*"|"/"|"%"|"not"|"or"|"and"|"|"|"&"|"^"|"~"|"++"|"--"
 Special = "("|")"|"{"|"}"|"["|"]"|";"|","|"::"|":"|"."|"->"|"*"|"?"
 
-integer = 0 | [-+]?[1-9][0-9]* | [-+]?0(x|X)[0-9A-Fa-f]+ | [-+]?0[0-7]+
+integer = 0 | [-]?[1-9][0-9]* | [-]?0(x|X)[0-9A-Fa-f]+ | [-]?0[0-7]+
 realNormal = [-]?{integer}?"."[0-9]+ | [-]?{integer}"."
 realScientific = {realNormal}[eE]{integer} | {integer}[eE]{integer}
 real = {realNormal} | {realScientific}

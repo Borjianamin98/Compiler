@@ -11,6 +11,10 @@ public class Block {
     public Block() {
         this.blockCodes = new ArrayList<>();
     }
+//
+//    public Block(List<BlockCode> blockCodes) {
+//        this.blockCodes = blockCodes;
+//    }
 
     public void addBlockCode(BlockCode blockCode) {
         blockCodes.add(blockCode);

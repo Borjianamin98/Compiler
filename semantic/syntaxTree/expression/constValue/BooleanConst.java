@@ -17,6 +17,10 @@ public class BooleanConst extends Expression {
         this.value = value;
     }
 
+    public BooleanConst(int value) {
+        this.value = value == 1;
+    }
+
     @Override
     public TypeDSCP getResultType() {
         return TypeTree.BOOLEAN_DSCP;
