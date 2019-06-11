@@ -23,6 +23,7 @@ import semantic.syntaxTree.statement.assignment.DirectAssignment;
 import semantic.syntaxTree.statement.controlflow.BreakStatement;
 import semantic.syntaxTree.statement.controlflow.ContinueStatement;
 import semantic.syntaxTree.statement.controlflow.ReturnStatement;
+import semantic.typeTree.TypeTree;
 
 public class Foreach extends Statement {
     private String identifierName;
@@ -71,7 +72,7 @@ public class Foreach extends Statement {
         iteratorAssignment.generateCode(currentClass, currentMethod, cv, mv);
 
         // create int i = 0;
-        VariableDCL varCounterDCL = new VariableDCL(varCounterName, "int", false, false);
+        VariableDCL varCounterDCL = new VariableDCL(varCounterName, TypeTree.INTEGER_NAME, false, false);
         varCounterDCL.generateCode(currentClass, currentMethod, cv, mv);
         DirectAssignment counterAssignment = new DirectAssignment(varCounter, new IntegerConst(0));
         counterAssignment.generateCode(currentClass, currentMethod, cv, mv);

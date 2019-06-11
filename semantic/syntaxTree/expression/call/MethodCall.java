@@ -12,6 +12,7 @@ import semantic.syntaxTree.BlockCode;
 import semantic.syntaxTree.declaration.method.Argument;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
+import semantic.syntaxTree.expression.Ignorable;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.typeTree.TypeTree;
 
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class MethodCall extends Expression implements BlockCode {
+public class MethodCall extends Expression implements BlockCode, Ignorable {
     private String methodName;
     private List<Expression> parameters;
     private MethodDSCP methodDSCP;
@@ -30,15 +31,16 @@ public class MethodCall extends Expression implements BlockCode {
      * this will set with parser, but if you test it by your own, set it
      * to true
      */
-    private boolean discardResult;
+    private boolean ignoreResult;
 
     public MethodCall(String methodName, List<Expression> parameters) {
         this.methodName = methodName;
         this.parameters = parameters;
     }
 
-    public void setDiscardResult(boolean discardResult) {
-        this.discardResult = discardResult;
+    @Override
+    public void setIgnoreResult(boolean ignoreResult) {
+        this.ignoreResult = ignoreResult;
     }
 
     @Override
@@ -107,7 +109,7 @@ public class MethodCall extends Expression implements BlockCode {
         mv.visitMethodInsn(Opcodes.INVOKESTATIC, getTypeDSCP().getOwner(), getTypeDSCP().getName(),
                 methodDSCP.getDescriptor(indexOfOverloadMethod), false);
 
-        if (getTypeDSCP().hasReturn() && discardResult) {
+        if (getTypeDSCP().hasReturn() && ignoreResult) {
             mv.visitInsn(Opcodes.POP);
         }
     }

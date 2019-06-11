@@ -4,7 +4,7 @@ import java_cup.runtime.*;
 import semantic.syntaxTree.BlockCode;
 import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.*;
-import semantic.syntaxTree.expression.Expression;
+import semantic.syntaxTree.expression.*;
 import semantic.syntaxTree.expression.call.*;
 import semantic.syntaxTree.expression.identifier.*;
 import semantic.syntaxTree.expression.constValue.*;
@@ -16,6 +16,7 @@ import semantic.syntaxTree.expression.operation.unary.*;
 import semantic.syntaxTree.expression.operation.unary.prefix_postfix.*;
 import semantic.syntaxTree.statement.*;
 import semantic.syntaxTree.statement.assignment.*;
+import semantic.syntaxTree.statement.controlflow.*;
 import semantic.syntaxTree.statement.controlflow.ifelse.*;
 import semantic.syntaxTree.statement.controlflow.switchcase.*;
 import semantic.syntaxTree.statement.controlflow.loop.*;
@@ -60,7 +61,7 @@ terminal Integer                        BOOL_CONST;
 terminal Character                      CHAR_CONST;
 terminal String                         STRING_CONST;
 terminal                                CAST_PREC;
-terminal                                PRINTLN;
+terminal                                PRINTLN, INPUT;
 
 /* Non terminals */
 non terminal                            program;
@@ -305,7 +306,7 @@ block_body          ::= var_dcl:list
                         method_cal:methodCall SEMICOLON
                         {:
                         Block currentBlock = (Block) Parser.semanticStack.getLast();
-                        ((MethodCall) methodCall).setDiscardResult(true);
+                        ((Ignorable) methodCall).setIgnoreResult(true);
                         currentBlock.addBlockCode((BlockCode) methodCall);
                         :}
                         |
@@ -332,16 +333,16 @@ statement           ::= assignment:stat SEMICOLON
                         {: RESULT = stat; :}
                         |
                         RETURN SEMICOLON
-                        {: System.out.println("return stat"); :}
+                        {: RESULT = new ReturnStatement(); :}
                         |
-                        RETURN expr SEMICOLON
-                        {: System.out.println("return expr stat"); :}
+                        RETURN expr:e SEMICOLON
+                        {: RESULT = new ReturnStatement(e); :}
                         |
                         BREAK SEMICOLON
-                        {: System.out.println("break"); :}
+                        {: RESULT = new BreakStatement(); :}
                         |
                         CONTINUE SEMICOLON
-                        {: System.out.println("continue"); :}
+                        {: RESULT = new ContinueStatement(); :}
                         ;
 
 assignment          ::= variable:var DIRECT_ASSIGN expr:e
@@ -365,6 +366,16 @@ assignment          ::= variable:var DIRECT_ASSIGN expr:e
 
 method_cal          ::= IDENTIFIER:methodName LPAREN parameters:parms RPAREN
                         {: RESULT = new MethodCall(methodName, parms); :}
+                        |
+                        INPUT LPAREN typeName:typeName RPAREN
+                        {:
+                        RESULT = new ScannerFunction(typeName);
+                        :}
+                        |
+                        INPUT LPAREN RPAREN
+                        {:
+                        RESULT = new ScannerFunction();
+                        :}
                         ;
 
 parameters          ::= expr:e
@@ -416,11 +427,11 @@ loop_stmt           ::= FOR LPAREN for_init_part:initial SEMICOLON expr:e SEMICO
                         FOR LPAREN for_init_part:initial SEMICOLON expr:e SEMICOLON RPAREN block:body
                         {: RESULT = new ForLoop(initial, e, body); :}
                         |
-                        REPEAT block UNTIL LPAREN expr RPAREN SEMICOLON
-                        {: System.out.println("repeat stat"); :}
+                        REPEAT block:body UNTIL LPAREN expr:condition RPAREN SEMICOLON
+                        {: RESULT = new RepeatUntil(condition, body); :}
                         |
-                        FOREACH LPAREN IDENTIFIER IN expr RPAREN block
-                        {: System.out.println("foreach stat"); :}
+                        FOREACH LPAREN IDENTIFIER:temp IN variable:iterator RPAREN block:body
+                        {: RESULT = new Foreach(temp, iterator, body); :}
                         ;
 
 for_init_part       ::=
@@ -498,8 +509,8 @@ expr                ::= expr:e1 PLUS expr:e2
                         {: RESULT = new PlusPlusPostfix(var); :}
                         %prec PLUSPLUS_POSTFIX
                         |
-                        method_cal
-                        {: System.out.println("method call"); :}
+                        method_cal:methodCal
+                        {: RESULT = methodCal; :}
                         |
                         MINUS expr:e
                         {: RESULT = new Neg(e); :}

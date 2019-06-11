@@ -44,6 +44,7 @@ public class ParserSym {
   public static final int EQUAL = 12;
   public static final int CHAR = 36;
   public static final int DIRECT_ASSIGN = 47;
+  public static final int INPUT = 80;
   public static final int SWITCH = 58;
   public static final int FOR = 64;
   public static final int GREATER = 16;
@@ -168,7 +169,8 @@ public class ParserSym {
   "CHAR_CONST",
   "STRING_CONST",
   "CAST_PREC",
-  "PRINTLN"
+  "PRINTLN",
+  "INPUT"
   };
 }
 

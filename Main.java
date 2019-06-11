@@ -50,8 +50,6 @@ public class Main implements Opcodes {
             methodDCLS.add(new StartMethodDCL("Tester", body));
 
 
-
-            body.addBlockCode(new ReturnStatement());
             ClassDCL clazz = new ClassDCL("Tester", null, methodDCLS, null);
             clazz.generateCode(null, null, null, null);
         } catch (Exception e) {
