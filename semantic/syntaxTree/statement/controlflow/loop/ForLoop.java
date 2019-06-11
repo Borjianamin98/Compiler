@@ -12,33 +12,38 @@ import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.syntaxTree.statement.Statement;
-import semantic.syntaxTree.statement.assignment.Assignment;
 import semantic.syntaxTree.statement.controlflow.BreakStatement;
 import semantic.syntaxTree.statement.controlflow.ContinueStatement;
 import semantic.syntaxTree.statement.controlflow.ReturnStatement;
 
 public class ForLoop extends Statement {
-    private Assignment initialAssignment;
+    private Statement initialAssignment;
     private Expression condition;
     /**
      * only one of steps available at any time
      */
-    private Assignment stepAssignment;
+    private Statement stepAssignment;
     private Expression stepExpression;
 
     private Block body;
 
-    public ForLoop(Assignment initialAssignment, Expression condition, Assignment stepAssignment, Block body) {
+    public ForLoop(Statement initialAssignment, Expression condition, Statement stepAssignment, Block body) {
         this.initialAssignment = initialAssignment;
         this.condition = condition;
         this.stepAssignment = stepAssignment;
         this.body = body;
     }
 
-    public ForLoop(Assignment initialAssignment, Expression condition, Expression stepExpression, Block body) {
+    public ForLoop(Statement initialAssignment, Expression condition, Expression stepExpression, Block body) {
         this.initialAssignment = initialAssignment;
         this.condition = condition;
         this.stepExpression = stepExpression;
+        this.body = body;
+    }
+
+    public ForLoop(Statement initialAssignment, Expression condition, Block body) {
+        this.initialAssignment = initialAssignment;
+        this.condition = condition;
         this.body = body;
     }
 
@@ -75,12 +80,15 @@ public class ForLoop extends Statement {
         }
         Display.pop();
 
+
         // generate step assigment
         mv.visitLabel(stepLabel);
         if (stepAssignment != null)
             stepAssignment.generateCode(currentClass, currentMethod, cv, mv);
-        if (stepExpression != null)
+        if (stepExpression != null) {
             stepExpression.generateCode(currentClass, currentMethod, cv, mv);
+            mv.visitInsn(Opcodes.POP);
+        }
 
         // generate jump for for-loop
         mv.visitJumpInsn(Opcodes.GOTO, conditionLabel);

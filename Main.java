@@ -15,6 +15,7 @@ import semantic.syntaxTree.expression.identifier.SimpleVariable;
 import semantic.syntaxTree.expression.operation.relational.*;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.syntaxTree.statement.controlflow.ReturnStatement;
+import semantic.syntaxTree.statement.controlflow.loop.*;
 import semantic.typeTree.TypeTree;
 import syntax.Parser;
 
@@ -48,11 +49,9 @@ public class Main implements Opcodes {
             Block body = (Block) Parser.finalR;
             methodDCLS.add(new StartMethodDCL("Tester", body));
 
-//        body.addBlockCode((BlockCode) Parser.result);
+
 
             body.addBlockCode(new ReturnStatement());
-//            List<Field> fields = new ArrayList<>();
-//        fields.add(new Field())
             ClassDCL clazz = new ClassDCL("Tester", null, methodDCLS, null);
             clazz.generateCode(null, null, null, null);
         } catch (Exception e) {

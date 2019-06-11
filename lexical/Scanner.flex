@@ -54,7 +54,7 @@ EndOfLineComment = "##" [^\r\n]* \R?
 ReservedKeyword = "function"|"repeat"|"until"|"if"|"of"|"begin"|"end"|"for"|"foreach"|"in"|"int"|"bool"|"auto"|"char"|"long"|"else"|"void"|"case"|"while"|"const"|"float"|"extern"|"break"|"return"|"string"|"sizeof"|"double"|"static"|"switch"|"default"|"continue"|"record"|"new"|"println"
 Identifier = [:jletter:] [:jletterdigit:]*
 // removed operator: "<<"|">>"
-Operator = "="|"!="|">"|">="|"<"|"<="|"="|"+="|"-="|"*="|"/="|"%="|"+"|"-"|"*"|"/"|"%"|"not"|"or"|"and"|"|"|"&"|"^"|"~"|"++"|"--"
+Operator = "="|"=="|"!="|">"|">="|"<"|"<="|"="|"+="|"-="|"*="|"/="|"%="|"+"|"-"|"*"|"/"|"%"|"not"|"or"|"and"|"|"|"&"|"^"|"~"|"++"|"--"
 Special = "("|")"|"{"|"}"|"["|"]"|"[]"|";"|","|"::"|":"|"."|"->"|"*"|"?"
 
 integer = 0 | [-]?[1-9][0-9]* | [-]?0(x|X)[0-9A-Fa-f]+ | [-]?0[0-7]+

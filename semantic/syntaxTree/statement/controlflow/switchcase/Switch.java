@@ -28,10 +28,6 @@ public class Switch extends Statement {
         this.defaultCase = defaultCase;
     }
 
-    public Switch(Expression expression, List<Case> cases) {
-        this(expression, cases, null);
-    }
-
     private void generateCaseCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Block caseBlock, Label outLabel) {
         for (BlockCode blockCode : caseBlock.getBlockCodes()) {
             if (blockCode instanceof BreakStatement) {

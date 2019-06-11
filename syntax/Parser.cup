@@ -16,6 +16,9 @@ import semantic.syntaxTree.expression.operation.unary.*;
 import semantic.syntaxTree.expression.operation.unary.prefix_postfix.*;
 import semantic.syntaxTree.statement.*;
 import semantic.syntaxTree.statement.assignment.*;
+import semantic.syntaxTree.statement.controlflow.ifelse.*;
+import semantic.syntaxTree.statement.controlflow.switchcase.*;
+import semantic.syntaxTree.statement.controlflow.loop.*;
 
 import semantic.typeTree.TypeTree;
 
@@ -71,8 +74,8 @@ non terminal Statement                  statement;
 non terminal Block                      block;
 non terminal                            block_body;
 non terminal                            block_part;
-non terminal                            else_part, case_part;
-non terminal                            for_init_part, for_step_part;
+non terminal List<Case>                 case_part;
+non terminal Statement                  for_init_part;
 non terminal List<VariableDCLFactory>   const_var_dcl_p, var_dcl_p, var_dcl, var_declrations;
 non terminal                            struct_dcl;
 non terminal                            function_dcl, func_signature, arguments, argument, extern_dcl;
@@ -322,11 +325,11 @@ block_body          ::= var_dcl:list
 statement           ::= assignment:stat SEMICOLON
                         {: RESULT = stat; :}
                         |
-                        cond_stmt
-                        {: System.out.println("cond_stat"); :}
+                        cond_stmt:stat
+                        {: RESULT = stat; :}
                         |
-                        loop_stmt
-                        {: System.out.println("loop_stat"); :}
+                        loop_stmt:stat
+                        {: RESULT = stat; :}
                         |
                         RETURN SEMICOLON
                         {: System.out.println("return stat"); :}
@@ -365,7 +368,10 @@ method_cal          ::= IDENTIFIER:methodName LPAREN parameters:parms RPAREN
                         ;
 
 parameters          ::= expr:e
-                        {: RESULT = new ArrayList<Expression>(e); :}
+                        {:
+                        RESULT = new ArrayList<Expression>();
+                        RESULT.add(e);
+                        :}
                         |
                         expr:e COMMA parameters:list
                         {:
@@ -374,31 +380,41 @@ parameters          ::= expr:e
                         :}
                         ;
 
-cond_stmt           ::= IF LPAREN expr RPAREN block else_part
-                        {: System.out.println("if condition"); :}
+cond_stmt           ::= IF LPAREN expr:e RPAREN block:mainBody ELSE block:elseBody
+                        {: RESULT = new IfElseThen(e, mainBody, elseBody); :}
                         |
-                        SWITCH LPAREN IDENTIFIER RPAREN OF COLON
-                        BEGIN case_part DEFAULT COLON block END
-                        {: System.out.println("switch condition"); :}
+                        IF LPAREN expr:e RPAREN block:mainBody
+                        {: RESULT = new IfElseThen(e, mainBody, null); :}
                         |
-                        SWITCH LPAREN IDENTIFIER RPAREN OF COLON
-                        BEGIN case_part END
-                        {: System.out.println("switch condition"); :}
-                        ;
-
-else_part           ::=
+                        SWITCH LPAREN expr:e RPAREN OF COLON
+                        BEGIN case_part:cases DEFAULT COLON block:defaultBlock END
+                        {: RESULT = new Switch(e, cases, defaultBlock); :}
                         |
-                        ELSE block
+                        SWITCH LPAREN expr:e RPAREN OF COLON
+                        BEGIN case_part:cases END
+                        {: RESULT = new Switch(e, cases, null); :}
                         ;
 
 case_part           ::=
+                        {:
+                        RESULT = new ArrayList<Case>();
+                        :}
                         |
-                        CASE INT_CONST COLON block case_part
-                        {: System.out.println("case statement"); :}
+                        CASE INT_CONST:number COLON block:body case_part:list
+                        {:
+                        list.add(new Case(number, body));
+                        RESULT = list;
+                        :}
                         ;
 
-loop_stmt           ::= FOR LPAREN for_init_part SEMICOLON expr SEMICOLON for_step_part RPAREN block
-                        {: System.out.println("for stat"); :}
+loop_stmt           ::= FOR LPAREN for_init_part:initial SEMICOLON expr:e SEMICOLON assignment:stepAssignment RPAREN block:body
+                        {: RESULT = new ForLoop(initial, e, stepAssignment, body); :}
+                        |
+                        FOR LPAREN for_init_part:initial SEMICOLON expr:e SEMICOLON expr:stepExpr RPAREN block:body
+                        {: RESULT = new ForLoop(initial, e, stepExpr, body); :}
+                        |
+                        FOR LPAREN for_init_part:initial SEMICOLON expr:e SEMICOLON RPAREN block:body
+                        {: RESULT = new ForLoop(initial, e, body); :}
                         |
                         REPEAT block UNTIL LPAREN expr RPAREN SEMICOLON
                         {: System.out.println("repeat stat"); :}
@@ -408,14 +424,11 @@ loop_stmt           ::= FOR LPAREN for_init_part SEMICOLON expr SEMICOLON for_st
                         ;
 
 for_init_part       ::=
+                        {: RESULT = null; :}
                         |
-                        assignment;
-
-for_step_part       ::=
-                        |
-                        assignment
-                        |
-                        expr;
+                        assignment:stat
+                        {: RESULT = stat; :}
+                        ;
 
 expr                ::= expr:e1 PLUS expr:e2
                         {: RESULT = new Plus(e1, e2); :}
