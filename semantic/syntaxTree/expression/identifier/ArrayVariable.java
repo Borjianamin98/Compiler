@@ -63,29 +63,33 @@ public class ArrayVariable extends Variable {
         TypeTree.widen(mv, value.getResultType(), getResultType()); // right value must be converted to type of variable
 
         mv.visitInsn(Utility.getOpcode(arrayTypeDSCP.getInternalType(), "ASTORE"));
+        getDSCP().setInitialized(true);
     }
 
     @Override
     public HasTypeDSCP getDSCP() {
         if (dscp == null) {
-            if (!(parent.getDSCP().getType() instanceof ArrayTypeDSCP))
-                throw new RuntimeException("Variable " + parent.getChainName() + " is not a array");
-            arrayTypeDSCP = (ArrayTypeDSCP) parent.getDSCP().getType();
+            // handle index subscription for array type
+            if (parent.getDSCP().getType() instanceof ArrayTypeDSCP) {
+                arrayTypeDSCP = (ArrayTypeDSCP) parent.getDSCP().getType();
 
-            if (parent instanceof MemberVariable)
-                parentRecordDSCP = ((MemberVariable) parent).getRecordTypeDSCP();
-            else if (parent instanceof ArrayVariable)
-                parentRecordDSCP = ((ArrayVariable) parent).parentRecordDSCP;
+                if (parent instanceof MemberVariable)
+                    parentRecordDSCP = ((MemberVariable) parent).getRecordTypeDSCP();
+                else if (parent instanceof ArrayVariable)
+                    parentRecordDSCP = ((ArrayVariable) parent).parentRecordDSCP;
 
-            Optional<DSCP> fetchedDSCP;
-            if (parentRecordDSCP == null)
-                fetchedDSCP = Display.find(parent.getDSCP().getName() + "[]");
-            else
-                fetchedDSCP = parentRecordDSCP.find(parent.getDSCP().getName() + "[]");
+                Optional<DSCP> fetchedDSCP;
+                if (parentRecordDSCP == null)
+                    fetchedDSCP = Display.find(parent.getDSCP().getName() + "[]");
+                else
+                    fetchedDSCP = parentRecordDSCP.find(parent.getDSCP().getName() + "[]");
 
-            if (!fetchedDSCP.isPresent() || !(fetchedDSCP.get() instanceof HasTypeDSCP))
-                throw new RuntimeException(parent.getDSCP().getName() + "[]" + " is not declared");
-            dscp = (HasTypeDSCP) fetchedDSCP.get();
+                if (!fetchedDSCP.isPresent() || !(fetchedDSCP.get() instanceof HasTypeDSCP))
+                    throw new RuntimeException(parent.getDSCP().getName() + "[]" + " is not declared");
+                dscp = (HasTypeDSCP) fetchedDSCP.get();
+            } else
+                throw new RuntimeException("Call subscript is only for array: " + parent.getChainName());
+
         }
         return dscp;
     }

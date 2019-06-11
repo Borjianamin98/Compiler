@@ -41,7 +41,8 @@ terminal                    FOR, REPEAT, UNTIL, FOREACH, IN;
 terminal                    SIZEOF, CONST;
 terminal Integer            INT_CONST;
 terminal Long               LONG_CONST;
-terminal Double             REAL_CONST;
+terminal Double             DOUBLE_CONST;
+terminal Float              FLOAT_CONST;
 terminal Integer            BOOL_CONST;
 terminal Character          CHAR_CONST;
 terminal String             STRING_CONST;
@@ -49,8 +50,8 @@ terminal String             STRING_CONST;
 /* Non terminals */
 non terminal                program;
 non terminal                method_cal, parameters;
-non terminal                simpleVariable, array_part;
-non terminal DSCP           baseType;
+non terminal                variable, array_part_val;
+non terminal                base_type, type;
 non terminal                assignment, assign_mark;
 non terminal                cond_stmt, loop_stmt, statement;
 non terminal Block          block;
@@ -59,7 +60,7 @@ non terminal                else_part, case_part;
 non terminal                for_init_part, for_step_part;
 non terminal                var_declrations, var_dcl, var_dcl_p, const_var_dcl_p;
 non terminal                struct_dcl;
-non terminal                function_dcl, fun_signature, arguments, argument, call_array_part, extern_dcl;
+non terminal                function_dcl, fun_signature, arguments, argument, array_part_no_val, extern_dcl;
 non terminal Expression     expr;
 non terminal Expression     const_val;
 
@@ -76,290 +77,307 @@ precedence left PLUS, MINUS;
 precedence left MULTIPLY, DIVIDE, MOD;
 precedence left UNARY_MINUS;
 precedence right BITWISE_NOT, NOT;
+precedence left DOT;
+precedence left LBRACKET;
 precedence nonassoc MINUSMINUS, PLUSPLUS;
 precedence nonassoc MINUSMINUS_POSTFIX, PLUSPLUS_POSTFIX;
 
 /* The grammar */
 start with expr;
-program         ::= var_dcl program
-                    |
-                    function_dcl program
-                    |
-                    extern_dcl program
-                    |
-                    struct_dcl program
-                    |
-                    ;
+program             ::= var_dcl program
+                        |
+                        function_dcl program
+                        |
+                        extern_dcl program
+                        |
+                        struct_dcl program
+                        |
+                        ;
 
-extern_dcl      ::= EXTERN baseType IDENTIFIER SEMICOLON;
+extern_dcl          ::= EXTERN type IDENTIFIER SEMICOLON;
 
-function_dcl    ::= FUNCTION baseType fun_signature
-                    |
-                    FUNCTION VOID fun_signature;
+function_dcl        ::= FUNCTION type fun_signature
+                        |
+                        FUNCTION VOID fun_signature;
 
-fun_signature   ::= IDENTIFIER LPAREN arguments RPAREN SEMICOLON
-                    |
-                    IDENTIFIER LPAREN RPAREN SEMICOLON
-                    |
-                    IDENTIFIER LPAREN arguments RPAREN block
-                    |
-                    IDENTIFIER LPAREN RPAREN block
-                    ;
+fun_signature       ::= IDENTIFIER LPAREN arguments RPAREN SEMICOLON
+                        |
+                        IDENTIFIER LPAREN RPAREN SEMICOLON
+                        |
+                        IDENTIFIER LPAREN arguments RPAREN block
+                        |
+                        IDENTIFIER LPAREN RPAREN block
+                        ;
 
-arguments       ::= argument COMMA arguments
-                    {: System.out.println("argument detected"); :}
-                    |
-                    argument
-                    {: System.out.println("argument detected"); :}
-                    ;
+arguments           ::= argument COMMA arguments
+                        {: System.out.println("argument detected"); :}
+                        |
+                        argument
+                        {: System.out.println("argument detected"); :}
+                        ;
 
-argument        ::= baseType IDENTIFIER
-                    |
-                    baseType IDENTIFIER call_array_part;
+argument            ::= type IDENTIFIER
+                        |
+                        type IDENTIFIER array_part_no_val;
 
-call_array_part ::= LBRACKET RBRACKET call_array_part
-                    |
-                    LBRACKET RBRACKET;
+array_part_no_val   ::= LBRACKET RBRACKET array_part_no_val
+                        |
+                        LBRACKET RBRACKET;
 
-struct_dcl      ::= RECORD IDENTIFIER BEGIN var_declrations END RECORD SEMICOLON;
+struct_dcl          ::= RECORD IDENTIFIER BEGIN var_declrations END RECORD SEMICOLON;
 
-var_declrations ::= var_dcl var_declrations
-                   |
-                   var_dcl;
+var_declrations     ::= var_dcl var_declrations
+                       |
+                       var_dcl;
 
-var_dcl         ::= CONST baseType const_var_dcl_p SEMICOLON
-                    |
-                    CONST AUTO const_var_dcl_p SEMICOLON
-                    |
-                    baseType var_dcl_p SEMICOLON
-                    |
-                    AUTO const_var_dcl_p SEMICOLON
-                    ;
+var_dcl             ::= CONST type array_part_no_val const_var_dcl_p SEMICOLON
+                        |
+                        CONST AUTO const_var_dcl_p SEMICOLON
+                        |
+                        type array_part_no_val var_dcl_p SEMICOLON
+                        |
+                        AUTO const_var_dcl_p SEMICOLON
+                        ;
 
-const_var_dcl_p ::= IDENTIFIER DIRECT_ASSIGN expr COMMA const_var_dcl_p
-                    |
-                    IDENTIFIER DIRECT_ASSIGN expr
-                    ;
+const_var_dcl_p     ::= IDENTIFIER DIRECT_ASSIGN expr COMMA const_var_dcl_p
+                        |
+                        IDENTIFIER DIRECT_ASSIGN expr
+                        ;
 
-var_dcl_p       ::= IDENTIFIER COMMA var_dcl_p
-                    |
-                    IDENTIFIER DIRECT_ASSIGN expr COMMA var_dcl_p
-                    |
-                    IDENTIFIER DIRECT_ASSIGN expr
-                    |
-                    IDENTIFIER;
-
-
-block           ::= BEGIN block_part END
-                    |
-                    BEGIN END;
+var_dcl_p           ::= IDENTIFIER COMMA var_dcl_p
+                        |
+                        IDENTIFIER DIRECT_ASSIGN expr COMMA var_dcl_p
+                        |
+                        IDENTIFIER DIRECT_ASSIGN expr
+                        |
+                        IDENTIFIER;
 
 
-block_part      ::= block_body
-                    |
-                    block_body block_part
-                    ;
+block               ::= BEGIN block_part END
+                        |
+                        BEGIN END;
 
 
-block_body      ::= var_dcl
-                    |
-                    statement;
+block_part          ::= block_body
+                        |
+                        block_body block_part
+                        ;
 
-statement       ::= assignment SEMICOLON
-                    {: System.out.println("assignment"); :}
-                    |
-                    method_cal SEMICOLON
-                    {: System.out.println("method cal"); :}
-                    |
-                    cond_stmt
-                    {: System.out.println("cond_stat"); :}
-                    |
-                    loop_stmt
-                    {: System.out.println("loop_stat"); :}
-                    |
-                    RETURN SEMICOLON
-                    {: System.out.println("return stat"); :}
-                    |
-                    RETURN expr SEMICOLON
-                    {: System.out.println("return expr stat"); :}
-                    |
-                    BREAK SEMICOLON
-                    {: System.out.println("break"); :}
-                    |
-                    CONTINUE SEMICOLON
-                    {: System.out.println("continue"); :}
-                    ;
 
-assignment      ::= simpleVariable assign_mark expr;
+block_body          ::= var_dcl
+                        |
+                        statement;
 
-assign_mark     ::= DIRECT_ASSIGN
-                    |
-                    SUM_ASSIGN
-                    |
-                    DIFF_ASSIGN
-                    |
-                    MULT_ASSIGN
-                    |
-                    DIVIDE_ASSIGN
-                    |
-                    MOD_ASSIGN;
+statement           ::= assignment SEMICOLON
+                        {: System.out.println("assignment"); :}
+                        |
+                        method_cal SEMICOLON
+                        {: System.out.println("method cal"); :}
+                        |
+                        cond_stmt
+                        {: System.out.println("cond_stat"); :}
+                        |
+                        loop_stmt
+                        {: System.out.println("loop_stat"); :}
+                        |
+                        RETURN SEMICOLON
+                        {: System.out.println("return stat"); :}
+                        |
+                        RETURN expr SEMICOLON
+                        {: System.out.println("return expr stat"); :}
+                        |
+                        BREAK SEMICOLON
+                        {: System.out.println("break"); :}
+                        |
+                        CONTINUE SEMICOLON
+                        {: System.out.println("continue"); :}
+                        ;
 
-method_cal      ::= IDENTIFIER LPAREN parameters RPAREN
-                    {: System.out.println("method call"); :}
-                    ;
+assignment          ::= variable assign_mark expr;
 
-parameters      ::= expr | expr COMMA parameters;
+assign_mark         ::= DIRECT_ASSIGN
+                        |
+                        SUM_ASSIGN
+                        |
+                        DIFF_ASSIGN
+                        |
+                        MULT_ASSIGN
+                        |
+                        DIVIDE_ASSIGN
+                        |
+                        MOD_ASSIGN;
 
-cond_stmt       ::= IF LPAREN expr RPAREN block else_part
-                    {: System.out.println("if condition"); :}
-                    |
-                    SWITCH LPAREN IDENTIFIER RPAREN OF COLON
-                    BEGIN case_part DEFAULT COLON block END
-                    {: System.out.println("switch condition"); :}
-                    ;
+method_cal          ::= IDENTIFIER LPAREN parameters RPAREN
+                        {: System.out.println("method call"); :}
+                        ;
 
-else_part       ::=
-                    |
-                    ELSE block
-                    ;
+parameters          ::= expr | expr COMMA parameters;
 
-case_part       ::=
-                    |
-                    CASE INT_CONST COLON block case_part
-                    {: System.out.println("case statement"); :}
-                    ;
+cond_stmt           ::= IF LPAREN expr RPAREN block else_part
+                        {: System.out.println("if condition"); :}
+                        |
+                        SWITCH LPAREN IDENTIFIER RPAREN OF COLON
+                        BEGIN case_part DEFAULT COLON block END
+                        {: System.out.println("switch condition"); :}
+                        |
+                        SWITCH LPAREN IDENTIFIER RPAREN OF COLON
+                        BEGIN case_part END
+                        {: System.out.println("switch condition"); :}
+                        ;
 
-loop_stmt       ::= FOR LPAREN for_init_part SEMICOLON expr SEMICOLON for_step_part RPAREN block
-                    {: System.out.println("for stat"); :}
-                    |
-                    REPEAT block UNTIL LPAREN expr RPAREN SEMICOLON
-                    {: System.out.println("repeat stat"); :}
-                    |
-                    FOREACH LPAREN IDENTIFIER IN expr RPAREN block
-                    {: System.out.println("foreach stat"); :}
-                    ;
+else_part           ::=
+                        |
+                        ELSE block
+                        ;
 
-for_init_part   ::=
-                    |
-                    assignment;
+case_part           ::=
+                        |
+                        CASE INT_CONST COLON block case_part
+                        {: System.out.println("case statement"); :}
+                        ;
 
-for_step_part   ::=
-                    |
-                    assignment
-                    |
-                    expr;
+loop_stmt           ::= FOR LPAREN for_init_part SEMICOLON expr SEMICOLON for_step_part RPAREN block
+                        {: System.out.println("for stat"); :}
+                        |
+                        REPEAT block UNTIL LPAREN expr RPAREN SEMICOLON
+                        {: System.out.println("repeat stat"); :}
+                        |
+                        FOREACH LPAREN IDENTIFIER IN expr RPAREN block
+                        {: System.out.println("foreach stat"); :}
+                        ;
 
-expr            ::= expr:e1 PLUS expr:e2
-                    {: RESULT = new Plus(e1, e2); list.add(RESULT); :}
-                    |
-                    expr:e1 MINUS expr:e2
-                    {: System.out.println("e1 - e2"); :}
-                    |
-                    expr:e1 MULTIPLY expr:e2
-                    {: RESULT = new Multiply(e1, e2); :}
-                    |
-                    expr:e1 DIVIDE expr:e2
-                    {: System.out.println("e1 / e2"); :}
-                    |
-                    expr:e1 MOD expr:e2
-                    {: System.out.println("e1 % e2"); :}
-                    |
-                    expr:e1 BITWISE_AND expr:e2
-                    {: System.out.println("e1 & e2"); :}
-                    |
-                    expr:e1 BITWISE_XOR expr:e2
-                    {: System.out.println("e1 ^ e2"); :}
-                    |
-                    expr:e1 BITWISE_OR expr:e2
-                    {: System.out.println("e1 | e2"); :}
-                    |
-                    expr:e1 EQUAL expr:e2
-                    {: System.out.println("e1 == e2"); :}
-                    |
-                    expr:e1 NOT_EQUAL expr:e2
-                    {: System.out.println("e1 != e2"); :}
-                    |
-                    expr:e1 GREATER_EQUAL expr:e2
-                    {: System.out.println("e1 >= e2"); :}
-                    |
-                    expr:e1 LESS_EQUAL expr:e2
-                    {: System.out.println("e1 <= e2"); :}
-                    |
-                    expr:e1 GREATER expr:e2
-                    {: System.out.println("e1 > e2"); :}
-                    |
-                    expr:e1 LESS expr:e2
-                    {: System.out.println("e1 < e2"); :}
-                    |
-                    expr:e1 AND expr:e2
-                    {: System.out.println("e1 and e2"); :}
-                    |
-                    expr:e1 OR expr:e2
-                    {: System.out.println("e1 or e2"); :}
-                    |
-                    LPAREN expr:val RPAREN
-                    {: RESULT = val; :}
-                    |
-                    simpleVariable
-                    {: System.out.println("simpleVariable"); :}
-                    |
-                    MINUSMINUS simpleVariable
-                    |
-                    PLUSPLUS simpleVariable
-                    |
-                    simpleVariable MINUSMINUS %prec MINUSMINUS_POSTFIX
-                    |
-                    simpleVariable PLUSPLUS %prec PLUSPLUS_POSTFIX
-                    |
-                    method_cal
-                    {: System.out.println("method call"); :}
-                    |
-                    MINUS expr
-                    {: System.out.println("-e"); :}
-                    %prec UNARY_MINUS
-                    |
-                    BITWISE_NOT expr
-                    {: System.out.println("~e"); :}
-                    |
-                    NOT expr:e
-                    {: System.out.println("not e"); :}
-                    |
-                    const_val:val
-                    {: RESULT = val; :}
-                    |
-                    SIZEOF LPAREN baseType RPAREN
-                    ;
+for_init_part       ::=
+                        |
+                        assignment;
 
-baseType            ::= INT
-                    | LONG
-                    | FLOAT
-                    | DOUBLE
-                    | BOOL
-                    | CHAR
-                    | STRING
-                    | IDENTIFIER
-                    ;
+for_step_part       ::=
+                        |
+                        assignment
+                        |
+                        expr;
 
-simpleVariable      ::= IDENTIFIER
-                    |
-                    IDENTIFIER array_part
-                    |
-                    simpleVariable DOT IDENTIFIER
-                    ;
+expr                ::= expr:e1 PLUS expr:e2
+                        {: RESULT = new Plus(e1, e2); list.add(RESULT); :}
+                        |
+                        expr:e1 MINUS expr:e2
+                        {: System.out.println("e1 - e2"); :}
+                        |
+                        expr:e1 MULTIPLY expr:e2
+                        {: RESULT = new Multiply(e1, e2); :}
+                        |
+                        expr:e1 DIVIDE expr:e2
+                        {: System.out.println("e1 / e2"); :}
+                        |
+                        expr:e1 MOD expr:e2
+                        {: System.out.println("e1 % e2"); :}
+                        |
+                        expr:e1 BITWISE_AND expr:e2
+                        {: System.out.println("e1 & e2"); :}
+                        |
+                        expr:e1 BITWISE_XOR expr:e2
+                        {: System.out.println("e1 ^ e2"); :}
+                        |
+                        expr:e1 BITWISE_OR expr:e2
+                        {: System.out.println("e1 | e2"); :}
+                        |
+                        expr:e1 EQUAL expr:e2
+                        {: System.out.println("e1 == e2"); :}
+                        |
+                        expr:e1 NOT_EQUAL expr:e2
+                        {: System.out.println("e1 != e2"); :}
+                        |
+                        expr:e1 GREATER_EQUAL expr:e2
+                        {: System.out.println("e1 >= e2"); :}
+                        |
+                        expr:e1 LESS_EQUAL expr:e2
+                        {: System.out.println("e1 <= e2"); :}
+                        |
+                        expr:e1 GREATER expr:e2
+                        {: System.out.println("e1 > e2"); :}
+                        |
+                        expr:e1 LESS expr:e2
+                        {: System.out.println("e1 < e2"); :}
+                        |
+                        expr:e1 AND expr:e2
+                        {: System.out.println("e1 and e2"); :}
+                        |
+                        expr:e1 OR expr:e2
+                        {: System.out.println("e1 or e2"); :}
+                        |
+                        LPAREN expr:val RPAREN
+                        {: RESULT = val; :}
+                        |
+                        variable
+                        {: System.out.println("variable"); :}
+                        |
+                        MINUSMINUS variable
+                        |
+                        PLUSPLUS variable
+                        |
+                        variable MINUSMINUS %prec MINUSMINUS_POSTFIX
+                        |
+                        variable PLUSPLUS %prec PLUSPLUS_POSTFIX
+                        |
+                        method_cal
+                        {: System.out.println("method call"); :}
+                        |
+                        MINUS expr
+                        {: System.out.println("-e"); :}
+                        %prec UNARY_MINUS
+                        |
+                        BITWISE_NOT expr
+                        {: System.out.println("~e"); :}
+                        |
+                        NOT expr:e
+                        {: System.out.println("not e"); :}
+                        |
+                        const_val:val
+                        {: RESULT = val; :}
+                        |
+                        SIZEOF LPAREN type RPAREN
+                        |
+                        LPAREN base_type RPAREN expr
+                        ;
 
-array_part      ::= LBRACKET expr RBRACKET
-                    |
-                    LBRACKET expr RBRACKET array_part;
+base_type           ::= INT
+                        |
+                        LONG
+                        |
+                        FLOAT
+                        |
+                        DOUBLE
+                        |
+                        BOOL
+                        |
+                        CHAR
+                        |
+                        STRING
+                        ;
 
-const_val       ::= INT_CONST:val
-                    |
-                    LONG_CONST:val
-                    |
-                    REAL_CONST:val
-                    |
-                    CHAR_CONST:val
-                    |
-                    BOOL_CONST:val
-                    |
-                    STRING_CONST:val
-                    ;
+type                ::= base_type | IDENTIFIER;
+
+variable            ::= IDENTIFIER
+                        |
+                        variable array_part_val
+                        |
+                        variable DOT IDENTIFIER
+                        ;
+
+array_part_val      ::= LBRACKET expr RBRACKET
+                        |
+                        LBRACKET expr RBRACKET array_part_val;
+
+const_val           ::= INT_CONST:val
+                        |
+                        LONG_CONST:val
+                        |
+                        DOUBLE_CONST:val
+                        |
+                        FLOAT_CONST:val
+                        |
+                        CHAR_CONST:val
+                        |
+                        BOOL_CONST:val
+                        |
+                        STRING_CONST:val
+                        ;

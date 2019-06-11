@@ -50,9 +50,11 @@ WhiteSpace = {LineTerminator} | [ \t\f]
 
 EndOfLineComment = "##" [^\r\n]* \R?
 
-ReservedKeyword = "function"|"repeat"|"until"|"if"|"of"|"begin"|"end"|"for"|"foreach"|"in"|"int"|"bool"|"auto"|"goto"|"char"|"long"|"else"|"void"|"case"|"enum"|"class"|"union"|"short"|"while"|"const"|"float"|"extern"|"break"|"return"|"string"|"sizeof"|"double"|"signed"|"static"|"switch"|"default"|"typedef"|"continue"|"volatile"|"register"|"record"|"unsigned"|"NULL"|"nullptr"|"new"|"delete"|"public"|"private"|"protected"|"virtual"|"using"|"namespace"
+// removed reserverd: "goto"|"enum"|"class"|"union"|"short"|"signed"|"typedef"|"volatile"|"register"|"unsigned"|"NULL"|"nullptr"|"delete"|"public"|"private"|"protected"|"virtual"|"using"|"namespace"
+ReservedKeyword = "function"|"repeat"|"until"|"if"|"of"|"begin"|"end"|"for"|"foreach"|"in"|"int"|"bool"|"auto"|"char"|"long"|"else"|"void"|"case"|"while"|"const"|"float"|"extern"|"break"|"return"|"string"|"sizeof"|"double"|"static"|"switch"|"default"|"continue"|"record"|"new"
 Identifier = [:jletter:] [:jletterdigit:]*
-Operator = "="|"!="|">"|">="|"<"|"<="|"="|"+="|"-="|"*="|"/="|"%="|"+"|"-"|"*"|"/"|"%"|"not"|"or"|"and"|"|"|"&"|"^"|"~"|"<<"|">>"|"++"|"--"
+// removed operator: "<<"|">>"
+Operator = "="|"!="|">"|">="|"<"|"<="|"="|"+="|"-="|"*="|"/="|"%="|"+"|"-"|"*"|"/"|"%"|"not"|"or"|"and"|"|"|"&"|"^"|"~"|"++"|"--"
 Special = "("|")"|"{"|"}"|"["|"]"|";"|","|"::"|":"|"."|"->"|"*"|"?"
 
 integer = 0 | [-+]?[1-9][0-9]* | [-+]?0(x|X)[0-9A-Fa-f]+ | [-+]?0[0-7]+
@@ -82,21 +84,10 @@ escapeCharacter = "'"{escapeChar}"'"
     {Identifier}                { return symbol("Identifier", Token.getWithRepresentation("identifier").getSym(), yytext()); }
 
     /* literals */
-    {integer}                   {
-                                    try {
-                                        int int_val = Integer.parseInt(yytext());
-                                        return symbol("Integer", Token.getWithRepresentation("int_const").getSym(), int_val);
-                                    } catch (NumberFormatException e) {
-                                        // ignore it
-                                    }
-                                    try {
-                                        long long_val = Long.parseLong(yytext());
-                                        return symbol("Long", Token.getWithRepresentation("long_const").getSym(), long_val);
-                                    } catch (NumberFormatException e) {
-                                        throw new Error("overflow exception: " + yytext() + " is too large");
-                                    }
-                                }
-    {real}                      { return symbol("Real", Token.getWithRepresentation("real_const").getSym(), Double.valueOf(yytext())); }
+    {integer}                   { return symbol("Integer", Token.getWithRepresentation("int_const").getSym(), Integer.parseInt(yytext())); }
+    {integer}[lL]               { return symbol("Long", Token.getWithRepresentation("long_const").getSym(), Long.parseLong(yytext())); }
+    {real}                      { return symbol("Double", Token.getWithRepresentation("double_const").getSym(), Double.valueOf(yytext())); }
+    {real}[fF]                  { return symbol("Float", Token.getWithRepresentation("float_const").getSym(), Float.valueOf(yytext())); }
     {character}                 { return symbol("Character", Token.getWithRepresentation("char_const").getSym(), yytext().substring(1, 2).charAt(0)); }
     {escapeCharacter}           { return symbol("EscapeCharacter", Token.getWithRepresentation("char_const").getSym(), yytext().substring(1, yytext().length() - 1).charAt(0)); }
     \"                          { string.setLength(0); string.append(yytext()); yybegin(STRING); }

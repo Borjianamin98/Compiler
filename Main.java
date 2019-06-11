@@ -2,27 +2,16 @@ import java_cup.runtime.ComplexSymbolFactory;
 import org.objectweb.asm.Opcodes;
 import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.AutoVariableDCL;
-import semantic.syntaxTree.declaration.VariableDCL;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.declaration.method.StartMethodDCL;
-import semantic.syntaxTree.declaration.record.Field;
-import semantic.syntaxTree.declaration.record.RecordTypeDCL;
-import semantic.syntaxTree.declaration.record.SimpleFieldDCL;
-import semantic.syntaxTree.expression.Cast;
 import semantic.syntaxTree.expression.Expression;
-import semantic.syntaxTree.expression.constValue.BooleanConst;
-import semantic.syntaxTree.expression.constValue.DoubleConst;
 import semantic.syntaxTree.expression.constValue.IntegerConst;
 import semantic.syntaxTree.expression.constValue.LongConst;
+import semantic.syntaxTree.expression.constValue.StringConst;
 import semantic.syntaxTree.expression.identifier.ArrayVariable;
-import semantic.syntaxTree.expression.identifier.MemberVariable;
 import semantic.syntaxTree.expression.identifier.SimpleVariable;
 import semantic.syntaxTree.expression.instance.NewArrayInstruction;
-import semantic.syntaxTree.expression.instance.NewRecordInstruction;
-import semantic.syntaxTree.expression.operation.unary.MinusMinusPostfix;
-import semantic.syntaxTree.expression.operation.unary.MinusMinusPrefix;
-import semantic.syntaxTree.expression.operation.unary.PlusPlusPostfix;
-import semantic.syntaxTree.expression.operation.unary.PlusPlusPrefix;
+import semantic.syntaxTree.expression.operation.unary.Len;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.syntaxTree.statement.PrintFunction;
 import semantic.syntaxTree.statement.assignment.DirectAssignment;
@@ -165,8 +154,20 @@ public class Main implements Opcodes {
 //                )
 //        ));
 
-        body.addBlockCode(new AutoVariableDCL("a", false, new IntegerConst(1)));
-        body.addBlockCode(new PrintFunction(new SimpleVariable("a")));
+        List<Expression> dim = new ArrayList<>();
+        dim.add(new IntegerConst(10));
+        dim.add(new IntegerConst(20));
+        body.addBlockCode(new AutoVariableDCL("a", false, new NewArrayInstruction(TypeTree.STRING_NAME, dim)));
+        body.addBlockCode(new DirectAssignment(
+                new ArrayVariable(
+                        new ArrayVariable(new SimpleVariable("a"), new IntegerConst(2))
+                        ,new IntegerConst(1)
+        ), new StringConst("alireza")));
+        body.addBlockCode(new PrintFunction(new Len(
+                new ArrayVariable(
+                        new ArrayVariable(new SimpleVariable("a"), new IntegerConst(2))
+                        ,new IntegerConst(1))
+        )));
 
         body.addBlockCode(new ReturnStatement());
         ClassDCL clazz = new ClassDCL("Tester", null, methodDCLS, null);

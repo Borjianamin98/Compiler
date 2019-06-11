@@ -6,10 +6,15 @@ import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
 import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.hastype.VariableDSCP;
+import semantic.symbolTable.descriptor.type.ArrayTypeDSCP;
+import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
+import semantic.symbolTable.descriptor.type.SimpleTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
+import semantic.syntaxTree.declaration.record.RecordTypeDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.expression.identifier.SimpleVariable;
+import semantic.syntaxTree.expression.identifier.Variable;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.syntaxTree.statement.assignment.DirectAssignment;
 
@@ -37,9 +42,18 @@ public class AutoVariableDCL extends Declaration {
             throw new RuntimeException(getName() + " declared more than one time");
 
         getTypeDSCP();
-        VariableDSCP variableDSCP = new VariableDSCP(getName(), getTypeDSCP(), getTypeDSCP().getSize(),
-                top.getFreeAddress(), isConstant(), true);
-        top.addSymbol(getName(), variableDSCP);
+        Declaration variable;
+        if (defaultValue.getResultType() instanceof SimpleTypeDSCP) {
+            variable = new VariableDCL(getName(), getTypeDSCP().getName(), isConstant(), false);
+        } else if (defaultValue.getResultType() instanceof RecordTypeDSCP) {
+            variable = new VariableDCL(getName(), getTypeDSCP().getName(), isConstant(), false);
+        } else if (defaultValue.getResultType() instanceof ArrayTypeDSCP) {
+            ArrayTypeDSCP arrayTypeDSCP = (ArrayTypeDSCP) defaultValue.getResultType();
+            variable = new ArrayDCL(getName(), arrayTypeDSCP.getBaseType().getName(), arrayTypeDSCP.getDimensions(), isConstant(), false);
+        } else {
+            throw new RuntimeException("Can not detect type for auto variable");
+        }
+        variable.generateCode(currentClass, currentMethod, cv, mv);
         new DirectAssignment(new SimpleVariable(getName()), defaultValue).generateCode(currentClass, currentMethod, cv, mv);
     }
 }

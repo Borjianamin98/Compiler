@@ -1,4 +1,4 @@
-package semantic.syntaxTree.expression.operation.unary;
+package semantic.syntaxTree.expression.operation.unary.prefix_postfix;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;

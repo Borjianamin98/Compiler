@@ -51,24 +51,35 @@ public abstract class TypeDSCP extends DSCP {
             name.deleteCharAt(0);
         }
         String nameString = name.toString();
-        if (nameString.equals(TypeTree.INTEGER_NAME))
-            convName.insert(0, "int");
-        else if (nameString.equals(TypeTree.BOOLEAN_NAME))
-            convName.insert(0, "bool");
-        else if (nameString.equals(TypeTree.LONG_NAME))
-            convName.insert(0, "long");
-        else if (nameString.equals(TypeTree.FLOAT_NAME))
-            convName.insert(0, "float");
-        else if (nameString.equals(TypeTree.DOUBLE_NAME))
-            convName.insert(0, "double");
-        else if (nameString.equals(TypeTree.CHAR_NAME))
-            convName.insert(0, "char");
-        else if (nameString.equals(TypeTree.STRING_NAME))
-            convName.insert(0, "string");
-        else if (nameString.equals(TypeTree.VOID_NAME))
-            convName.insert(0, "void");
-        else
-            convName.insert(0, name.substring(1, name.length() - 1)); // name is like: L(type);
+        switch ((TypeTree.typePrefix + nameString)) {
+            case TypeTree.INTEGER_NAME:
+                convName.insert(0, "int");
+                break;
+            case TypeTree.BOOLEAN_NAME:
+                convName.insert(0, "bool");
+                break;
+            case TypeTree.LONG_NAME:
+                convName.insert(0, "long");
+                break;
+            case TypeTree.FLOAT_NAME:
+                convName.insert(0, "float");
+                break;
+            case TypeTree.DOUBLE_NAME:
+                convName.insert(0, "double");
+                break;
+            case TypeTree.CHAR_NAME:
+                convName.insert(0, "char");
+                break;
+            case TypeTree.STRING_NAME:
+                convName.insert(0, "string");
+                break;
+            case TypeTree.VOID_NAME:
+                convName.insert(0, "void");
+                break;
+            default:
+                convName.insert(0, name.substring(1, name.length() - 1)); // name is like: L(type);
+                break;
+        }
         return convName.toString();
     }
 

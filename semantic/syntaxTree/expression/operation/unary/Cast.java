@@ -1,4 +1,4 @@
-package semantic.syntaxTree.expression;
+package semantic.syntaxTree.expression.operation.unary;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -6,6 +6,7 @@ import semantic.symbolTable.Display;
 import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.type.SimpleTypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
+import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.typeTree.TypeTree;
 

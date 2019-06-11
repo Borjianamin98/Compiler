@@ -38,7 +38,8 @@ public enum Token {
     // Integer & Long & Real & String & Character constant value
     _ic(ParserSym.INT_CONST, "int_const"),
     _lc(ParserSym.LONG_CONST, "long_const"),
-    _rc(ParserSym.REAL_CONST, "real_const"),
+    _dc(ParserSym.DOUBLE_CONST, "double_const"),
+    _fc(ParserSym.FLOAT_CONST, "float_const"),
     _sc(ParserSym.STRING_CONST, "string_const"),
     _cc(ParserSym.CHAR_CONST, "char_const"),
 
