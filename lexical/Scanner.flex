@@ -55,7 +55,7 @@ ReservedKeyword = "function"|"repeat"|"until"|"if"|"of"|"begin"|"end"|"for"|"for
 Identifier = [:jletter:] [:jletterdigit:]*
 // removed operator: "<<"|">>"
 Operator = "="|"!="|">"|">="|"<"|"<="|"="|"+="|"-="|"*="|"/="|"%="|"+"|"-"|"*"|"/"|"%"|"not"|"or"|"and"|"|"|"&"|"^"|"~"|"++"|"--"
-Special = "("|")"|"{"|"}"|"["|"]"|";"|","|"::"|":"|"."|"->"|"*"|"?"
+Special = "("|")"|"{"|"}"|"["|"]"|"[]"|";"|","|"::"|":"|"."|"->"|"*"|"?"
 
 integer = 0 | [-]?[1-9][0-9]* | [-]?0(x|X)[0-9A-Fa-f]+ | [-]?0[0-7]+
 realNormal = [-]?{integer}?"."[0-9]+ | [-]?{integer}"."

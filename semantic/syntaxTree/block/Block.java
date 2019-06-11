@@ -11,13 +11,15 @@ public class Block {
     public Block() {
         this.blockCodes = new ArrayList<>();
     }
-//
-//    public Block(List<BlockCode> blockCodes) {
-//        this.blockCodes = blockCodes;
-//    }
 
     public void addBlockCode(BlockCode blockCode) {
         blockCodes.add(blockCode);
+    }
+
+    public void addBlockCodes(List<BlockCode> codes) {
+        if (codes == null)
+            throw new IllegalArgumentException("Block code must be not null");
+        this.blockCodes.addAll(codes);
     }
 
     public List<BlockCode> getBlockCodes() {

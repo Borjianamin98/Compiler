@@ -37,6 +37,7 @@ public class TypeTree {
     public static final String CHAR_NAME = typePrefix + "C";
     public static final String STRING_NAME = typePrefix + "Ljava/lang/String;";
     public static final String VOID_NAME = typePrefix + "V";
+    public static final String AUTO_NAME = typePrefix + "AUTO";
 
     private static final int INTEGER_SIZE = 1;
     private static final int LONG_SIZE = 2;

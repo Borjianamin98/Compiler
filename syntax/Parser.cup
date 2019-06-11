@@ -3,6 +3,7 @@ import java_cup.runtime.*;
 
 import semantic.syntaxTree.BlockCode;
 import semantic.syntaxTree.block.Block;
+import semantic.syntaxTree.declaration.*;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.expression.identifier.*;
 import semantic.syntaxTree.expression.constValue.*;
@@ -27,7 +28,7 @@ parser code
 {:
     public static List<Expression> list = new ArrayList<>();
     public static ArrayDeque<Object> semanticStack = new ArrayDeque<>();
-    public static Object result;
+    public static Object finalR;
 :}
 
 /* Terminals (tokens returned by the scanner). */
@@ -36,7 +37,7 @@ terminal                                PLUS, MINUS, MULTIPLY, DIVIDE, MOD;
 terminal                                BITWISE_AND, BITWISE_OR, BITWISE_XOR, BITWISE_NOT;
 terminal                                EQUAL, NOT_EQUAL, LESS_EQUAL, LESS, GREATER, GREATER_EQUAL, NOT, AND, OR;
 terminal                                UNARY_MINUS;
-terminal                                LPAREN, RPAREN, LBRACKET, RBRACKET;
+terminal                                LPAREN, RPAREN, LBRACKET, RBRACKET, LRBRACKET;
 terminal String                         IDENTIFIER;
 terminal                                RECORD, FUNCTION, EXTERN;
 terminal                                INT, LONG, FLOAT, DOUBLE, BOOL, CHAR, STRING, VOID, AUTO;
@@ -64,13 +65,14 @@ non terminal Statement                  assignment;
 non terminal Statement                  cond_stmt, loop_stmt;
 non terminal Statement                  statement;
 non terminal Block                      block;
-non terminal BlockCode                  block_body;
+non terminal                            block_body;
 non terminal                            block_part;
 non terminal                            else_part, case_part;
 non terminal                            for_init_part, for_step_part;
-non terminal                            var_declrations, var_dcl, var_dcl_p, const_var_dcl_p;
+non terminal List<VariableDCLFactory>   const_var_dcl_p, var_dcl_p, var_dcl, var_declrations;
 non terminal                            struct_dcl;
-non terminal                            function_dcl, fun_signature, arguments, argument, array_part_no_val, extern_dcl;
+non terminal                            function_dcl, func_signature, arguments, argument, extern_dcl;
+non terminal Integer                    array_part_no_val;
 non terminal Expression                 expr;
 non terminal Expression                 const_val;
 non terminal                            begining;
@@ -107,11 +109,11 @@ program             ::= var_dcl program
 
 extern_dcl          ::= EXTERN typeName IDENTIFIER SEMICOLON;
 
-function_dcl        ::= FUNCTION typeName fun_signature
+function_dcl        ::= FUNCTION typeName func_signature
                         |
-                        FUNCTION VOID fun_signature;
+                        FUNCTION VOID func_signature;
 
-fun_signature       ::= IDENTIFIER LPAREN arguments RPAREN SEMICOLON
+func_signature       ::= IDENTIFIER LPAREN arguments RPAREN SEMICOLON
                         |
                         IDENTIFIER LPAREN RPAREN SEMICOLON
                         |
@@ -131,38 +133,133 @@ argument            ::= typeName IDENTIFIER
                         |
                         typeName IDENTIFIER array_part_no_val;
 
-array_part_no_val   ::= LBRACKET RBRACKET array_part_no_val
+array_part_no_val   ::= LRBRACKET array_part_no_val:count
+                        {: RESULT = 1 + count; :}
                         |
-                        LBRACKET RBRACKET;
+
+                        {: RESULT = 0; :}
+                        ;
 
 struct_dcl          ::= RECORD IDENTIFIER BEGIN var_declrations END RECORD SEMICOLON;
 
-var_declrations     ::= var_dcl var_declrations
+var_declrations     ::= var_dcl:other var_declrations:list
+                        {:
+                        if (list == null)
+                            list = new ArrayList<VariableDCLFactory>();
+                        list.addAll(other == null ? new ArrayList<>() : other);
+                        RESULT = list;
+                        :}
                        |
-                       var_dcl;
+                       var_dcl:other
+                       {: RESULT = other; :}
+                       ;
 
-var_dcl             ::= CONST typeName array_part_no_val const_var_dcl_p SEMICOLON
+var_dcl             ::= CONST typeName:typeName array_part_no_val:dimensions
+                        {:
+                        Parser.semanticStack.addLast(VariableDCLFactory.create()
+                                                        .setConstant(true)
+                                                        .setTypeName(typeName)
+                                                        .setDimensions(dimensions));
+                        :}
+                        const_var_dcl_p:list SEMICOLON
+                        {:
+                        Parser.semanticStack.removeLast();
+                        RESULT = list;
+                        :}
                         |
-                        CONST AUTO const_var_dcl_p SEMICOLON
+                        typeName:typeName array_part_no_val:dimensions
+                        {:
+                        Parser.semanticStack.addLast(VariableDCLFactory.create()
+                                                        .setConstant(false)
+                                                        .setTypeName(typeName)
+                                                        .setDimensions(dimensions));
+                        :}
+                        var_dcl_p:list SEMICOLON
+                        {:
+                        Parser.semanticStack.removeLast();
+                        RESULT = list;
+                        :}
                         |
-                        typeName array_part_no_val var_dcl_p SEMICOLON
+                        CONST AUTO
+                        {:
+                        Parser.semanticStack.addLast(VariableDCLFactory.create()
+                                                        .setConstant(true)
+                                                        .setTypeName(TypeTree.AUTO_NAME));
+                        :}
+                        const_var_dcl_p:list SEMICOLON
+                        {:
+                        Parser.semanticStack.removeLast();
+                        RESULT = list;
+                        :}
                         |
-                        AUTO const_var_dcl_p SEMICOLON
+                        AUTO
+                        {:
+                        Parser.semanticStack.addLast(VariableDCLFactory.create()
+                                                        .setConstant(false)
+                                                        .setTypeName(TypeTree.AUTO_NAME));
+                        :}
+                        const_var_dcl_p:list SEMICOLON
+                        {:
+                        Parser.semanticStack.removeLast();
+                        RESULT = list;
+                        :}
                         ;
 
-const_var_dcl_p     ::= IDENTIFIER DIRECT_ASSIGN expr COMMA const_var_dcl_p
+const_var_dcl_p     ::= IDENTIFIER:variableName DIRECT_ASSIGN expr:e COMMA const_var_dcl_p:list
+                        {:
+                        if (list == null)
+                            list = new ArrayList<VariableDCLFactory>();
+                        VariableDCLFactory factory = (VariableDCLFactory) Parser.semanticStack.getLast();
+                        list.add(factory.copy().setVariableName(variableName).setDefaultValue(e));
+                        RESULT = list;
+                        :}
                         |
-                        IDENTIFIER DIRECT_ASSIGN expr
+                        IDENTIFIER:variableName DIRECT_ASSIGN expr:e
+                        {:
+                        VariableDCLFactory factory = (VariableDCLFactory) Parser.semanticStack.getLast();
+                        RESULT = new ArrayList<VariableDCLFactory>();
+                        RESULT.add(factory.copy().setVariableName(variableName).setDefaultValue(e));
+                        :}
                         ;
 
-var_dcl_p           ::= IDENTIFIER COMMA var_dcl_p
-                        |
-                        IDENTIFIER DIRECT_ASSIGN expr COMMA var_dcl_p
-                        |
-                        IDENTIFIER DIRECT_ASSIGN expr
-                        |
-                        IDENTIFIER;
 
+var_dcl_p           ::= IDENTIFIER:variableName COMMA var_dcl_p:list
+                        {:
+                        if (list == null)
+                            list = new ArrayList<VariableDCLFactory>();
+                        VariableDCLFactory factory = (VariableDCLFactory) Parser.semanticStack.getLast();
+                        list.add(factory.copy().setVariableName(variableName));
+                        RESULT = list;
+                        :}
+                        |
+                        IDENTIFIER:variableName
+                        {:
+                        VariableDCLFactory factory = (VariableDCLFactory) Parser.semanticStack.getLast();
+                        RESULT = new ArrayList<VariableDCLFactory>();
+                        RESULT.add(factory.copy().setVariableName(variableName));
+                        :}
+                        |
+                        IDENTIFIER:variableName DIRECT_ASSIGN expr:e COMMA var_dcl_p:list
+                        {:
+                        if (list == null)
+                            list = new ArrayList<VariableDCLFactory>();
+                        VariableDCLFactory factory = (VariableDCLFactory) Parser.semanticStack.getLast();
+                        list.add(factory.copy().setVariableName(variableName).setDefaultValue(e));
+                        RESULT = list;
+                        :}
+                        |
+                        IDENTIFIER:variableName DIRECT_ASSIGN expr:e
+                        {:
+                        VariableDCLFactory factory = (VariableDCLFactory) Parser.semanticStack.getLast();
+                        RESULT = new ArrayList<VariableDCLFactory>();
+                        RESULT.add(factory.copy().setVariableName(variableName).setDefaultValue(e));
+                        :}
+                        ;
+
+
+begining            ::= block:bl
+                        {: finalR = bl; :}
+                        ;
 
 block               ::= BEGIN
                         {: Parser.semanticStack.addLast(new Block()); :}
@@ -175,18 +272,24 @@ block               ::= BEGIN
                         ;
 
 
-block_part          ::= block_body:blockCode
-                        {: ((Block) Parser.semanticStack.getLast()).addBlockCode(blockCode); :}
+block_part          ::= block_body
                         |
-                        block_body:blockCode block_part
-                        {: ((Block) Parser.semanticStack.getLast()).addBlockCode(blockCode); :}
+                        block_body block_part
                         ;
 
-
-block_body          ::= var_dcl
+block_body          ::= var_dcl:list
+                        {:
+                        Block currentBlock = (Block) Parser.semanticStack.getLast();
+                        for (VariableDCLFactory variableDCLFactory : list) {
+                            currentBlock.addBlockCodes(variableDCLFactory.createMethodVariable());
+                        }
+                        :}
                         |
                         statement:stat
-                        {: RESULT = stat; :}
+                        {:
+                        Block currentBlock = (Block) Parser.semanticStack.getLast();
+                        currentBlock.addBlockCode(stat);
+                        :}
                         ;
 
 statement           ::= assignment:stat SEMICOLON
@@ -281,10 +384,6 @@ for_step_part       ::=
                         assignment
                         |
                         expr;
-
-begining            ::= expr:e
-                        {: result = e; :}
-                        ;
 
 expr                ::= expr:e1 PLUS expr:e2
                         {: RESULT = new Plus(e1, e2); :}
@@ -407,13 +506,13 @@ typeName                ::= base_type:typeName
                         ;
 
 variable            ::= IDENTIFIER:name
-                        {: new SimpleVariable(name); :}
+                        {: RESULT = new SimpleVariable(name); :}
                         |
                         variable:var LBRACKET expr:requestedDimension RBRACKET
-                        {: new ArrayVariable(var, requestedDimension); :}
+                        {: RESULT = new ArrayVariable(var, requestedDimension); :}
                         |
                         variable:parent DOT IDENTIFIER:memberName
-                        {: new MemberVariable(parent, memberName); :}
+                        {: RESULT = new MemberVariable(parent, memberName); :}
                         ;
 
 const_val           ::= INT_CONST:val

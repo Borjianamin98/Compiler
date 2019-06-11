@@ -9,9 +9,9 @@ import java.util.Optional;
 
 public class Parameter {
     protected String name;
-    private String baseType;
-    private int dimensions;
-    private TypeDSCP baseTypeDSCP;
+    protected String baseType;
+    protected int dimensions;
+    protected TypeDSCP baseTypeDSCP;
 
     public Parameter(String name, String baseType, int dimensions) {
         this.name = name;

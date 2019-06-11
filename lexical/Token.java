@@ -61,7 +61,7 @@ public enum Token {
     // special
     _leftParen(ParserSym.LPAREN, "("), _rightParen(ParserSym.RPAREN, ")"),
     //    _openCurlyBracket(SubType.Special, "{"), _closeCurlyBracket(SubType.Special, "}"),
-    _leftBracket(ParserSym.LBRACKET, "["), _rightBracket(ParserSym.RBRACKET, "]"),
+    _leftBracket(ParserSym.LBRACKET, "["), _rightBracket(ParserSym.RBRACKET, "]"), _leftRightBracket(ParserSym.LRBRACKET, "[]"),
     _semicolon(ParserSym.SEMICOLON, ";"), _comma(ParserSym.COMMA, ","),
 //    _twocolon(SubType.Special, "::"),
     _colon(ParserSym.COLON, ":"),
