@@ -22,6 +22,7 @@ import semantic.syntaxTree.expression.operation.arithmetic.Reminder;
 import semantic.syntaxTree.expression.operation.bitwise.BitwiseAnd;
 import semantic.syntaxTree.expression.operation.bitwise.BitwiseOr;
 import semantic.syntaxTree.expression.operation.logical.Or;
+import semantic.syntaxTree.expression.operation.relational.*;
 import semantic.syntaxTree.expression.operation.unary.BitwiseNot;
 import semantic.syntaxTree.expression.operation.unary.Len;
 import semantic.syntaxTree.expression.operation.unary.Neg;
@@ -203,10 +204,10 @@ public class Main implements Opcodes {
 //                )
 //                ));
         List<Argument> args = new ArrayList<>();
-        args.add(new Argument("x", TypeTree.INTEGER_NAME, 0));
-        args.add(new Argument("y", TypeTree.INTEGER_NAME, 0));
+        args.add(new Argument("x", TypeTree.LONG_NAME, 0));
+        args.add(new Argument("y", TypeTree.LONG_NAME, 0));
         Block b = new Block();
-        b.addBlockCode(new AutoVariableDCL("z", false, new Or(new SimpleVariable("x"), new SimpleVariable("y"))));
+        b.addBlockCode(new AutoVariableDCL("z", false, new NotEqual(new SimpleVariable("x"), new SimpleVariable("y"))));
         b.addBlockCode(new ReturnStatement());
         MethodDCL m = new MethodDCL("Tester", "test", args, b, true);
         body.addBlockCode(m);
