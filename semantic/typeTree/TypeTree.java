@@ -42,7 +42,7 @@ public class TypeTree {
     private static final int FLOAT_SIZE = 1;
     private static final int DOUBLE_SIZE = 2;
     private static final int CHAR_SIZE = 1;
-    private static final int STRING_SIZE = -1;
+    private static final int STRING_SIZE = 1;
 
     static {
         wideningTree.put(DOUBLE_DSCP, new TypeNode(null, DOUBLE_DSCP, 0));

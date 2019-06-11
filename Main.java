@@ -5,13 +5,18 @@ import semantic.syntaxTree.declaration.AutoVariableDCL;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.declaration.method.StartMethodDCL;
 import semantic.syntaxTree.expression.Expression;
+import semantic.syntaxTree.expression.constValue.DoubleConst;
 import semantic.syntaxTree.expression.constValue.IntegerConst;
 import semantic.syntaxTree.expression.constValue.LongConst;
 import semantic.syntaxTree.expression.constValue.StringConst;
 import semantic.syntaxTree.expression.identifier.ArrayVariable;
+import semantic.syntaxTree.expression.identifier.SimpleType;
 import semantic.syntaxTree.expression.identifier.SimpleVariable;
 import semantic.syntaxTree.expression.instance.NewArrayInstruction;
+import semantic.syntaxTree.expression.operation.unary.BitwiseNot;
 import semantic.syntaxTree.expression.operation.unary.Len;
+import semantic.syntaxTree.expression.operation.unary.Neg;
+import semantic.syntaxTree.expression.operation.unary.Sizeof;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.syntaxTree.statement.PrintFunction;
 import semantic.syntaxTree.statement.assignment.DirectAssignment;
@@ -154,20 +159,22 @@ public class Main implements Opcodes {
 //                )
 //        ));
 
-        List<Expression> dim = new ArrayList<>();
-        dim.add(new IntegerConst(10));
-        dim.add(new IntegerConst(20));
-        body.addBlockCode(new AutoVariableDCL("a", false, new NewArrayInstruction(TypeTree.STRING_NAME, dim)));
-        body.addBlockCode(new DirectAssignment(
-                new ArrayVariable(
-                        new ArrayVariable(new SimpleVariable("a"), new IntegerConst(2))
-                        ,new IntegerConst(1)
-        ), new StringConst("alireza")));
-        body.addBlockCode(new PrintFunction(new Len(
-                new ArrayVariable(
-                        new ArrayVariable(new SimpleVariable("a"), new IntegerConst(2))
-                        ,new IntegerConst(1))
-        )));
+//        List<Expression> dim = new ArrayList<>();
+//        dim.add(new IntegerConst(10));
+//        dim.add(new IntegerConst(20));
+//        body.addBlockCode(new AutoVariableDCL("a", false, new NewArrayInstruction(TypeTree.STRING_NAME, dim)));
+//        body.addBlockCode(new DirectAssignment(
+//                new ArrayVariable(
+//                        new ArrayVariable(new SimpleVariable("a"), new IntegerConst(2))
+//                        ,new IntegerConst(1)
+//        ), new StringConst("alireza")));
+//        body.addBlockCode(new PrintFunction(new Len(
+//                new ArrayVariable(
+//                        new ArrayVariable(new SimpleVariable("a"), new IntegerConst(2))
+//                        ,new IntegerConst(1))
+//        )));
+
+        body.addBlockCode(new AutoVariableDCL("a", false, new Sizeof(new SimpleType(TypeTree.LONG_NAME))));
 
         body.addBlockCode(new ReturnStatement());
         ClassDCL clazz = new ClassDCL("Tester", null, methodDCLS, null);

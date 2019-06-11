@@ -257,7 +257,7 @@ for_step_part       ::=
                         expr;
 
 expr                ::= expr:e1 PLUS expr:e2
-                        {: RESULT = new Plus(e1, e2); list.add(RESULT); :}
+                        {: RESULT = new Plus(e1, e2); :}
                         |
                         expr:e1 MINUS expr:e2
                         {: System.out.println("e1 - e2"); :}

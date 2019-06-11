@@ -23,19 +23,20 @@ public class Len extends Expression {
 
     @Override
     public SimpleTypeDSCP getResultType() {
+        if (!(operand.getResultType() instanceof ArrayTypeDSCP) || !TypeTree.isString(operand.getResultType()))
+            throw new RuntimeException("len function can call only on string and array");
         return TypeTree.INTEGER_DSCP;
     }
 
     @Override
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+        getResultType();
         if (operand.getResultType() instanceof ArrayTypeDSCP) {
             operand.generateCode(currentClass, currentMethod, cv, mv);
             mv.visitInsn(Opcodes.ARRAYLENGTH);
         } else if (TypeTree.isString(operand.getResultType())) {
             operand.generateCode(currentClass, currentMethod, cv, mv);
             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/String", "length", "()I", false);
-        } else {
-            throw new RuntimeException("len function can call only on string and array");
         }
     }
 }
