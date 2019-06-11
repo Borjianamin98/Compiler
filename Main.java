@@ -3,6 +3,7 @@ import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Display;
 import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.AutoVariableDCL;
+import semantic.syntaxTree.declaration.method.Argument;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.declaration.method.StartMethodDCL;
 import semantic.syntaxTree.expression.Expression;
@@ -18,6 +19,9 @@ import semantic.syntaxTree.expression.operation.arithmetic.Divide;
 import semantic.syntaxTree.expression.operation.arithmetic.Multiply;
 import semantic.syntaxTree.expression.operation.arithmetic.Plus;
 import semantic.syntaxTree.expression.operation.arithmetic.Reminder;
+import semantic.syntaxTree.expression.operation.bitwise.BitwiseAnd;
+import semantic.syntaxTree.expression.operation.bitwise.BitwiseOr;
+import semantic.syntaxTree.expression.operation.logical.Or;
 import semantic.syntaxTree.expression.operation.unary.BitwiseNot;
 import semantic.syntaxTree.expression.operation.unary.Len;
 import semantic.syntaxTree.expression.operation.unary.Neg;
@@ -41,6 +45,7 @@ public class Main implements Opcodes {
 //        while ((symbol = (ComplexSymbolFactory.ComplexSymbol) scanner.next_token()) != null) {
 //            System.out.println(symbol.getName() + " " + Token.getWithSym(symbol.sym) + " " + symbol.value);
 //        }
+
         // order of initialization is important
         Display.init();
         TypeTree.init();
@@ -182,21 +187,29 @@ public class Main implements Opcodes {
 //                        ,new IntegerConst(1))
 //        )));
 
-        body.addBlockCode(new AutoVariableDCL("a", false,
-                new Reminder(
-                        new Divide(
-                                new Plus(
-                                        new IntegerConst(2)
-                                        ,
-                                        new Multiply(new IntegerConst(5), new IntegerConst(6))
-                                )
-                                ,
-                                new IntegerConst(2)
-                        )
-                        ,
-                        new LongConst(5)
-                )
-                ));
+//        body.addBlockCode(new AutoVariableDCL("a", false,
+//                new Reminder(
+//                        new Divide(
+//                                new Plus(
+//                                        new IntegerConst(2)
+//                                        ,
+//                                        new Multiply(new IntegerConst(5), new IntegerConst(6))
+//                                )
+//                                ,
+//                                new IntegerConst(2)
+//                        )
+//                        ,
+//                        new LongConst(5)
+//                )
+//                ));
+        List<Argument> args = new ArrayList<>();
+        args.add(new Argument("x", TypeTree.INTEGER_NAME, 0));
+        args.add(new Argument("y", TypeTree.INTEGER_NAME, 0));
+        Block b = new Block();
+        b.addBlockCode(new AutoVariableDCL("z", false, new Or(new SimpleVariable("x"), new SimpleVariable("y"))));
+        b.addBlockCode(new ReturnStatement());
+        MethodDCL m = new MethodDCL("Tester", "test", args, b, true);
+        body.addBlockCode(m);
 
         body.addBlockCode(new ReturnStatement());
         ClassDCL clazz = new ClassDCL("Tester", null, methodDCLS, null);
