@@ -10,6 +10,7 @@ import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.declaration.method.StartMethodDCL;
 import semantic.syntaxTree.declaration.record.Field;
 import semantic.syntaxTree.expression.Expression;
+import semantic.syntaxTree.expression.call.MethodCall;
 import semantic.syntaxTree.expression.identifier.SimpleVariable;
 import semantic.syntaxTree.expression.operation.relational.*;
 import semantic.syntaxTree.program.ClassDCL;
@@ -48,8 +49,6 @@ public class Main implements Opcodes {
             methodDCLS.add(new StartMethodDCL("Tester", body));
 
 //        body.addBlockCode((BlockCode) Parser.result);
-
-
 
             body.addBlockCode(new ReturnStatement());
 //            List<Field> fields = new ArrayList<>();

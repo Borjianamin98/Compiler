@@ -5,6 +5,7 @@ import semantic.syntaxTree.BlockCode;
 import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.*;
 import semantic.syntaxTree.expression.Expression;
+import semantic.syntaxTree.expression.call.*;
 import semantic.syntaxTree.expression.identifier.*;
 import semantic.syntaxTree.expression.constValue.*;
 import semantic.syntaxTree.expression.operation.arithmetic.*;
@@ -55,10 +56,13 @@ terminal Float                          FLOAT_CONST;
 terminal Integer                        BOOL_CONST;
 terminal Character                      CHAR_CONST;
 terminal String                         STRING_CONST;
+terminal                                CAST_PREC;
+terminal                                PRINTLN;
 
 /* Non terminals */
 non terminal                            program;
-non terminal                            method_cal, parameters;
+non terminal Expression                 method_cal;
+non terminal List<Expression>           parameters;
 non terminal Variable                   variable;
 non terminal String                     base_type, typeName;
 non terminal Statement                  assignment;
@@ -78,21 +82,25 @@ non terminal Expression                 const_val;
 non terminal                            begining;
 
 /* Precedences */
+precedence right MULT_ASSIGN, DIVIDE_ASSIGN, MOD_ASSIGN;
+precedence right SUM_ASSIGN, DIFF_ASSIGN;
 precedence left OR;
 precedence left AND;
 precedence left BITWISE_OR;
 precedence left BITWISE_XOR;
 precedence left BITWISE_AND;
-precedence nonassoc LESS, LESS_EQUAL;
-precedence nonassoc GREATER, GREATER_EQUAL;
 precedence nonassoc EQUAL, NOT_EQUAL;
+precedence nonassoc GREATER, GREATER_EQUAL;
+precedence nonassoc LESS, LESS_EQUAL;
 precedence left PLUS, MINUS;
 precedence left MULTIPLY, DIVIDE, MOD;
-precedence left UNARY_MINUS;
+precedence left SIZEOF;
+precedence left CAST_PREC;
 precedence right BITWISE_NOT, NOT;
-precedence left DOT;
-precedence left LBRACKET;
+precedence left UNARY_MINUS;
+//precedence left LBRACKET;
 precedence nonassoc MINUSMINUS, PLUSPLUS;
+precedence left DOT;
 precedence nonassoc MINUSMINUS_POSTFIX, PLUSPLUS_POSTFIX;
 
 /* The grammar */
@@ -290,13 +298,29 @@ block_body          ::= var_dcl:list
                         Block currentBlock = (Block) Parser.semanticStack.getLast();
                         currentBlock.addBlockCode(stat);
                         :}
+                        |
+                        method_cal:methodCall SEMICOLON
+                        {:
+                        Block currentBlock = (Block) Parser.semanticStack.getLast();
+                        ((MethodCall) methodCall).setDiscardResult(true);
+                        currentBlock.addBlockCode((BlockCode) methodCall);
+                        :}
+                        |
+                        PRINTLN LPAREN expr:e RPAREN SEMICOLON
+                        {:
+                        Block currentBlock = (Block) Parser.semanticStack.getLast();
+                        currentBlock.addBlockCode(new PrintFunction(e));
+                        :}
+                        |
+                        PRINTLN LPAREN RPAREN SEMICOLON
+                        {:
+                        Block currentBlock = (Block) Parser.semanticStack.getLast();
+                        currentBlock.addBlockCode(new PrintFunction());
+                        :}
                         ;
 
 statement           ::= assignment:stat SEMICOLON
                         {: RESULT = stat; :}
-                        |
-                        method_cal SEMICOLON
-                        {: System.out.println("method cal"); :}
                         |
                         cond_stmt
                         {: System.out.println("cond_stat"); :}
@@ -336,11 +360,19 @@ assignment          ::= variable:var DIRECT_ASSIGN expr:e
                         {: RESULT = new ReminderAssignment(var, e); :}
                         ;
 
-method_cal          ::= IDENTIFIER LPAREN parameters RPAREN
-                        {: System.out.println("method call"); :}
+method_cal          ::= IDENTIFIER:methodName LPAREN parameters:parms RPAREN
+                        {: RESULT = new MethodCall(methodName, parms); :}
                         ;
 
-parameters          ::= expr | expr COMMA parameters;
+parameters          ::= expr:e
+                        {: RESULT = new ArrayList<Expression>(e); :}
+                        |
+                        expr:e COMMA parameters:list
+                        {:
+                        list.add(e);
+                        RESULT = list;
+                        :}
+                        ;
 
 cond_stmt           ::= IF LPAREN expr RPAREN block else_part
                         {: System.out.println("if condition"); :}
@@ -474,6 +506,7 @@ expr                ::= expr:e1 PLUS expr:e2
                         |
                         LPAREN base_type:typeName RPAREN expr:e
                         {: RESULT = new Cast(typeName, e); :}
+                        %prec CAST_PREC
                         ;
 
 base_type           ::= INT

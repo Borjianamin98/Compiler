@@ -28,6 +28,7 @@ public enum Token {
     _continue(ParserSym.CONTINUE), _break(ParserSym.BREAK), _return(ParserSym.RETURN),
 //    _NULL(SubType.Reserved), _nullptr(SubType.Reserved),
     _true(ParserSym.BOOL_CONST, "true"), _false(ParserSym.BOOL_CONST, "false"),
+    _println(ParserSym.PRINTLN, "println"),
 //    _new(SubType.Reserved), _delete(SubType.Reserved),
 //    _using(SubType.Reserved), _namespace(SubType.Reserved),
 
@@ -35,7 +36,7 @@ public enum Token {
     // Identifier
     _id(ParserSym.IDENTIFIER, "identifier"),
 
-    // Integer & Long & Real & String & Character constant value
+    // Integer & Long & Double & Float & String & Character constant value
     _ic(ParserSym.INT_CONST, "int_const"),
     _lc(ParserSym.LONG_CONST, "long_const"),
     _dc(ParserSym.DOUBLE_CONST, "double_const"),
@@ -60,7 +61,6 @@ public enum Token {
 
     // special
     _leftParen(ParserSym.LPAREN, "("), _rightParen(ParserSym.RPAREN, ")"),
-    //    _openCurlyBracket(SubType.Special, "{"), _closeCurlyBracket(SubType.Special, "}"),
     _leftBracket(ParserSym.LBRACKET, "["), _rightBracket(ParserSym.RBRACKET, "]"), _leftRightBracket(ParserSym.LRBRACKET, "[]"),
     _semicolon(ParserSym.SEMICOLON, ";"), _comma(ParserSym.COMMA, ","),
 //    _twocolon(SubType.Special, "::"),

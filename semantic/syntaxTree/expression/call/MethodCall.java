@@ -24,10 +24,21 @@ public class MethodCall extends Expression implements BlockCode {
     private String methodName;
     private List<Expression> parameters;
     private MethodDSCP methodDSCP;
+    /**
+     * if result of method must be discarded, you must set this to true
+     * so result of function (if exists) will be pop from operand stack
+     * this will set with parser, but if you test it by your own, set it
+     * to true
+     */
+    private boolean discardResult;
 
     public MethodCall(String methodName, List<Expression> parameters) {
         this.methodName = methodName;
         this.parameters = parameters;
+    }
+
+    public void setDiscardResult(boolean discardResult) {
+        this.discardResult = discardResult;
     }
 
     @Override
@@ -95,5 +106,9 @@ public class MethodCall extends Expression implements BlockCode {
         // invoke method
         mv.visitMethodInsn(Opcodes.INVOKESTATIC, getTypeDSCP().getOwner(), getTypeDSCP().getName(),
                 methodDSCP.getDescriptor(indexOfOverloadMethod), false);
+
+        if (getTypeDSCP().hasReturn() && discardResult) {
+            mv.visitInsn(Opcodes.POP);
+        }
     }
 }

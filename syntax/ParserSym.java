@@ -16,6 +16,7 @@ public class ParserSym {
   public static final int BOOL_CONST = 75;
   public static final int FLOAT_CONST = 74;
   public static final int UNTIL = 66;
+  public static final int CAST_PREC = 78;
   public static final int BITWISE_OR = 9;
   public static final int SIZEOF = 69;
   public static final int COMMA = 41;
@@ -31,6 +32,7 @@ public class ParserSym {
   public static final int FLOAT = 33;
   public static final int DOUBLE_CONST = 73;
   public static final int RECORD = 28;
+  public static final int PRINTLN = 79;
   public static final int MOD = 7;
   public static final int MULTIPLY = 5;
   public static final int DIFF_ASSIGN = 49;
@@ -164,7 +166,9 @@ public class ParserSym {
   "FLOAT_CONST",
   "BOOL_CONST",
   "CHAR_CONST",
-  "STRING_CONST"
+  "STRING_CONST",
+  "CAST_PREC",
+  "PRINTLN"
   };
 }
 
