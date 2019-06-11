@@ -12,20 +12,23 @@ import semantic.typeTree.TypeTree;
 
 public class Plus extends Arithmetic {
     public Plus(Expression firstOperand, Expression secondOperand) {
-        super("+", firstOperand, secondOperand);
+        super("+", "ADD", firstOperand, secondOperand);
     }
 
     @Override
     public TypeDSCP getResultType() {
-        if (!getFirstOperand().getResultType().isPrimitive() || !getSecondOperand().getResultType().isPrimitive())
-            throw new RuntimeException(String.format("Bad operand types for binary operator '%s'\n  first type: %s\n  second type: %s",
-                    getArithmeticSign(), getFirstOperand().getResultType().getConventionalName(), getSecondOperand().getResultType().getConventionalName()));
-        // handle special case which one of operand is string
-        if (getFirstOperand().getResultType().getTypeCode() == TypeTree.STRING_DSCP.getTypeCode() ||
-                getSecondOperand().getResultType().getTypeCode() == TypeTree.STRING_DSCP.getTypeCode())
-            return TypeTree.STRING_DSCP;
-        else
-            return TypeTree.max(getFirstOperand().getResultType(), getSecondOperand().getResultType());
+        if (resultType == null) {
+            if (!getFirstOperand().getResultType().isPrimitive() || !getSecondOperand().getResultType().isPrimitive())
+                throw new RuntimeException(String.format("Bad operand types for binary operator '%s'\n  first type: %s\n  second type: %s",
+                        getArithmeticSign(), getFirstOperand().getResultType().getConventionalName(), getSecondOperand().getResultType().getConventionalName()));
+            // handle special case which one of operand is string
+            if (getFirstOperand().getResultType().getTypeCode() == TypeTree.STRING_DSCP.getTypeCode() ||
+                    getSecondOperand().getResultType().getTypeCode() == TypeTree.STRING_DSCP.getTypeCode())
+                resultType = TypeTree.STRING_DSCP;
+            else
+                resultType = TypeTree.max(getFirstOperand().getResultType(), getSecondOperand().getResultType());
+        }
+        return resultType;
     }
 
     @Override
@@ -41,24 +44,16 @@ public class Plus extends Arithmetic {
             mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false);
 
             getFirstOperand().generateCode(currentClass, currentMethod, cv, mv);
-//            TypeTree.widen(mv, getFirstOperand().getResultType(), getResultType());
             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(" +
                     Utility.getDescriptor(getFirstOperand().getResultType(), 0) + ")Ljava/lang/StringBuilder;", false);
 
             getSecondOperand().generateCode(currentClass, currentMethod, cv, mv);
-//            TypeTree.widen(mv, getSecondOperand().getResultType(), getResultType());
             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(" +
                     Utility.getDescriptor(getSecondOperand().getResultType(), 0) + ")Ljava/lang/StringBuilder;", false);
 
             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false);
         } else {
-            getFirstOperand().generateCode(currentClass, currentMethod, cv, mv);
-            TypeTree.widen(mv, getFirstOperand().getResultType(), getResultType());
-
-            getSecondOperand().generateCode(currentClass, currentMethod, cv, mv);
-            TypeTree.widen(mv, getSecondOperand().getResultType(), getResultType());
-
-            mv.visitInsn(Utility.getOpcode(getResultType(), "ADD"));
+            super.generateCode(currentClass, currentMethod, cv, mv);
         }
     }
 }

@@ -11,7 +11,7 @@ public class Display {
     private static List<SymbolTable> displayList = new ArrayList<>();
     static SymbolTable mainSymbolTable = new SymbolTable();
 
-    static {
+    public static void init() {
         SymbolTable.addType(TypeTree.INTEGER_NAME, TypeTree.INTEGER_DSCP);
         SymbolTable.addType(TypeTree.BOOLEAN_NAME, TypeTree.BOOLEAN_DSCP);
         SymbolTable.addType(TypeTree.LONG_NAME, TypeTree.LONG_DSCP);

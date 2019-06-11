@@ -1,5 +1,6 @@
 import java_cup.runtime.ComplexSymbolFactory;
 import org.objectweb.asm.Opcodes;
+import semantic.symbolTable.Display;
 import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.AutoVariableDCL;
 import semantic.syntaxTree.declaration.method.MethodDCL;
@@ -13,6 +14,10 @@ import semantic.syntaxTree.expression.identifier.ArrayVariable;
 import semantic.syntaxTree.expression.identifier.SimpleType;
 import semantic.syntaxTree.expression.identifier.SimpleVariable;
 import semantic.syntaxTree.expression.instance.NewArrayInstruction;
+import semantic.syntaxTree.expression.operation.arithmetic.Divide;
+import semantic.syntaxTree.expression.operation.arithmetic.Multiply;
+import semantic.syntaxTree.expression.operation.arithmetic.Plus;
+import semantic.syntaxTree.expression.operation.arithmetic.Reminder;
 import semantic.syntaxTree.expression.operation.unary.BitwiseNot;
 import semantic.syntaxTree.expression.operation.unary.Len;
 import semantic.syntaxTree.expression.operation.unary.Neg;
@@ -36,6 +41,9 @@ public class Main implements Opcodes {
 //        while ((symbol = (ComplexSymbolFactory.ComplexSymbol) scanner.next_token()) != null) {
 //            System.out.println(symbol.getName() + " " + Token.getWithSym(symbol.sym) + " " + symbol.value);
 //        }
+        // order of initialization is important
+        Display.init();
+        TypeTree.init();
         parseInput(symbolFactory);
     }
 
@@ -174,7 +182,21 @@ public class Main implements Opcodes {
 //                        ,new IntegerConst(1))
 //        )));
 
-        body.addBlockCode(new AutoVariableDCL("a", false, new Sizeof(new SimpleType(TypeTree.LONG_NAME))));
+        body.addBlockCode(new AutoVariableDCL("a", false,
+                new Reminder(
+                        new Divide(
+                                new Plus(
+                                        new IntegerConst(2)
+                                        ,
+                                        new Multiply(new IntegerConst(5), new IntegerConst(6))
+                                )
+                                ,
+                                new IntegerConst(2)
+                        )
+                        ,
+                        new LongConst(5)
+                )
+                ));
 
         body.addBlockCode(new ReturnStatement());
         ClassDCL clazz = new ClassDCL("Tester", null, methodDCLS, null);
