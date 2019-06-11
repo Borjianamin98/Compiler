@@ -44,7 +44,7 @@ public class ArrayVariable extends Variable {
         requestedDimension.generateCode(currentClass, currentMethod, cv, mv);
         TypeTree.widen(mv, requestedDimension.getResultType(), TypeTree.INTEGER_DSCP);
 
-        mv.visitInsn(Utility.getOpcode(arrayTypeDSCP.getInternalType().getTypeCode(), "ALOAD"));
+        mv.visitInsn(Utility.getOpcode(arrayTypeDSCP.getInternalType(), "ALOAD"));
     }
 
     @Override
@@ -62,7 +62,7 @@ public class ArrayVariable extends Variable {
         value.generateCode(currentClass, currentMethod, cv, mv);
         TypeTree.widen(mv, value.getResultType(), getResultType()); // right value must be converted to type of variable
 
-        mv.visitInsn(Utility.getOpcode(arrayTypeDSCP.getInternalType().getTypeCode(), "ASTORE"));
+        mv.visitInsn(Utility.getOpcode(arrayTypeDSCP.getInternalType(), "ASTORE"));
     }
 
     @Override

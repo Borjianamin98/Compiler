@@ -23,6 +23,6 @@ public class Minus extends Arithmetic {
         getSecondOperand().generateCode(currentClass, currentMethod, cv, mv);
         TypeTree.widen(mv, getSecondOperand().getResultType(), getResultType());
 
-        mv.visitInsn(Utility.getOpcode(getResultType().getTypeCode(), "SUB"));
+        mv.visitInsn(Utility.getOpcode(getResultType(), "SUB"));
     }
 }

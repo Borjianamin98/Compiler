@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.List;
 
 public class RecordTypeDCL extends Declaration {
-    private RecordTypeDSCP typeDSCP;
     private List<Field> fields;
 
     public RecordTypeDCL(String name, List<Field> fields) {

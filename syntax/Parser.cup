@@ -57,9 +57,9 @@ non terminal Block          block;
 non terminal                block_body, block_part;
 non terminal                else_part, case_part;
 non terminal                for_init_part, for_step_part;
-non terminal                var_declrations, var_dcl, var_dcl_part, var_dcl_cnt;
+non terminal                var_declrations, var_dcl, var_dcl_p, const_var_dcl_p;
 non terminal                struct_dcl;
-non terminal                function_dcl, arguments, argument, call_array_part, extern_dcl;
+non terminal                function_dcl, fun_signature, arguments, argument, call_array_part, extern_dcl;
 non terminal Expression     expr;
 non terminal Expression     const_val;
 
@@ -93,17 +93,17 @@ program         ::= var_dcl program
 
 extern_dcl      ::= EXTERN baseType IDENTIFIER SEMICOLON;
 
-function_dcl    ::= FUNCTION baseType IDENTIFIER LPAREN arguments RPAREN SEMICOLON
-                    {: System.out.println("function prototype"); :}
+function_dcl    ::= FUNCTION baseType fun_signature
                     |
-                    FUNCTION baseType IDENTIFIER LPAREN RPAREN SEMICOLON
-                    {: System.out.println("function prototype"); :}
+                    FUNCTION VOID fun_signature;
+
+fun_signature   ::= IDENTIFIER LPAREN arguments RPAREN SEMICOLON
                     |
-                    FUNCTION baseType IDENTIFIER LPAREN arguments RPAREN block
-                    {: System.out.println("function declaration"); :}
+                    IDENTIFIER LPAREN RPAREN SEMICOLON
                     |
-                    FUNCTION baseType IDENTIFIER LPAREN RPAREN block
-                    {: System.out.println("function declaration"); :}
+                    IDENTIFIER LPAREN arguments RPAREN block
+                    |
+                    IDENTIFIER LPAREN RPAREN block
                     ;
 
 arguments       ::= argument COMMA arguments
@@ -127,23 +127,27 @@ var_declrations ::= var_dcl var_declrations
                    |
                    var_dcl;
 
-var_dcl         ::= CONST baseType var_dcl_part SEMICOLON
+var_dcl         ::= CONST baseType const_var_dcl_p SEMICOLON
                     |
-                    baseType var_dcl_part SEMICOLON
+                    CONST AUTO const_var_dcl_p SEMICOLON
+                    |
+                    baseType var_dcl_p SEMICOLON
+                    |
+                    AUTO const_var_dcl_p SEMICOLON
                     ;
 
-var_dcl_part    ::= var_dcl_cnt COMMA var_dcl_part
+const_var_dcl_p ::= IDENTIFIER DIRECT_ASSIGN expr COMMA const_var_dcl_p
                     |
-                    var_dcl_cnt;
+                    IDENTIFIER DIRECT_ASSIGN expr
+                    ;
 
-
-var_dcl_cnt     ::= IDENTIFIER:name
-                    {:
-//                        DSCP typeDSCP = (DSCP) semanticStack.getLast();
-//                        mainSymbolTable.setADRC(mainSymbolTable.getADRC() + typeDSCP.getSize());
-                    :}
+var_dcl_p       ::= IDENTIFIER COMMA var_dcl_p
                     |
-                    IDENTIFIER DIRECT_ASSIGN expr;
+                    IDENTIFIER DIRECT_ASSIGN expr COMMA var_dcl_p
+                    |
+                    IDENTIFIER DIRECT_ASSIGN expr
+                    |
+                    IDENTIFIER;
 
 
 block           ::= BEGIN block_part END
@@ -333,9 +337,7 @@ baseType            ::= INT
                     | BOOL
                     | CHAR
                     | STRING
-                    | VOID
-                    | AUTO
-                    | IDENTIFIER:name
+                    | IDENTIFIER
                     ;
 
 simpleVariable      ::= IDENTIFIER

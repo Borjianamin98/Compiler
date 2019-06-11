@@ -100,6 +100,18 @@ public class Utility {
     }
 
     /**
+     * get primitive type name without prefix which is added to them (TypeTree.typePrefix)
+     * @param type type
+     * @return descriptor of primitive type
+     * @throws RuntimeException if type is not primitive
+     */
+    public static String getPrimitiveTypeName(TypeDSCP type) {
+        if (!type.isPrimitive())
+            throw new RuntimeException(type.getName() + " is not primitive");
+        return type.getName().replace(TypeTree.typePrefix, "");
+    }
+
+    /**
      * create descriptor of a type with requested dimensions
      * @param type       type
      * @param dimensions dimensions
@@ -108,7 +120,7 @@ public class Utility {
     public static String getDescriptor(TypeDSCP type, int dimensions) {
         StringBuilder desc = new StringBuilder(String.join("", Collections.nCopies(dimensions, "[")));
         if (type.isPrimitive())
-            desc.append(type.getName());
+            desc.append(getPrimitiveTypeName(type));
         else
             desc.append('L').append(type.getName()).append(";");
 
@@ -119,7 +131,7 @@ public class Utility {
         StringBuilder methodDescriptor = new StringBuilder(createArgumentDescriptor(arguments));
         if (hasReturn) {
             if (returnType.isPrimitive())
-                methodDescriptor.append(returnType.getName());
+                methodDescriptor.append(getPrimitiveTypeName(returnType));
             else
                 methodDescriptor.append("L").append(returnType.getName()).append(";");
         } else

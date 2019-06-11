@@ -58,7 +58,7 @@ public class Plus extends Arithmetic {
             getSecondOperand().generateCode(currentClass, currentMethod, cv, mv);
             TypeTree.widen(mv, getSecondOperand().getResultType(), getResultType());
 
-            mv.visitInsn(Utility.getOpcode(getResultType().getTypeCode(), "ADD"));
+            mv.visitInsn(Utility.getOpcode(getResultType(), "ADD"));
         }
     }
 }

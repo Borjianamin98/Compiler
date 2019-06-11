@@ -66,12 +66,17 @@ public class MethodDCL extends Declaration {
         MethodDSCP methodDSCP;
         if (fetchedDSCP.isPresent()) {
             if (!(fetchedDSCP.get() instanceof MethodDSCP))
-                throw new RuntimeException("Function " + getName() + " declared more than one time");
+                throw new RuntimeException(getName() + " declared more than one time");
             methodDSCP = (MethodDSCP) fetchedDSCP.get();
         } else {
             methodDSCP = new MethodDSCP(owner, getName(), returnType);
             top.addSymbol(getName(), methodDSCP);
         }
+
+        if (methodDSCP.hasReturn() && (!hasReturn() || methodDSCP.getReturnType().getTypeCode() == getReturnType().getTypeCode()))
+            throw new RuntimeException("Overloaded method " + getName() + " must have same return type");
+        else if (!methodDSCP.hasReturn() && hasReturn())
+            throw new RuntimeException("Overloaded method " + getName() + " must have same return type");
 
         methodDSCP.addArguments(arguments == null ? new ArrayList<>() : arguments);
 

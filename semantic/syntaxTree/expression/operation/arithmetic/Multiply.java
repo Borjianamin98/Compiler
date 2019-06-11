@@ -25,7 +25,7 @@ public class Multiply extends Arithmetic {
         getSecondOperand().generateCode(currentClass, currentMethod, cv, mv);
         TypeTree.widen(mv, getSecondOperand().getResultType(), getResultType());
 
-        mv.visitInsn(Utility.getOpcode(getResultType().getTypeCode(), "MUL"));
+        mv.visitInsn(Utility.getOpcode(getResultType(), "MUL"));
     }
 
 

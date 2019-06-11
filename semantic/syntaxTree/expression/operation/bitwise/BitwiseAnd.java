@@ -23,6 +23,6 @@ public class BitwiseAnd extends Bitwise {
         getSecondOperand().generateCode(currentClass, currentMethod, cv, mv);
         TypeTree.widen(mv, getSecondOperand().getResultType(), getResultType());
 
-        mv.visitInsn(Utility.getOpcode(getResultType().getTypeCode(), "AND"));
+        mv.visitInsn(Utility.getOpcode(getResultType(), "AND"));
     }
 }

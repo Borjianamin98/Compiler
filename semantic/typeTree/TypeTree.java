@@ -23,14 +23,19 @@ public class TypeTree {
     public static final SimpleTypeDSCP STRING_DSCP = new SimpleTypeDSCP(TypeTree.STRING_NAME, TypeTree.STRING_SIZE);
     public static final SimpleTypeDSCP VOID_DSCP = new SimpleTypeDSCP(TypeTree.VOID_NAME, 0);
 
-    public static final String INTEGER_NAME = "I";
-    public static final String BOOLEAN_NAME = "Z";
-    public static final String LONG_NAME = "J";
-    public static final String FLOAT_NAME = "F";
-    public static final String DOUBLE_NAME = "D";
-    public static final String CHAR_NAME = "C";
-    public static final String STRING_NAME = "Ljava/lang/String;";
-    public static final String VOID_NAME = "V";
+    /**
+     * prefix type$ is ued because these are predefined types however
+     * a programmer can define a type/variable with name of I, Z, ...
+     */
+    public static final String typePrefix = "type$";
+    public static final String INTEGER_NAME = typePrefix + "I";
+    public static final String BOOLEAN_NAME = typePrefix + "Z";
+    public static final String LONG_NAME = typePrefix + "J";
+    public static final String FLOAT_NAME = typePrefix + "F";
+    public static final String DOUBLE_NAME = typePrefix + "D";
+    public static final String CHAR_NAME = typePrefix + "C";
+    public static final String STRING_NAME = typePrefix + "Ljava/lang/String;";
+    public static final String VOID_NAME = typePrefix + "V";
 
     private static final int INTEGER_SIZE = 1;
     private static final int LONG_SIZE = 2;
