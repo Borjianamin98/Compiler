@@ -3,14 +3,11 @@ package semantic.syntaxTree.declaration.method;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import semantic.exception.DuplicateDeclarationException;
-import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
 import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.MethodDSCP;
-import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.BlockCode;
 import semantic.syntaxTree.block.Block;
@@ -69,7 +66,7 @@ public class MethodDCL extends Declaration {
         MethodDSCP methodDSCP;
         if (fetchedDSCP.isPresent()) {
             if (!(fetchedDSCP.get() instanceof MethodDSCP))
-                throw new DuplicateDeclarationException("Function " + getName() + " declared more than one time");
+                throw new RuntimeException("Function " + getName() + " declared more than one time");
             methodDSCP = (MethodDSCP) fetchedDSCP.get();
         } else {
             methodDSCP = new MethodDSCP(owner, getName(), returnType);

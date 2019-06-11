@@ -2,14 +2,9 @@ package semantic.syntaxTree.expression;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Type;
-import semantic.exception.IllegalTypeException;
-import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.descriptor.DSCP;
-import semantic.symbolTable.descriptor.hastype.VariableDSCP;
 import semantic.symbolTable.descriptor.type.SimpleTypeDSCP;
-import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.typeTree.TypeTree;
@@ -31,11 +26,11 @@ public class Cast extends Expression {
         if (castTypeDSCP == null) {
             Optional<DSCP> fetchedDSCP = Display.find(castType);
             if (!fetchedDSCP.isPresent())
-                throw new SymbolNotFoundException(castType + " is not declared");
+                throw new RuntimeException(castType + " is not declared");
             if (fetchedDSCP.get() instanceof SimpleTypeDSCP) {
                 castTypeDSCP = (SimpleTypeDSCP) fetchedDSCP.get();
             } else
-                throw new IllegalTypeException(castType + " is not a primitive type");
+                throw new RuntimeException(castType + " is not a primitive type");
         }
         return castTypeDSCP;
     }

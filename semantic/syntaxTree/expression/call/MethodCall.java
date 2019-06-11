@@ -3,7 +3,6 @@ package semantic.syntaxTree.expression.call;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
@@ -44,7 +43,7 @@ public class MethodCall extends Expression implements BlockCode {
         if (methodDSCP == null) {
             Optional<DSCP> fetchedDSCP = Display.find(methodName);
             if (!fetchedDSCP.isPresent() || !(fetchedDSCP.get() instanceof MethodDSCP))
-                throw new SymbolNotFoundException("Function " + methodName + " is not declared");
+                throw new RuntimeException("Function " + methodName + " is not declared");
             methodDSCP = (MethodDSCP) fetchedDSCP.get();
         }
         return methodDSCP;

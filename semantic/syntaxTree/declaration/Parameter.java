@@ -1,6 +1,5 @@
 package semantic.syntaxTree.declaration;
 
-import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
@@ -44,7 +43,7 @@ public class Parameter {
         if (baseTypeDSCP == null) {
             Optional<DSCP> typeDSCP = Display.find(baseType);
             if (!typeDSCP.isPresent() || !(typeDSCP.get() instanceof TypeDSCP))
-                throw new SymbolNotFoundException(baseType + " is not declared");
+                throw new RuntimeException(baseType + " is not declared");
             baseTypeDSCP =((TypeDSCP) typeDSCP.get());
         }
         return baseTypeDSCP;
@@ -53,7 +52,7 @@ public class Parameter {
     public TypeDSCP getType() {
         Optional<DSCP> typeDSCP = Display.find(getDescriptor());
         if (!typeDSCP.isPresent() || !(typeDSCP.get() instanceof TypeDSCP))
-            throw new SymbolNotFoundException(getDescriptor() + " is not declared");
+            throw new RuntimeException(getDescriptor() + " is not declared");
         return ((TypeDSCP) typeDSCP.get());
     }
 }

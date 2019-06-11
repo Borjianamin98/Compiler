@@ -2,7 +2,6 @@ package semantic.syntaxTree.expression.instance;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
-import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
@@ -31,7 +30,7 @@ public class NewArrayInstruction extends Expression {
         if (typeDSCP == null) {
             Optional<DSCP> fetchedDSCP = Display.find(type);
             if (!fetchedDSCP.isPresent() || !(fetchedDSCP.get() instanceof TypeDSCP))
-                throw new SymbolNotFoundException("Type " + type + " not found");
+                throw new RuntimeException("Type " + type + " not found");
             typeDSCP = (TypeDSCP) fetchedDSCP.get();
         }
         return typeDSCP;

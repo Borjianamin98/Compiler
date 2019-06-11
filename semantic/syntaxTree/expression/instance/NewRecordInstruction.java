@@ -3,11 +3,9 @@ package semantic.syntaxTree.expression.instance;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import semantic.exception.SymbolNotFoundException;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
-import semantic.symbolTable.descriptor.type.ArrayTypeDSCP;
 import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
@@ -27,7 +25,7 @@ public class NewRecordInstruction extends Expression {
         if (typeDSCP == null) {
             Optional<DSCP> fetchedDSCP = Display.find(type);
             if (!fetchedDSCP.isPresent() || !(fetchedDSCP.get() instanceof RecordTypeDSCP))
-                throw new SymbolNotFoundException("Type " + type + " not found");
+                throw new RuntimeException("Type " + type + " not found");
             typeDSCP = (RecordTypeDSCP) fetchedDSCP.get();
         }
         return typeDSCP;

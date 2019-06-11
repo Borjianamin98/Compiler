@@ -12,6 +12,7 @@ import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.expression.constValue.BooleanConst;
 import semantic.syntaxTree.expression.constValue.DoubleConst;
 import semantic.syntaxTree.expression.constValue.IntegerConst;
+import semantic.syntaxTree.expression.constValue.LongConst;
 import semantic.syntaxTree.expression.identifier.ArrayVariable;
 import semantic.syntaxTree.expression.identifier.MemberVariable;
 import semantic.syntaxTree.expression.identifier.SimpleVariable;
@@ -149,9 +150,19 @@ public class Main implements Opcodes {
 //        )));
 //
 //        body.addBlockCode(new SimpleFieldDCL("Tester", "name", TypeTree.STRING_NAME, false, false, true));
-
-        body.addBlockCode(new VariableDCL("a", TypeTree.LONG_NAME, false, false));
-        body.addBlockCode(new DirectAssignment(new SimpleVariable("a"), new Cast(TypeTree.LONG_NAME ,new IntegerConst(2))));
+        List<Field> f = new ArrayList<>();
+        List<Expression> dim = new ArrayList<>();
+        dim.add(new IntegerConst(1));
+        dim.add(new IntegerConst(2));
+        f.add(new Field("x", TypeTree.INTEGER_NAME, 2, new NewArrayInstruction(TypeTree.INTEGER_NAME, dim), false, false));
+        body.addBlockCode(new RecordTypeDCL("A", f));
+        body.addBlockCode(new VariableDCL("a", "A", false, false));
+        body.addBlockCode(new DirectAssignment(new SimpleVariable("a"), new NewRecordInstruction("A")));
+        body.addBlockCode(new PrintFunction(
+                new ArrayVariable(
+                        new ArrayVariable(new MemberVariable(new SimpleVariable("a"), "x"), new IntegerConst(1)), new IntegerConst(2)
+                )
+        ));
 
         body.addBlockCode(new ReturnStatement());
         ClassDCL clazz = new ClassDCL("Tester", null, methodDCLS, null);
