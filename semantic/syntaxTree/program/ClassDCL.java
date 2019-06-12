@@ -2,6 +2,8 @@ package semantic.syntaxTree.program;
 
 import org.objectweb.asm.*;
 import semantic.symbolTable.Display;
+import semantic.symbolTable.descriptor.DSCP;
+import semantic.symbolTable.descriptor.MethodDSCP;
 import semantic.syntaxTree.ClassCode;
 import semantic.syntaxTree.Node;
 import semantic.syntaxTree.declaration.Declaration;
@@ -15,6 +17,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ClassDCL extends Node {
     private String name;
@@ -46,6 +49,18 @@ public class ClassDCL extends Node {
                 createFieldCode(classWriter, methodVisitor, (Field) classCode);
             else if (classCode instanceof MethodDCL || classCode instanceof RecordTypeDCL)
                 ((Declaration) classCode).generateCode(this, null, classWriter, null, null, null);
+        }
+
+        // Check all method declaration are provided (not prototype)
+        for (ClassCode classCode : classCodes) {
+            if (classCode instanceof MethodDCL)
+            {
+                MethodDCL methodDCL = (MethodDCL) classCode;
+                Optional<DSCP> dscp = Display.find(methodDCL.getName());
+                if (!dscp.isPresent() || !(dscp.get() instanceof MethodDSCP))
+                    throw new AssertionError("doesn't happen");
+                ((MethodDSCP) dscp.get()).checkAllSignaturesDeclared();
+            }
         }
 
         methodVisitor.visitInsn(Opcodes.RETURN);

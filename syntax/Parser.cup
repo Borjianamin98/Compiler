@@ -167,13 +167,13 @@ func_signature       ::= IDENTIFIER:name LPAREN arguments:args RPAREN SEMICOLON
                         {: RESULT = new Signature(name, args, null); :}
                         |
                         IDENTIFIER:name LPAREN RPAREN SEMICOLON
-                        {: RESULT = new Signature(name, null, null); :}
+                        {: RESULT = new Signature(name, new ArrayList<Argument>(), null); :}
                         |
                         IDENTIFIER:name LPAREN arguments:args RPAREN block:body
                         {: RESULT = new Signature(name, args, body); :}
                         |
                         IDENTIFIER:name LPAREN RPAREN block:body
-                        {: RESULT = new Signature(name, null, body); :}
+                        {: RESULT = new Signature(name, new ArrayList<Argument>(), body); :}
                         ;
 
 arguments           ::= typeName:baseType IDENTIFIER:name array_part_no_val:dimensions COMMA arguments:list

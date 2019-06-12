@@ -6,6 +6,7 @@ import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 
 public class Parameter {
@@ -49,4 +50,19 @@ public class Parameter {
     public TypeDSCP getType() {
         return Display.getType(String.join("", Collections.nCopies(dimensions, "[")) + getBaseTypeDSCP().getName());
     }
+
+    /**
+     * two argument are equal if they have same type (same baseType and same dimensions)
+     * @param o other argument
+     * @return true if two argument have same type
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Parameter parameter = (Parameter) o;
+        return dimensions == parameter.dimensions &&
+                baseType.equals(parameter.baseType);
+    }
+
 }

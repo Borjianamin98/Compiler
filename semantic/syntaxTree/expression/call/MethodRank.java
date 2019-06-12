@@ -13,7 +13,6 @@ public class MethodRank {
     public static final Comparator<MethodRank> comparator = Comparator.comparing(MethodRank::getSumOfDiffLevel)
             .thenComparing(MethodRank::getMaxLevel);
 
-    private int overloadMethodIndex;
     /**
      * sum of difference between each method argument and call parameters
      * call func(par1, par2, ...) and func(arg1, arg2, ...)
@@ -33,9 +32,8 @@ public class MethodRank {
      */
     private List<Argument> arguments;
 
-    public MethodRank(List<Argument> arguments, int overloadMethodIndex) {
+    public MethodRank(List<Argument> arguments) {
         this.arguments = arguments;
-        this.overloadMethodIndex = overloadMethodIndex;
     }
 
     public void addSumOfDiffLevel(int value) {
@@ -49,10 +47,6 @@ public class MethodRank {
 
     private int getMaxLevel() {
         return maxLevel;
-    }
-
-    public int getOverloadMethodIndex() {
-        return overloadMethodIndex;
     }
 
     public List<Argument> getArguments() {

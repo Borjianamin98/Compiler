@@ -8,6 +8,7 @@ import semantic.symbolTable.Utility;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
+import semantic.typeTree.TypeTree;
 
 public class PrintFunction extends Statement {
     private Expression value;
@@ -33,11 +34,12 @@ public class PrintFunction extends Statement {
         mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
         if (value != null) {
             value.generateCode(currentClass, currentMethod, cv, mv, null, null);
-            if (value.getResultType().isPrimitive())
+            if (!value.getResultType().isPrimitive() ||
+                    TypeTree.isVoid(value.getResultType()))
+                throw new RuntimeException("Print a non-primitive value is not possible: " + value.getResultType().getConventionalName());
+            else
                 mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println",
                         "(" + Utility.getPrimitiveTypeName(value.getResultType()) + ")V", false);
-            else
-                throw new RuntimeException("Print a non-primitive value is not possible: " + value.getResultType().getConventionalName());
         } else
             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "()V", false);
     }

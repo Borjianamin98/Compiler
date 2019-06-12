@@ -30,4 +30,27 @@ public class Signature {
     public void setBody(Block body) {
         this.body = body;
     }
+
+    public boolean hasBody() {
+        return body != null;
+    }
+
+    @Override
+    public String toString() {
+        return name + "(" + arguments + ")";
+    }
+
+    /**
+     * two signature are equals if they have same arguments in same order
+     * @param o other signature
+     * @return true, if they have same arguments in same order
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Signature signature = (Signature) o;
+        return arguments.equals(signature.arguments);
+    }
+
 }

@@ -70,8 +70,7 @@ public class MethodCall extends Expression implements BlockCode, Ignorable {
     @Override
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         getTypeDSCP();
-        List<List<Argument>> argumentsDSCP = getTypeDSCP().getAllArguments();
-        List<List<Argument>> collectedArguments = argumentsDSCP.stream().filter(arguments -> arguments.size() == parameters.size()).collect(Collectors.toList());
+        List<List<Argument>> collectedArguments = getTypeDSCP().getAllArguments(parameters.size());
         if (collectedArguments.isEmpty())
             throw new RuntimeException(String.format("No suitable method found for %s: actual and formal argument lists differ in length",
                     getMethodUserDescriptor()));
@@ -79,11 +78,11 @@ public class MethodCall extends Expression implements BlockCode, Ignorable {
         // Give rank to each potential method
         List<MethodRank> methodRanks = new ArrayList<>();
         outer:
-        for (int indexOfOverload = 0; indexOfOverload < collectedArguments.size(); indexOfOverload++) {
-            MethodRank methodRank = new MethodRank(collectedArguments.get(indexOfOverload), indexOfOverload);
+        for (List<Argument> collectedArgument : collectedArguments) {
+            MethodRank methodRank = new MethodRank(collectedArgument);
             for (int i = 0; i < parameters.size(); i++) {
                 TypeDSCP parameterType = parameters.get(i).getResultType();
-                TypeDSCP argumentType = collectedArguments.get(indexOfOverload).get(i).getType();
+                TypeDSCP argumentType = collectedArgument.get(i).getType();
                 if (TypeTree.canWiden(parameterType, argumentType)) {
                     methodRank.addSumOfDiffLevel(TypeTree.diffLevel(parameterType, argumentType));
                 } else
@@ -96,7 +95,6 @@ public class MethodCall extends Expression implements BlockCode, Ignorable {
         methodRanks.sort(MethodRank.comparator);
 
         // Extract method which is chosen among overloaded method
-        int indexOfOverloadMethod = methodRanks.get(0).getOverloadMethodIndex();
         List<Argument> overloadMethodArguments = methodRanks.get(0).getArguments();
 
         // Generate call expression code and do type conversion
@@ -108,7 +106,7 @@ public class MethodCall extends Expression implements BlockCode, Ignorable {
 
         // invoke method
         mv.visitMethodInsn(Opcodes.INVOKESTATIC, getTypeDSCP().getOwner(), getTypeDSCP().getName(),
-                methodDSCP.getDescriptor(indexOfOverloadMethod), false);
+                methodDSCP.getDescriptor(overloadMethodArguments), false);
 
         if (getTypeDSCP().hasReturn() && ignoreResult) {
             mv.visitInsn(Opcodes.POP);

@@ -1071,7 +1071,7 @@ class CUP$Parser$actions {
 		int nameleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).left;
 		int nameright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).right;
 		String name = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-3)).value;
-		 RESULT = new Signature(name, null, null); 
+		 RESULT = new Signature(name, new ArrayList<Argument>(), null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("func_signature",23, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1104,7 +1104,7 @@ class CUP$Parser$actions {
 		int bodyleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int bodyright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Block body = (Block)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new Signature(name, null, body); 
+		 RESULT = new Signature(name, new ArrayList<Argument>(), body); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("func_signature",23, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
