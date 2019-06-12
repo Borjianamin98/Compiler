@@ -27,13 +27,17 @@ public class Utility {
     /**
      * return prefix appropriate for a opcode of a type
      * @param type type
+     * @param realReturn if true, return 'c' instead of 'i' for character and same for other types
+     *                   purpose of this is because of reference to char array. fo some opcode like
+     *                   castore, caload, ... we must use prefix 'c' instead of 'i'
      * @return appropriate prefix
      */
-    private static String getTypePrefix(TypeDSCP type) {
+    private static String getTypePrefix(TypeDSCP type, boolean realReturn) {
         if (type.getTypeCode() == TypeTree.INTEGER_DSCP.getTypeCode() ||
-                type.getTypeCode() == TypeTree.BOOLEAN_DSCP.getTypeCode() ||
-                type.getTypeCode() == TypeTree.CHAR_DSCP.getTypeCode()) {
+                type.getTypeCode() == TypeTree.BOOLEAN_DSCP.getTypeCode()) {
             return "I";
+        } else if (type.getTypeCode() == TypeTree.CHAR_DSCP.getTypeCode()) {
+            return realReturn ? "C" : "I";
         } else if (type.getTypeCode() == TypeTree.LONG_DSCP.getTypeCode()) {
             return "L";
         } else if (type.getTypeCode() == TypeTree.DOUBLE_DSCP.getTypeCode()) {
@@ -64,12 +68,13 @@ public class Utility {
      * return opcode created by prefix + instruction based on type
      * @param type type of opcode
      * @param instruction main instruction
+     * @param realReturn if true, return 'c' instead of 'i' for character and same for other types
      * @return appropriate opcode
      * @throws RuntimeException if opcode not found
      */
-    public static int getOpcode(TypeDSCP type, String instruction) {
+    public static int getOpcode(TypeDSCP type, String instruction, boolean realReturn) {
         try {
-            return (int) Opcodes.class.getDeclaredField(getTypePrefix(type) + instruction).get(null);
+            return (int) Opcodes.class.getDeclaredField(getTypePrefix(type, realReturn) + instruction).get(null);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Not found requested opcode");
         }
@@ -260,4 +265,16 @@ public class Utility {
         } else
             throw new IllegalArgumentException("Type must be a primitive type: " + type.getConventionalName());
     }
+
+    /**
+     * check if a type is reference or not. a reference type can contain null value
+     * @param type type
+     * @return true if type is a reference, otherwise false
+     */
+    public static boolean isReferenceType(TypeDSCP type) {
+        return !type.isPrimitive() ||
+                TypeTree.isString(type) ||
+                TypeTree.isVoid(type);
+    }
+
 }

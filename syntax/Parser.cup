@@ -8,6 +8,7 @@ import semantic.syntaxTree.expression.*;
 import semantic.syntaxTree.expression.call.*;
 import semantic.syntaxTree.expression.identifier.*;
 import semantic.syntaxTree.expression.constValue.*;
+import semantic.syntaxTree.expression.instance.*;
 import semantic.syntaxTree.expression.operation.arithmetic.*;
 import semantic.syntaxTree.expression.operation.bitwise.*;
 import semantic.syntaxTree.expression.operation.logical.*;
@@ -44,7 +45,7 @@ terminal                                EQUAL, NOT_EQUAL, LESS_EQUAL, LESS, GREA
 terminal                                UNARY_MINUS;
 terminal                                LPAREN, RPAREN, LBRACKET, RBRACKET, LRBRACKET;
 terminal String                         IDENTIFIER;
-terminal                                RECORD, FUNCTION, EXTERN;
+terminal                                RECORD, FUNCTION, EXTERN, NEW;
 terminal                                INT, LONG, FLOAT, DOUBLE, BOOL, CHAR, STRING, VOID, AUTO;
 terminal                                DOT, COMMA, COLON;
 terminal                                PLUSPLUS, MINUSMINUS, PLUSPLUS_POSTFIX, MINUSMINUS_POSTFIX;
@@ -81,6 +82,7 @@ non terminal List<VariableDCLFactory>   const_var_dcl_p, var_dcl_p, var_dcl, var
 non terminal                            struct_dcl;
 non terminal                            function_dcl, func_signature, arguments, argument, extern_dcl;
 non terminal Integer                    array_part_no_val;
+non terminal List<Expression>           array_part_val;
 non terminal Expression                 expr;
 non terminal Expression                 const_val;
 non terminal                            begining;
@@ -98,11 +100,11 @@ precedence nonassoc GREATER, GREATER_EQUAL;
 precedence nonassoc LESS, LESS_EQUAL;
 precedence left PLUS, MINUS;
 precedence left MULTIPLY, DIVIDE, MOD;
+precedence left NEW;
 precedence left SIZEOF;
 precedence left CAST_PREC;
 precedence right BITWISE_NOT, NOT;
 precedence left UNARY_MINUS;
-//precedence left LBRACKET;
 precedence nonassoc MINUSMINUS, PLUSPLUS;
 precedence left DOT;
 precedence nonassoc MINUSMINUS_POSTFIX, PLUSPLUS_POSTFIX;
@@ -531,6 +533,25 @@ expr                ::= expr:e1 PLUS expr:e2
                         LPAREN base_type:typeName RPAREN expr:e
                         {: RESULT = new Cast(typeName, e); :}
                         %prec CAST_PREC
+                        |
+                        NEW typeName:typeName array_part_val:listOfDImensions
+                        {: RESULT = new NewArrayInstruction(typeName, listOfDImensions); :}
+                        |
+                        NEW typeName:typeName
+                        {: RESULT = new NewRecordInstruction(typeName); :}
+                        ;
+
+array_part_val      ::= array_part_val:list LBRACKET expr:e RBRACKET
+                        {:
+                        RESULT = list;
+                        RESULT.add(e);
+                        :}
+                        |
+                        LBRACKET expr:e RBRACKET
+                        {:
+                        RESULT = new ArrayList<Expression>();
+                        RESULT.add(e);
+                        :}
                         ;
 
 base_type           ::= INT

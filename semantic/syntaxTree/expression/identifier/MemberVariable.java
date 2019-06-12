@@ -46,6 +46,8 @@ public class MemberVariable extends Variable {
         TypeTree.widen(mv, value.getResultType(), getResultType()); // right value must be converted to type of variable
         mv.visitFieldInsn(Opcodes.PUTFIELD, recordTypeDSCP.getName(), memberName, dscp.getDescriptor());
         getDSCP().setInitialized(true);
+        // TODO Check initialization for array
+        // setInitializationOfArray(getChainName(), value);
     }
 
     @Override

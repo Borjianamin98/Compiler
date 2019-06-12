@@ -29,7 +29,8 @@ public enum Token {
 //    _NULL(SubType.Reserved), _nullptr(SubType.Reserved),
     _true(ParserSym.BOOL_CONST, "true"), _false(ParserSym.BOOL_CONST, "false"),
     _println(ParserSym.PRINTLN, "println"), _input(ParserSym.INPUT, "input"),
-//    _new(SubType.Reserved), _delete(SubType.Reserved),
+    _new(ParserSym.NEW, "new"),
+//    _delete(SubType.Reserved),
 //    _using(SubType.Reserved), _namespace(SubType.Reserved),
 
 

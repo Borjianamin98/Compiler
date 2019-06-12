@@ -55,13 +55,13 @@ ReservedKeyword = "function"|"repeat"|"until"|"if"|"of"|"begin"|"end"|"for"|"for
 Identifier = [:jletter:] [:jletterdigit:]*
 // removed operator: "<<"|">>"
 Operator = "="|"=="|"!="|">"|">="|"<"|"<="|"="|"+="|"-="|"*="|"/="|"%="|"+"|"-"|"*"|"/"|"%"|"not"|"or"|"and"|"|"|"&"|"^"|"~"|"++"|"--"
-Special = "("|")"|"{"|"}"|"["|"]"|"[]"|";"|","|"::"|":"|"."|"->"|"*"|"?"
+Special = "("|")"|"{"|"}"|"["|"]"|";"|","|"::"|":"|"."|"->"|"*"|"?"
 
 integer = 0 | [-]?[1-9][0-9]* | [-]?0(x|X)[0-9A-Fa-f]+ | [-]?0[0-7]+
 realNormal = [-]?{integer}?"."[0-9]+ | [-]?{integer}"."
 realScientific = {realNormal}[eE]{integer} | {integer}[eE]{integer}
 real = {realNormal} | {realScientific}
-escapeChar = "\\'"|"\\\""|"\\\\"|"\\n"|"\\r"|"\\t"|"\\b"|"\\f"|"\\v"|"\\0"
+escapeChar = "\\'"|"\\\""|"\\\\"|"\\n"|"\\r"|"\\t"|"\\b"|"\\f"|"\\0"
 character = "'"."'"
 escapeCharacter = "'"{escapeChar}"'"
 
@@ -79,6 +79,10 @@ escapeCharacter = "'"{escapeChar}"'"
 
     {Operator}                  { return symbol("Operator", Token.getWithRepresentation(yytext()).getSym()); }
 
+    "[]"                        { return symbol("Special", Token.getWithRepresentation("[]").getSym()); }
+
+    "["[ ]+"]"                  { return symbol("Special", Token.getWithRepresentation("[]").getSym()); }
+
     {Special}                   { return symbol("Special", Token.getWithRepresentation(yytext()).getSym()); }
 
     {Identifier}                { return symbol("Identifier", Token.getWithRepresentation("identifier").getSym(), yytext()); }
@@ -89,8 +93,23 @@ escapeCharacter = "'"{escapeChar}"'"
     {real}                      { return symbol("Double", Token.getWithRepresentation("double_const").getSym(), Double.valueOf(yytext())); }
     {real}[fF]                  { return symbol("Float", Token.getWithRepresentation("float_const").getSym(), Float.valueOf(yytext())); }
     {character}                 { return symbol("Character", Token.getWithRepresentation("char_const").getSym(), yytext().substring(1, 2).charAt(0)); }
-    {escapeCharacter}           { return symbol("EscapeCharacter", Token.getWithRepresentation("char_const").getSym(), yytext().substring(1, yytext().length() - 1).charAt(0)); }
-    \"                          { string.setLength(0); string.append(yytext()); yybegin(STRING); }
+    {escapeCharacter}           {
+                                char ch;
+                                switch (yytext().substring(1, yytext().length() - 1).charAt(1)) {
+                                    case '\'': ch = '\''; break;
+                                    case '\"': ch = '\"'; break;
+                                    case '\\': ch = '\\'; break;
+                                    case 'n': ch = '\n'; break;
+                                    case 'r': ch = '\r'; break;
+                                    case 't': ch = '\t'; break;
+                                    case 'b': ch = '\b'; break;
+                                    case 'f': ch = '\f'; break;
+                                    case '0': ch = '\0'; break;
+                                    default: throw new RuntimeException("Unhandled escape character: " + yytext());
+                                }
+                                return symbol("EscapeCharacter", Token.getWithRepresentation("char_const").getSym(), ch);
+                                }
+    \"                          { string.setLength(0); yybegin(STRING); }
 
     /* comments */
     {EndOfLineComment}          { /* skip */ }
@@ -101,7 +120,6 @@ escapeCharacter = "'"{escapeChar}"'"
     /* whitespace */
     {WhiteSpace}+               { /* skip */ }
 
-//    {InputCharacter}+           { return symbol(lexical.Token._ignore, yytext()); }
 }
 
 <COMMENT> {
@@ -113,12 +131,11 @@ escapeCharacter = "'"{escapeChar}"'"
 }
 
 <STRING> {
-    [^\n\r\"\\]+                { string.append( yytext() ); }
+    [^\n\r\"\\]+                { string.append(yytext()); }
 
-    {escapeChar}               { string.append(yytext()); }
+    {escapeChar}                { string.append(yytext()); }
 
     "\""                        { yybegin(YYINITIAL);
-                                    string.append(yytext());
                                     return symbol("String", Token.getWithRepresentation("string_const").getSym(), string.toString()); }
 }
 

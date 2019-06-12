@@ -33,6 +33,6 @@ public class BitwiseNot extends Expression {
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
         operand.generateCode(currentClass, currentMethod, cv, mv);
         Utility.getSimpleConstant(getResultType(), -1).generateCode(currentClass, currentMethod, cv, mv);
-        mv.visitInsn(Utility.getOpcode(getResultType(), "XOR"));
+        mv.visitInsn(Utility.getOpcode(getResultType(), "XOR", false));
     }
 }

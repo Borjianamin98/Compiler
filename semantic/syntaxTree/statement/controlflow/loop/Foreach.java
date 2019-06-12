@@ -66,7 +66,8 @@ public class Foreach extends Statement {
         Label stepLabel = new Label();
 
         // create T[] a = Expression;
-        ArrayDCL arrayDCL = new ArrayDCL(varIteratorName, arrayTypeDSCP.getBaseType().getName(), arrayTypeDSCP.getDimensions(), false, false);
+        ArrayDCL arrayDCL = new ArrayDCL(varIteratorName, arrayTypeDSCP.getBaseType().getName(),
+                arrayTypeDSCP.getDimensions(), false, iterator.getDSCP().isInitialized());
         arrayDCL.generateCode(currentClass, currentMethod, cv, mv);
         DirectAssignment iteratorAssignment = new DirectAssignment(varIterator, iterator);
         iteratorAssignment.generateCode(currentClass, currentMethod, cv, mv);

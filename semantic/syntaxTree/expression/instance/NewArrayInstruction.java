@@ -26,7 +26,14 @@ public class NewArrayInstruction extends Expression {
         this.dimensions = dimensions;
     }
 
-    private TypeDSCP getTypeDSCP() {
+    public int getDimensionsCount() {
+        return dimensions.size();
+    }
+
+    /**
+     * @return TypeDSCP of base type which is created by new array instruction
+     */
+    public TypeDSCP getTypeDSCP() {
         if (typeDSCP == null) {
             Optional<DSCP> fetchedDSCP = Display.find(type);
             if (!fetchedDSCP.isPresent() || !(fetchedDSCP.get() instanceof TypeDSCP))

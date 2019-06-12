@@ -27,7 +27,7 @@ public class SimpleVariable extends Variable {
         getDSCP();
         if (!getDSCP().isInitialized())
             throw new RuntimeException(String.format("Variable %s might not have been initialized", getChainName()));
-        mv.visitVarInsn(Utility.getOpcode(dscp.getType(), "LOAD"), dscp.getAddress());
+        mv.visitVarInsn(Utility.getOpcode(dscp.getType(), "LOAD", false), dscp.getAddress());
     }
 
     @Override
@@ -38,8 +38,9 @@ public class SimpleVariable extends Variable {
                     getChainName(), getChainName()));
         value.generateCode(currentClass, currentMethod, cv, mv);
         TypeTree.widen(mv, value.getResultType(), getResultType()); // right value must be converted to type of variable
-        mv.visitVarInsn(Utility.getOpcode(dscp.getType(), "STORE"), dscp.getAddress());
+        mv.visitVarInsn(Utility.getOpcode(dscp.getType(), "STORE", false), dscp.getAddress());
         getDSCP().setInitialized(true);
+        setInitializationOfArray(name, value);
     }
 
     @Override

@@ -17,7 +17,7 @@ public class CharConst extends Expression {
 
     @Override
     public TypeDSCP getResultType() {
-        return TypeTree.INTEGER_DSCP;
+        return TypeTree.CHAR_DSCP;
     }
 
     @Override

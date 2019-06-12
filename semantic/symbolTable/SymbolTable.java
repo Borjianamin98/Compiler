@@ -56,9 +56,12 @@ public class SymbolTable {
         return symbols.containsKey(name);
     }
 
+    /**
+     * get a symbol form current symbol table
+     * @param name name of symbol
+     * @return symbol DSCP if found, otherwise Optional.empty
+     */
     public Optional<DSCP> getDSCP(String name) {
-        if (!symbols.containsKey(name))
-            return Optional.empty();
         return Optional.ofNullable(symbols.get(name));
     }
 

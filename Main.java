@@ -12,6 +12,8 @@ import semantic.syntaxTree.declaration.record.Field;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.expression.call.MethodCall;
 import semantic.syntaxTree.expression.identifier.SimpleVariable;
+import semantic.syntaxTree.expression.instance.NewArrayInstruction;
+import semantic.syntaxTree.expression.instance.NewRecordInstruction;
 import semantic.syntaxTree.expression.operation.relational.*;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.syntaxTree.statement.controlflow.ReturnStatement;

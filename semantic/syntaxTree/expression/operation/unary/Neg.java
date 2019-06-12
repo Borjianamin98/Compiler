@@ -38,6 +38,6 @@ public class Neg extends Expression {
     @Override
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
         operand.generateCode(currentClass, currentMethod, cv, mv);
-        mv.visitInsn(Utility.getOpcode(getResultType(), "NEG"));
+        mv.visitInsn(Utility.getOpcode(getResultType(), "NEG", false));
     }
 }

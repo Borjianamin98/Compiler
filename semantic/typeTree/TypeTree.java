@@ -166,6 +166,10 @@ public class TypeTree {
         return type.getTypeCode() == STRING_DSCP.getTypeCode();
     }
 
+    public static boolean isVoid(TypeDSCP type) {
+        return type.getTypeCode() == VOID_DSCP.getTypeCode();
+    }
+
     /**
      * check type is integer or long
      *

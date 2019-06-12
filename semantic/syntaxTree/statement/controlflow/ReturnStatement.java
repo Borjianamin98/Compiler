@@ -32,7 +32,7 @@ public class ReturnStatement extends Statement {
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
         if (value != null) {
             value.generateCode(currentClass, currentMethod, cv, mv);
-            mv.visitInsn(Utility.getOpcode(value.getResultType(), "RETURN"));
+            mv.visitInsn(Utility.getOpcode(value.getResultType(), "RETURN", false));
             if (!currentMethod.hasReturn())
                 throw new RuntimeException("Unexpected return type: " + value.getResultType().getName());
             else if (currentMethod.hasReturn() && currentMethod.getReturnType().getTypeCode() != value.getResultType().getTypeCode())

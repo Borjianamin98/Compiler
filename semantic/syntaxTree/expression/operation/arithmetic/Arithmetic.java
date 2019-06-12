@@ -47,6 +47,6 @@ public class Arithmetic extends BinaryOperation {
         getSecondOperand().generateCode(currentClass, currentMethod, cv, mv);
         TypeTree.widen(mv, getSecondOperand().getResultType(), getResultType());
 
-        mv.visitInsn(Utility.getOpcode(getResultType(), mainOpcode));
+        mv.visitInsn(Utility.getOpcode(getResultType(), mainOpcode, false));
     }
 }
