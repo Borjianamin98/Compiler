@@ -11,7 +11,7 @@ import semantic.symbolTable.descriptor.type.SimpleTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
-import semantic.syntaxTree.expression.identifier.SimpleVariable;
+import semantic.syntaxTree.expression.identifier.SimpleLocalVariable;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.syntaxTree.statement.assignment.DirectAssignment;
 
@@ -49,6 +49,6 @@ public class AutoVariableDCL extends Declaration {
             throw new RuntimeException("Can not detect type for auto variable");
         }
         variable.generateCode(currentClass, currentMethod, cv, mv, null, null);
-        new DirectAssignment(new SimpleVariable(getName()), defaultValue).generateCode(currentClass, currentMethod, cv, mv, null, null);
+        new DirectAssignment(new SimpleLocalVariable(getName()), defaultValue).generateCode(currentClass, currentMethod, cv, mv, null, null);
     }
 }

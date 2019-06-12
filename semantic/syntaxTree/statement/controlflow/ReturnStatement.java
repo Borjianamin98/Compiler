@@ -35,19 +35,19 @@ public class ReturnStatement extends Statement {
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         if (value != null) {
             if (!currentMethod.hasReturn())
-                throw new RuntimeException("Unexpected return type: " + value.getResultType().getName());
+                throw new RuntimeException("Unexpected return type: " + value.getResultType().getConventionalName());
             else {
                 try {
                     value.generateCode(currentClass, currentMethod, cv, mv, null, null);
                     TypeTree.widen(mv, value.getResultType(), currentMethod.getReturnType()); // return value must be converted to return type of function
                 } catch (RuntimeException ex) {
-                    throw new RuntimeException("Unexpected return type: " + value.getResultType().getName());
+                    throw new RuntimeException("Unexpected return type: " + value.getResultType().getConventionalName());
                 }
                 mv.visitInsn(Utility.getOpcode(currentMethod.getReturnType(), "RETURN", false));
             }
         } else {
             if (currentMethod.hasReturn())
-                throw new RuntimeException("Unexpected return type: " + currentMethod.getReturnType().getName());
+                throw new RuntimeException("Unexpected return type: " + currentMethod.getReturnType().getConventionalName());
             mv.visitInsn(Opcodes.RETURN);
         }
     }

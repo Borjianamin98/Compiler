@@ -965,7 +965,7 @@ class CUP$Parser$actions {
 		
                         ClassDCL classDCL = (ClassDCL) Parser.semanticStack.getLast();
                         for (VariableDCLFactory factory : fieldsFactory)
-                            classDCL.addClassCode(factory.createFieldVariable(false));
+                            classDCL.addClassCode(factory.createFieldVariable(true));
                         
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("class_code",1, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -2630,7 +2630,7 @@ class CUP$Parser$actions {
 		int nameleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int nameright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		String name = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new SimpleVariable(name); 
+		 RESULT = new SimpleVariableFactory(name, true); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("variable",4, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;

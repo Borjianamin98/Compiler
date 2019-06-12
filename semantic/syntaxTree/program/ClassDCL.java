@@ -16,6 +16,7 @@ import semantic.syntaxTree.declaration.record.SimpleFieldDCL;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +27,10 @@ public class ClassDCL extends Node {
     public ClassDCL(String name) {
         this.name = name;
         this.classCodes = new ArrayList<>();
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void addClassCode(ClassCode classCode) {
@@ -44,17 +49,19 @@ public class ClassDCL extends Node {
         methodVisitor.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
         Display.add(false); // Class symbol table
 
+        List<Field> fields_need_initialized = new ArrayList<>();
         for (ClassCode classCode : classCodes) {
-            if (classCode instanceof Field)
-                createFieldCode(classWriter, methodVisitor, (Field) classCode);
-            else if (classCode instanceof MethodDCL || classCode instanceof RecordTypeDCL)
+            if (classCode instanceof Field) {
+                createFieldDCLCode(classWriter, (Field) classCode);
+                if (((Field) classCode).getDefaultValue() != null)
+                    fields_need_initialized.add((Field) classCode);
+            } else if (classCode instanceof MethodDCL || classCode instanceof RecordTypeDCL)
                 ((Declaration) classCode).generateCode(this, null, classWriter, null, null, null);
         }
 
         // Check all method declaration are provided (not prototype)
         for (ClassCode classCode : classCodes) {
-            if (classCode instanceof MethodDCL)
-            {
+            if (classCode instanceof MethodDCL) {
                 MethodDCL methodDCL = (MethodDCL) classCode;
                 Optional<DSCP> dscp = Display.find(methodDCL.getName());
                 if (!dscp.isPresent() || !(dscp.get() instanceof MethodDSCP))
@@ -63,10 +70,38 @@ public class ClassDCL extends Node {
             }
         }
 
+        // initialize field
+        // do initialization of field which are non-static in default constructor
+        Iterator<Field> iterator = fields_need_initialized.iterator();
+        while (iterator.hasNext()) {
+            Field nextField = iterator.next();
+            if (!nextField.isStatic()) {
+                methodVisitor.visitVarInsn(Opcodes.ALOAD, 0); // load "this"
+                nextField.getDefaultValue().generateCode(this, null, classWriter, methodVisitor, null, null);
+                methodVisitor.visitFieldInsn(Opcodes.PUTFIELD, name, nextField.getName(), nextField.getDescriptor());
+
+                // remove non-static fields
+                iterator.remove();
+            }
+        }
+
         methodVisitor.visitInsn(Opcodes.RETURN);
         methodVisitor.visitMaxs(0, 0);
         methodVisitor.visitEnd();
         classWriter.visitEnd();
+
+        // initialize field
+        // do initialization of field which are static in static constructor
+        methodVisitor = classWriter.visitMethod(Opcodes.ACC_STATIC, "<clinit>", "()V", null, null);
+        methodVisitor.visitCode();
+        for (Field field : fields_need_initialized) {
+            field.getDefaultValue().generateCode(this, null, classWriter, methodVisitor, null, null);
+            methodVisitor.visitFieldInsn(Opcodes.PUTSTATIC, name, field.getName(), field.getDescriptor());
+        }
+        methodVisitor.visitInsn(Opcodes.RETURN);
+        methodVisitor.visitMaxs(0, 0);
+        methodVisitor.visitEnd();
+
 
         // Generate class file
         try (FileOutputStream fos = new FileOutputStream(Node.outputPath + name + ".class")) {
@@ -81,29 +116,24 @@ public class ClassDCL extends Node {
         }
     }
 
-    private void createFieldCode(ClassWriter classWriter, MethodVisitor methodVisitor, Field field) {
+    /**
+     * generate field of class depend of filed type and it's dimension
+     * it's initialization will do in another method
+     *
+     * @param classWriter class writer
+     * @param field       filed
+     */
+    private void createFieldDCLCode(ClassWriter classWriter, Field field) {
         // Create field
         Declaration fieldDCL;
         if (field.isArray()) {
             fieldDCL = new ArrayFieldDCL(name, field.getName(), field.getBaseType(), field.getDimensions(),
-                    field.isConstant(), field.getDefaultValue() != null, false);
+                    field.isConstant(), field.getDefaultValue() != null, field.isStatic());
         } else {
             fieldDCL = new SimpleFieldDCL(name, field.getName(), field.getBaseType(), field.isConstant(),
-                    field.getDefaultValue() != null, false);
+                    field.getDefaultValue() != null, field.isStatic());
         }
         fieldDCL.generateCode(this, null, classWriter, null, null, null);
-
-        // initialize field
-        if (field.getDefaultValue() != null) {
-            if (field.isStatic()) {
-                field.getDefaultValue().generateCode(this, null, classWriter, methodVisitor, null, null);
-                methodVisitor.visitFieldInsn(Opcodes.PUTSTATIC, name, field.getName(), field.getDescriptor());
-            } else {
-                methodVisitor.visitVarInsn(Opcodes.ALOAD, 0); // load "this"
-                field.getDefaultValue().generateCode(this, null, classWriter, methodVisitor, null, null);
-                methodVisitor.visitFieldInsn(Opcodes.PUTFIELD, name, field.getName(), field.getDescriptor());
-            }
-        }
     }
 }
 

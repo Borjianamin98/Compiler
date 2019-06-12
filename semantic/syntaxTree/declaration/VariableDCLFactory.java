@@ -3,15 +3,11 @@ package semantic.syntaxTree.declaration;
 import semantic.syntaxTree.BlockCode;
 import semantic.syntaxTree.declaration.record.Field;
 import semantic.syntaxTree.expression.Expression;
-import semantic.syntaxTree.expression.identifier.SimpleVariable;
-import semantic.syntaxTree.expression.identifier.Variable;
-import semantic.syntaxTree.statement.Statement;
+import semantic.syntaxTree.expression.identifier.SimpleLocalVariable;
 import semantic.syntaxTree.statement.assignment.DirectAssignment;
 import semantic.typeTree.TypeTree;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -89,7 +85,7 @@ public class VariableDCLFactory {
                 blockCodes.add(new VariableDCL(variableName, typeName, constant, false));
             }
             if (defaultValue != null)
-                blockCodes.add(new DirectAssignment(new SimpleVariable(variableName), defaultValue));
+                blockCodes.add(new DirectAssignment(new SimpleLocalVariable(variableName), defaultValue));
         }
         return blockCodes;
     }

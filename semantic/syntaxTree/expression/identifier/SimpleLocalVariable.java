@@ -14,11 +14,11 @@ import semantic.typeTree.TypeTree;
 
 import java.util.Optional;
 
-public class SimpleVariable extends Variable {
+public class SimpleLocalVariable extends Variable {
     private VariableDSCP dscp;
     private String name;
 
-    public SimpleVariable(String name) {
+    public SimpleLocalVariable(String name) {
         super(name);
         this.name = name;
     }

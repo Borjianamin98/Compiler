@@ -133,7 +133,7 @@ class_code             ::= var_dcl:fieldsFactory
                         {:
                         ClassDCL classDCL = (ClassDCL) Parser.semanticStack.getLast();
                         for (VariableDCLFactory factory : fieldsFactory)
-                            classDCL.addClassCode(factory.createFieldVariable(false));
+                            classDCL.addClassCode(factory.createFieldVariable(true));
                         :}
                         |
                         function_dcl:functionDCL
@@ -628,7 +628,7 @@ typeName                ::= base_type:typeName
                         ;
 
 variable            ::= IDENTIFIER:name
-                        {: RESULT = new SimpleVariable(name); :}
+                        {: RESULT = new SimpleVariableFactory(name, true); :}
                         |
                         variable:var LBRACKET expr:requestedDimension RBRACKET
                         {: RESULT = new ArrayVariable(var, requestedDimension); :}
