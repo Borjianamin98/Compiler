@@ -21,4 +21,8 @@ public class RecordTypeDSCP extends TypeDSCP {
     public Optional<HasTypeDSCP> getField(String fieldName) {
         return symbolTable.getDSCP(fieldName).map(dscp -> (HasTypeDSCP) dscp);
     }
+
+    public SymbolTable getSymbolTable() {
+        return symbolTable;
+    }
 }

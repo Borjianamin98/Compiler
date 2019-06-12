@@ -48,7 +48,10 @@ public class Parameter {
     }
 
     public TypeDSCP getType() {
-        return Display.getType(String.join("", Collections.nCopies(dimensions, "[")) + getBaseTypeDSCP().getName());
+        if (dimensions == 0)
+            return getBaseTypeDSCP();
+        else
+            return Display.getType(Utility.getDescriptor(getBaseTypeDSCP(), dimensions));
     }
 
     /**

@@ -55,7 +55,7 @@ terminal                                DIRECT_ASSIGN, SUM_ASSIGN, DIFF_ASSIGN, 
 terminal                                IF, ELSE, RETURN, BREAK, CONTINUE;
 terminal                                SWITCH, OF, CASE, DEFAULT, BEGIN, END;
 terminal                                FOR, REPEAT, UNTIL, FOREACH, IN;
-terminal                                SIZEOF, CONST;
+terminal                                SIZEOF, CONST, LEN;
 terminal Integer                        INT_CONST;
 terminal Long                           LONG_CONST;
 terminal Double                         DOUBLE_CONST;
@@ -108,7 +108,7 @@ precedence nonassoc LESS, LESS_EQUAL;
 precedence left PLUS, MINUS;
 precedence left MULTIPLY, DIVIDE, MOD;
 precedence left NEW;
-precedence left SIZEOF;
+precedence left SIZEOF, LEN;
 precedence left CAST_PREC;
 precedence right BITWISE_NOT, NOT;
 precedence left UNARY_MINUS;
@@ -422,6 +422,9 @@ method_cal          ::= IDENTIFIER:methodName LPAREN parameters:parms RPAREN
                         {:
                         RESULT = new ScannerFunction();
                         :}
+                        |
+                        LEN LPAREN expr:e RPAREN
+                        {: RESULT = new Len(e); :}
                         ;
 
 parameters          ::= expr:e

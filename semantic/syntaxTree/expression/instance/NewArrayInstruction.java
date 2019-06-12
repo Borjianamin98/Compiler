@@ -56,6 +56,7 @@ public class NewArrayInstruction extends Expression {
         if (dimensions == null || dimensions.size() == 0)
             throw new RuntimeException("Array declaration must contains at least one dimension");
 
+        getResultType();
         for (Expression dim : dimensions) {
             dim.generateCode(currentClass, currentMethod, cv, mv, null, null);
             if (dim.getResultType().getTypeCode() != TypeTree.INTEGER_DSCP.getTypeCode())

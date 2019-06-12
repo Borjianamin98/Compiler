@@ -65,6 +65,10 @@ public class Foreach extends Statement {
         Label conditionLabel = new Label();
         Label stepLabel = new Label();
 
+        // we do this here because variable used as identifier in foreach
+        // can shadow other variables in outside block
+        Display.add(true);
+
         // create T[] a = Expression;
         ArrayDCL arrayDCL = new ArrayDCL(varIteratorName, arrayTypeDSCP.getBaseType().getName(),
                 arrayTypeDSCP.getDimensions(), false, iterator.getDSCP().isInitialized());
@@ -100,7 +104,6 @@ public class Foreach extends Statement {
         identifierAssignment.generateCode(currentClass, currentMethod, cv, mv, null, null);
 
         // create body
-        Display.add(true);
         for (BlockCode blockCode : body.getBlockCodes()) {
             blockCode.generateCode(currentClass, currentMethod, cv, mv, outLabel, stepLabel);
             if (blockCode instanceof ReturnStatement ||

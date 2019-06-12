@@ -57,7 +57,7 @@ public class SimpleFieldVariable extends Variable {
             mv.visitFieldInsn(Opcodes.PUTFIELD, currentClass.getName(), name, dscp.getDescriptor());
         }
         getDSCP().setInitialized(true);
-        setInitializationOfArray(name, value);
+        setInitializationOfArray(value);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package semantic.symbolTable;
 
 import semantic.symbolTable.descriptor.DSCP;
+import semantic.symbolTable.descriptor.hastype.HasTypeDSCP;
 import semantic.symbolTable.descriptor.hastype.VariableDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.typeTree.TypeTree;
@@ -57,7 +58,8 @@ public class Display {
      * all of type (integer, long, ... and array or record type are add to
      * main symbol table in Display. Assign a unique id to each type which is
      * added to main symbol table
-     * @param name name of type
+     *
+     * @param name       name of type
      * @param descriptor TypeDSCP of type
      * @throws RuntimeException if type declared more than one time
      */
@@ -72,6 +74,7 @@ public class Display {
 
     /**
      * get a TypeDSCP of a type
+     *
      * @param name name of type
      * @return TypeDSCP of type
      * @throws RuntimeException if type not found or name is not a type
@@ -82,7 +85,7 @@ public class Display {
         DSCP dscp = Display.mainSymbolTable.getSymbols().get(name);
         if (!(dscp instanceof TypeDSCP))
             throw new RuntimeException(name + " is not a type");
-        return  (TypeDSCP) dscp;
+        return (TypeDSCP) dscp;
     }
 
     /**
@@ -101,34 +104,45 @@ public class Display {
     }
 
     /**
-     * find a a variable and all its dimensions (var, var[], var[][], ...)
-     * in most top symbol table in Display array
+     * find a symbol in most top symbol table in Display array
      * (most top symbol table shadows other declaration in lowest symbol table)
      *
-     * @param var name of variable (it can contains dimensions like var[]...[])
+     * @param name name of symbol
+     * @return SymbolTable of variable if found, otherwise Optional.empty
+     */
+    public static Optional<SymbolTable> findSymbolTable(String name) {
+        for (int i = displayList.size() - 1; i >= 0; i--) {
+            if (displayList.get(i).contains(name))
+                return Optional.ofNullable(displayList.get(i));
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * find a a variable and all its dimensions (var, var[], var[][], ...) in symbolTable given to function
+     *
+     * @param symbolTable symbol table to search for var
+     * @param var         name of variable (it can contains dimensions like var[]...[])
      * @return a map from dimension to its variable DSCPs if found, otherwise empty map if
      * symbol not found or symbol is not a variable
      */
-    public static Map<Integer, VariableDSCP> findAll(String var) {
-        Map<Integer, VariableDSCP> variable = new HashMap<>();
+    public static Map<Integer, HasTypeDSCP> findAll(SymbolTable symbolTable, String var) {
+        Map<Integer, HasTypeDSCP> variable = new HashMap<>();
 
-        for (int i = displayList.size() - 1; i >= 0; i--) {
-            if (displayList.get(i).getDSCP(var).isPresent()) {
-                if (!(displayList.get(i).getDSCP(var).get() instanceof VariableDSCP))
-                    continue; // continue to search until find a variable or return empty list
+        if (symbolTable.getDSCP(var).isPresent()) {
+            if (!(symbolTable.getDSCP(var).get() instanceof VariableDSCP))
+                return variable; // return empty list
 
-                // this symbol table must contains var and all of its dimensions
-                // remove dimension from var
-                var = var.replaceAll("\\[\\]", "");
+            // this symbol table must contains var and all of its dimensions
+            // remove dimension from var
+            var = var.replaceAll("\\[\\]", "");
 
-                // get var and all of its dimensions
-                Optional<DSCP> fetch;
-                while ((fetch = displayList.get(i).getDSCP(var)).isPresent()) {
-                    VariableDSCP varDSCP = fetch.map(dscp -> (VariableDSCP) dscp).get();
-                    variable.put(varDSCP.getType().getDimensions(), varDSCP);
-                    var += "[]";
-                }
-                break;
+            // get var and all of its dimensions
+            Optional<DSCP> fetch;
+            while ((fetch = symbolTable.getDSCP(var)).isPresent()) {
+                HasTypeDSCP varDSCP = fetch.map(dscp -> (HasTypeDSCP) dscp).get();
+                variable.put(varDSCP.getType().getDimensions(), varDSCP);
+                var += "[]";
             }
         }
         return variable;

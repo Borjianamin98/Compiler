@@ -34,6 +34,10 @@ public class ArrayVariable extends Variable {
 
     }
 
+    public RecordTypeDSCP getParentRecordDSCP() {
+        return parentRecordDSCP;
+    }
+
     @Override
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         getDSCP();
@@ -65,8 +69,7 @@ public class ArrayVariable extends Variable {
 
         mv.visitInsn(Utility.getOpcode(arrayTypeDSCP.getInternalType(), "ASTORE", true));
         getDSCP().setInitialized(true);
-        // TODO Check initialization for array
-        // setInitializationOfArray(getChainName(), value);
+        setInitializationOfArray(value);
     }
 
     @Override

@@ -8,11 +8,13 @@ import semantic.symbolTable.descriptor.type.ArrayTypeDSCP;
 import semantic.symbolTable.descriptor.type.SimpleTypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
+import semantic.syntaxTree.expression.Ignorable;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.typeTree.TypeTree;
 
-public class Len extends Expression {
+public class Len extends Expression implements Ignorable {
     private Expression operand;
+    private boolean ignoreResult;
 
     public Len(Expression operand) {
         this.operand = operand;
@@ -20,7 +22,7 @@ public class Len extends Expression {
 
     @Override
     public SimpleTypeDSCP getResultType() {
-        if (!(operand.getResultType() instanceof ArrayTypeDSCP) || !TypeTree.isString(operand.getResultType()))
+        if (!(operand.getResultType() instanceof ArrayTypeDSCP) && !TypeTree.isString(operand.getResultType()))
             throw new RuntimeException("len function can call only on string and array");
         return TypeTree.INTEGER_DSCP;
     }
@@ -35,5 +37,12 @@ public class Len extends Expression {
             operand.generateCode(currentClass, currentMethod, cv, mv, null, null);
             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/String", "length", "()I", false);
         }
+        if (ignoreResult)
+            mv.visitInsn(Opcodes.POP);
+    }
+
+    @Override
+    public void setIgnoreResult(boolean ignoreResult) {
+        this.ignoreResult = ignoreResult;
     }
 }

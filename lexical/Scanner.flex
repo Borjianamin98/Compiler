@@ -51,7 +51,7 @@ WhiteSpace = {LineTerminator} | [ \t\f]
 EndOfLineComment = "##" [^\r\n]* \R?
 
 // removed reserverd: "goto"|"enum"|"class"|"union"|"short"|"signed"|"typedef"|"volatile"|"register"|"unsigned"|"NULL"|"nullptr"|"delete"|"public"|"private"|"protected"|"virtual"|"using"|"namespace"
-ReservedKeyword = "start"|"function"|"repeat"|"until"|"if"|"of"|"begin"|"end"|"for"|"foreach"|"in"|"int"|"bool"|"auto"|"char"|"long"|"else"|"void"|"case"|"while"|"const"|"float"|"extern"|"break"|"return"|"string"|"sizeof"|"double"|"static"|"switch"|"default"|"continue"|"record"|"new"|"println"|"input"
+ReservedKeyword = "len"|"start"|"function"|"repeat"|"until"|"if"|"of"|"begin"|"end"|"for"|"foreach"|"in"|"int"|"bool"|"auto"|"char"|"long"|"else"|"void"|"case"|"while"|"const"|"float"|"extern"|"break"|"return"|"string"|"sizeof"|"double"|"static"|"switch"|"default"|"continue"|"record"|"new"|"println"|"input"
 Identifier = [:jletter:] [:jletterdigit:]*
 // removed operator: "<<"|">>"
 Operator = "="|"=="|"!="|">"|">="|"<"|"<="|"="|"+="|"-="|"*="|"/="|"%="|"+"|"-"|"*"|"/"|"%"|"not"|"or"|"and"|"|"|"&"|"^"|"~"|"++"|"--"

@@ -13,6 +13,7 @@ import semantic.typeTree.TypeTree;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RecordTypeDCL extends Declaration implements BlockCode, ClassCode {
@@ -30,17 +31,12 @@ public class RecordTypeDCL extends Declaration implements BlockCode, ClassCode {
 
         // Record symbol table
         Display.add(false);
+        List<Field> fields_need_initialized = new ArrayList<>();
         for (Field field : fields) {
             field.setStatic(false);
-            Declaration fieldDCL;
-            if (field.isArray()) {
-                fieldDCL = new ArrayFieldDCL(getName(), field.getName(), field.getBaseType(), field.getDimensions(),
-                        field.isConstant(), field.getDefaultValue() != null, field.isStatic());
-            } else {
-                fieldDCL = new SimpleFieldDCL(getName(), field.getName(), field.getBaseType(), field.isConstant(),
-                        field.getDefaultValue() != null, field.isStatic());
-            }
-            fieldDCL.generateCode(null, null, classWriter, null, null, null);
+            field.createFieldDCL(currentClass.getName()).generateCode(currentClass, null, classWriter, null, null, null);
+            if (field.getDefaultValue() != null)
+                fields_need_initialized.add(field);
         }
 
         // Constructor of record
@@ -48,15 +44,13 @@ public class RecordTypeDCL extends Declaration implements BlockCode, ClassCode {
         methodVisitor.visitCode();
         methodVisitor.visitVarInsn(Opcodes.ALOAD, 0);
         methodVisitor.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
-        for (Field field : fields) {
-            if (field.getDefaultValue() != null) {
-                methodVisitor.visitVarInsn(Opcodes.ALOAD, 0); // load "this"
-                field.getDefaultValue().generateCode(null, null, classWriter, methodVisitor, null, null);
-                TypeTree.widen(mv, field.getDefaultValue().getResultType(), field.getType()); // right value must be converted to type of variable
-                methodVisitor.visitFieldInsn(Opcodes.PUTFIELD, getName(), field.getName(), field.getDescriptor());
-            }
-        }
 
+        // initialize field
+        // do initialization of field which are non-static in default constructor
+        for (Field field : fields_need_initialized) {
+            if (!field.isStatic())
+                field.generateCode(getName(), classWriter, methodVisitor);
+        }
 
         methodVisitor.visitInsn(Opcodes.RETURN);
         methodVisitor.visitMaxs(0, 0);

@@ -71,7 +71,7 @@ public class ArrayFieldDCL extends Declaration {
         for (int i = 0; i <= dimensions - 1; i++) {
             ArrayTypeDSCP arrayTypeDSCP = (ArrayTypeDSCP) lastDimensionType;
             DSCP descriptor = new ArrayDSCP(lastDSCPName, arrayTypeDSCP, arrayTypeDSCP.getInternalType(), baseTypeDSCP,
-                    i == 0 ? top.getFreeAddress() : -1, false, true);
+                    i == 0 ? top.getFreeAddress() : -1, false, initialized);
             top.addSymbol(descriptor.getName(), descriptor);
             lastDimensionType = arrayTypeDSCP.getInternalType();
             lastDSCPName = lastDSCPName + "[]";

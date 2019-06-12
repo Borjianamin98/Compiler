@@ -41,7 +41,7 @@ public class SimpleLocalVariable extends Variable {
         TypeTree.widen(mv, value.getResultType(), getResultType()); // right value must be converted to type of variable
         mv.visitVarInsn(Utility.getOpcode(dscp.getType(), "STORE", false), dscp.getAddress());
         getDSCP().setInitialized(true);
-        setInitializationOfArray(name, value);
+        setInitializationOfArray(value);
     }
 
     @Override

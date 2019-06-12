@@ -52,9 +52,10 @@ public class ClassDCL extends Node {
         List<Field> fields_need_initialized = new ArrayList<>();
         for (ClassCode classCode : classCodes) {
             if (classCode instanceof Field) {
-                createFieldDCLCode(classWriter, (Field) classCode);
-                if (((Field) classCode).getDefaultValue() != null)
-                    fields_need_initialized.add((Field) classCode);
+                Field field = (Field) classCode;
+                field.createFieldDCL(name).generateCode(currentClass, null, classWriter, null, null, null);
+                if (field.getDefaultValue() != null)
+                    fields_need_initialized.add(field);
             } else if (classCode instanceof MethodDCL || classCode instanceof RecordTypeDCL)
                 ((Declaration) classCode).generateCode(this, null, classWriter, null, null, null);
         }
@@ -72,17 +73,9 @@ public class ClassDCL extends Node {
 
         // initialize field
         // do initialization of field which are non-static in default constructor
-        Iterator<Field> iterator = fields_need_initialized.iterator();
-        while (iterator.hasNext()) {
-            Field nextField = iterator.next();
-            if (!nextField.isStatic()) {
-                methodVisitor.visitVarInsn(Opcodes.ALOAD, 0); // load "this"
-                nextField.getDefaultValue().generateCode(this, null, classWriter, methodVisitor, null, null);
-                methodVisitor.visitFieldInsn(Opcodes.PUTFIELD, name, nextField.getName(), nextField.getDescriptor());
-
-                // remove non-static fields
-                iterator.remove();
-            }
+        for (Field field : fields_need_initialized) {
+            if (!field.isStatic())
+                field.generateCode(getName(), classWriter, methodVisitor);
         }
 
         methodVisitor.visitInsn(Opcodes.RETURN);
@@ -95,8 +88,8 @@ public class ClassDCL extends Node {
         methodVisitor = classWriter.visitMethod(Opcodes.ACC_STATIC, "<clinit>", "()V", null, null);
         methodVisitor.visitCode();
         for (Field field : fields_need_initialized) {
-            field.getDefaultValue().generateCode(this, null, classWriter, methodVisitor, null, null);
-            methodVisitor.visitFieldInsn(Opcodes.PUTSTATIC, name, field.getName(), field.getDescriptor());
+            if (field.isStatic())
+                field.generateCode(getName(), classWriter, methodVisitor);
         }
         methodVisitor.visitInsn(Opcodes.RETURN);
         methodVisitor.visitMaxs(0, 0);
@@ -114,26 +107,6 @@ public class ClassDCL extends Node {
         if (Display.find(name).isPresent()) {
             throw new RuntimeException("Identifier " + name + " declared more than one time");
         }
-    }
-
-    /**
-     * generate field of class depend of filed type and it's dimension
-     * it's initialization will do in another method
-     *
-     * @param classWriter class writer
-     * @param field       filed
-     */
-    private void createFieldDCLCode(ClassWriter classWriter, Field field) {
-        // Create field
-        Declaration fieldDCL;
-        if (field.isArray()) {
-            fieldDCL = new ArrayFieldDCL(name, field.getName(), field.getBaseType(), field.getDimensions(),
-                    field.isConstant(), field.getDefaultValue() != null, field.isStatic());
-        } else {
-            fieldDCL = new SimpleFieldDCL(name, field.getName(), field.getBaseType(), field.isConstant(),
-                    field.getDefaultValue() != null, field.isStatic());
-        }
-        fieldDCL.generateCode(this, null, classWriter, null, null, null);
     }
 }
 
