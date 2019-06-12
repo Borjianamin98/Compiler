@@ -39,12 +39,12 @@ public class AutoVariableDCL extends Declaration {
         getTypeDSCP();
         Declaration variable;
         if (defaultValue.getResultType() instanceof SimpleTypeDSCP) {
-            variable = new VariableDCL(getName(), getTypeDSCP().getName(), isConstant(), true);
+            variable = new VariableDCL(getName(), getTypeDSCP().getName(), isConstant(), false);
         } else if (defaultValue.getResultType() instanceof RecordTypeDSCP) {
-            variable = new VariableDCL(getName(), getTypeDSCP().getName(), isConstant(), true);
+            variable = new VariableDCL(getName(), getTypeDSCP().getName(), isConstant(), false);
         } else if (defaultValue.getResultType() instanceof ArrayTypeDSCP) {
             ArrayTypeDSCP arrayTypeDSCP = (ArrayTypeDSCP) defaultValue.getResultType();
-            variable = new ArrayDCL(getName(), arrayTypeDSCP.getBaseType().getName(), arrayTypeDSCP.getDimensions(), isConstant(), true);
+            variable = new ArrayDCL(getName(), arrayTypeDSCP.getBaseType().getName(), arrayTypeDSCP.getDimensions(), isConstant(), false);
         } else {
             throw new RuntimeException("Can not detect type for auto variable");
         }

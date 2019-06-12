@@ -4,6 +4,7 @@ import org.objectweb.asm.*;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
 import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
+import semantic.syntaxTree.BlockCode;
 import semantic.syntaxTree.Node;
 import semantic.syntaxTree.declaration.Declaration;
 import semantic.syntaxTree.declaration.method.MethodDCL;
@@ -14,7 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-public class RecordTypeDCL extends Declaration {
+public class RecordTypeDCL extends Declaration implements BlockCode {
     private List<Field> fields;
 
     public RecordTypeDCL(String name, List<Field> fields) {

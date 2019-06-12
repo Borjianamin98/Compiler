@@ -9,6 +9,7 @@ import java_cup.runtime.*;
 import semantic.syntaxTree.BlockCode;
 import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.*;
+import semantic.syntaxTree.declaration.record.*;
 import semantic.syntaxTree.expression.*;
 import semantic.syntaxTree.expression.call.*;
 import semantic.syntaxTree.expression.identifier.*;
@@ -61,7 +62,7 @@ public class Parser extends java_cup.runtime.lr_parser {
     "\002\027\007\000\002\027\006\000\002\027\007\000\002" +
     "\027\006\000\002\030\005\000\002\030\003\000\002\031" +
     "\004\000\002\031\005\000\002\033\004\000\002\033\002" +
-    "\000\002\025\011\000\002\024\004\000\002\024\003\000" +
+    "\000\002\025\010\000\002\024\004\000\002\024\003\000" +
     "\002\040\002\000\002\023\010\000\002\041\002\000\002" +
     "\023\007\000\002\042\002\000\002\023\007\000\002\043" +
     "\002\000\002\023\006\000\002\021\007\000\002\021\005" +
@@ -1011,11 +1012,22 @@ class CUP$Parser$actions {
           return CUP$Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 19: // struct_dcl ::= RECORD IDENTIFIER BEGIN var_declrations END RECORD SEMICOLON 
+          case 19: // struct_dcl ::= RECORD IDENTIFIER BEGIN var_declrations END SEMICOLON 
             {
-              Object RESULT =null;
-
-              CUP$Parser$result = parser.getSymbolFactory().newSymbol("struct_dcl",19, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-6)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
+              Declaration RESULT =null;
+		int nameleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)).left;
+		int nameright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)).right;
+		String name = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-4)).value;
+		int fieldsFactoryleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
+		int fieldsFactoryright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
+		List<VariableDCLFactory> fieldsFactory = (List<VariableDCLFactory>)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
+		
+                        List<Field> fields = new ArrayList<>();
+                        for (VariableDCLFactory factory : fieldsFactory)
+                            fields.add(factory.createFieldVariable(false));
+                        RESULT = new RecordTypeDCL(name, fields);
+                        
+              CUP$Parser$result = parser.getSymbolFactory().newSymbol("struct_dcl",19, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-5)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
 

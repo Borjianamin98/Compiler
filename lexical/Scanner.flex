@@ -88,8 +88,9 @@ escapeCharacter = "'"{escapeChar}"'"
     {Identifier}                { return symbol("Identifier", Token.getWithRepresentation("identifier").getSym(), yytext()); }
 
     /* literals */
-    {integer}                   { return symbol("Integer", Token.getWithRepresentation("int_const").getSym(), Integer.parseInt(yytext())); }
-    {integer}[lL]               { return symbol("Long", Token.getWithRepresentation("long_const").getSym(), Long.parseLong(yytext())); }
+    {integer}                   { return symbol("Integer", Token.getWithRepresentation("int_const").getSym(), Integer.valueOf(yytext())); }
+    {integer}[lL]               { return symbol("Long", Token.getWithRepresentation("long_const").getSym(), Long.valueOf(yytext())); }
+    {integer}[fF]               { return symbol("Float", Token.getWithRepresentation("float_const").getSym(), Float.valueOf(yytext())); }
     {real}                      { return symbol("Double", Token.getWithRepresentation("double_const").getSym(), Double.valueOf(yytext())); }
     {real}[fF]                  { return symbol("Float", Token.getWithRepresentation("float_const").getSym(), Float.valueOf(yytext())); }
     {character}                 { return symbol("Character", Token.getWithRepresentation("char_const").getSym(), yytext().substring(1, 2).charAt(0)); }

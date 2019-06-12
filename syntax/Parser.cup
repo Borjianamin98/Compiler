@@ -4,6 +4,7 @@ import java_cup.runtime.*;
 import semantic.syntaxTree.BlockCode;
 import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.*;
+import semantic.syntaxTree.declaration.record.*;
 import semantic.syntaxTree.expression.*;
 import semantic.syntaxTree.expression.call.*;
 import semantic.syntaxTree.expression.identifier.*;
@@ -79,7 +80,7 @@ non terminal                            block_part;
 non terminal List<Case>                 case_part;
 non terminal Statement                  for_init_part;
 non terminal List<VariableDCLFactory>   const_var_dcl_p, var_dcl_p, var_dcl, var_declrations;
-non terminal                            struct_dcl;
+non terminal Declaration                struct_dcl;
 non terminal                            function_dcl, func_signature, arguments, argument, extern_dcl;
 non terminal Integer                    array_part_no_val;
 non terminal List<Expression>           array_part_val;
@@ -154,7 +155,14 @@ array_part_no_val   ::= LRBRACKET array_part_no_val:count
                         {: RESULT = 0; :}
                         ;
 
-struct_dcl          ::= RECORD IDENTIFIER BEGIN var_declrations END RECORD SEMICOLON;
+struct_dcl          ::= RECORD IDENTIFIER:name BEGIN var_declrations:fieldsFactory END SEMICOLON
+                        {:
+                        List<Field> fields = new ArrayList<>();
+                        for (VariableDCLFactory factory : fieldsFactory)
+                            fields.add(factory.createFieldVariable(false));
+                        RESULT = new RecordTypeDCL(name, fields);
+                        :}
+                        ;
 
 var_declrations     ::= var_dcl:other var_declrations:list
                         {:
