@@ -12,41 +12,46 @@ import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.syntaxTree.statement.Statement;
-import semantic.syntaxTree.statement.assignment.Assignment;
 import semantic.syntaxTree.statement.controlflow.BreakStatement;
 import semantic.syntaxTree.statement.controlflow.ContinueStatement;
 import semantic.syntaxTree.statement.controlflow.ReturnStatement;
 
 public class ForLoop extends Statement {
-    private Assignment initialAssignment;
+    private Statement initialAssignment;
     private Expression condition;
     /**
      * only one of steps available at any time
      */
-    private Assignment stepAssignment;
+    private Statement stepAssignment;
     private Expression stepExpression;
 
     private Block body;
 
-    public ForLoop(Assignment initialAssignment, Expression condition, Assignment stepAssignment, Block body) {
+    public ForLoop(Statement initialAssignment, Expression condition, Statement stepAssignment, Block body) {
         this.initialAssignment = initialAssignment;
         this.condition = condition;
         this.stepAssignment = stepAssignment;
         this.body = body;
     }
 
-    public ForLoop(Assignment initialAssignment, Expression condition, Expression stepExpression, Block body) {
+    public ForLoop(Statement initialAssignment, Expression condition, Expression stepExpression, Block body) {
         this.initialAssignment = initialAssignment;
         this.condition = condition;
         this.stepExpression = stepExpression;
         this.body = body;
     }
 
+    public ForLoop(Statement initialAssignment, Expression condition, Block body) {
+        this.initialAssignment = initialAssignment;
+        this.condition = condition;
+        this.body = body;
+    }
+
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         // Generate initial statement
         if (initialAssignment != null)
-            initialAssignment.generateCode(currentClass, currentMethod, cv, mv);
+            initialAssignment.generateCode(currentClass, currentMethod, cv, mv, null, null);
 
         Label conditionLabel = new Label();
         Label stepLabel = new Label();
@@ -60,27 +65,24 @@ public class ForLoop extends Statement {
         Display.add(true);
         if (body != null) {
             for (BlockCode blockCode : body.getBlockCodes()) {
-                if (blockCode instanceof BreakStatement) {
-                    mv.visitJumpInsn(Opcodes.GOTO, outLabel);
+                blockCode.generateCode(currentClass, currentMethod, cv, mv, outLabel, stepLabel);
+                if (blockCode instanceof ReturnStatement ||
+                        blockCode instanceof BreakStatement ||
+                        blockCode instanceof ContinueStatement)
                     break; // other code in this block are unnecessary
-                } else if (blockCode instanceof ContinueStatement) {
-                    mv.visitJumpInsn(Opcodes.GOTO, stepLabel);
-                    break; // other code in this block are unnecessary
-                } else if (blockCode instanceof ReturnStatement) {
-                    blockCode.generateCode(currentClass, currentMethod, cv, mv);
-                    break; // other code in this block are unnecessary
-                } else
-                    blockCode.generateCode(currentClass, currentMethod, cv, mv);
             }
         }
         Display.pop();
 
+
         // generate step assigment
         mv.visitLabel(stepLabel);
         if (stepAssignment != null)
-            stepAssignment.generateCode(currentClass, currentMethod, cv, mv);
-        if (stepExpression != null)
-            stepExpression.generateCode(currentClass, currentMethod, cv, mv);
+            stepAssignment.generateCode(currentClass, currentMethod, cv, mv, null, null);
+        if (stepExpression != null) {
+            stepExpression.generateCode(currentClass, currentMethod, cv, mv, null, null);
+            mv.visitInsn(Opcodes.POP);
+        }
 
         // generate jump for for-loop
         mv.visitJumpInsn(Opcodes.GOTO, conditionLabel);

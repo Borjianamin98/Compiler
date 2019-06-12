@@ -1,6 +1,7 @@
 package semantic.syntaxTree.expression.operation.unary.prefix_postfix;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
@@ -17,10 +18,10 @@ public class PlusPlusPrefix extends OneIncrementAndDecrement {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         TypeDSCP resultType = getResultType();
         Expression oneConst = Utility.getSimpleConstant(resultType, 1);
-        new DirectAssignment(getVariable(), new Plus(getVariable(), oneConst)).generateCode(currentClass, currentMethod, cv, mv);
-        getVariable().generateCode(currentClass, currentMethod, cv, mv);
+        new DirectAssignment(getVariable(), new Plus(getVariable(), oneConst)).generateCode(currentClass, currentMethod, cv, mv, null, null);
+        getVariable().generateCode(currentClass, currentMethod, cv, mv, null, null);
     }
 }

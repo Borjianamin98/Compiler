@@ -8,4 +8,10 @@ public class Argument extends Parameter {
         super(name, baseType, dimensions);
     }
 
+    @Override
+    public String toString() {
+        return getType().getConventionalName();
+    }
+
+
 }

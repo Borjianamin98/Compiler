@@ -1,12 +1,31 @@
 package syntax;
 import java_cup.runtime.*;
-import semantic.syntaxTree.Node;
+
+import semantic.syntaxTree.*;
 import semantic.syntaxTree.block.Block;
-import semantic.syntaxTree.expression.Expression;
+import semantic.syntaxTree.declaration.*;
+import semantic.syntaxTree.declaration.method.*;
+import semantic.syntaxTree.declaration.record.*;
+import semantic.syntaxTree.expression.*;
+import semantic.syntaxTree.expression.call.*;
+import semantic.syntaxTree.expression.identifier.*;
 import semantic.syntaxTree.expression.constValue.*;
+import semantic.syntaxTree.expression.instance.*;
 import semantic.syntaxTree.expression.operation.arithmetic.*;
-import semantic.symbolTable.SymbolTable;
-import semantic.symbolTable.descriptor.DSCP;
+import semantic.syntaxTree.expression.operation.bitwise.*;
+import semantic.syntaxTree.expression.operation.logical.*;
+import semantic.syntaxTree.expression.operation.relational.*;
+import semantic.syntaxTree.expression.operation.unary.*;
+import semantic.syntaxTree.expression.operation.unary.prefix_postfix.*;
+import semantic.syntaxTree.statement.*;
+import semantic.syntaxTree.statement.assignment.*;
+import semantic.syntaxTree.statement.controlflow.*;
+import semantic.syntaxTree.statement.controlflow.ifelse.*;
+import semantic.syntaxTree.statement.controlflow.switchcase.*;
+import semantic.syntaxTree.statement.controlflow.loop.*;
+import semantic.syntaxTree.program.ClassDCL;
+
+import semantic.typeTree.TypeTree;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -16,146 +35,299 @@ class Parser;
 
 parser code
 {:
-    public static List<Expression> list = new ArrayList<>();
     public static ArrayDeque<Object> semanticStack = new ArrayDeque<>();
-    public static SymbolTable mainSymbolTable = new SymbolTable();
-    public static boolean isConst = false;
+    public static ClassDCL finalResult;
 :}
 
 /* Terminals (tokens returned by the scanner). */
-terminal                    SEMICOLON;
-terminal                    PLUS, MINUS, MULTIPLY, DIVIDE, MOD;
-terminal                    BITWISE_AND, BITWISE_OR, BITWISE_XOR, BITWISE_NOT;
-terminal                    EQUAL, NOT_EQUAL, LESS_EQUAL, LESS, GREATER, GREATER_EQUAL, NOT, AND, OR;
-terminal                    UNARY_MINUS;
-terminal                    LPAREN, RPAREN, LBRACKET, RBRACKET;
-terminal String             IDENTIFIER;
-terminal                    RECORD, FUNCTION, EXTERN;
-terminal                    INT, LONG, FLOAT, DOUBLE, BOOL, CHAR, STRING, VOID, AUTO;
-terminal                    DOT, COMMA, COLON;
-terminal                    PLUSPLUS, MINUSMINUS, PLUSPLUS_POSTFIX, MINUSMINUS_POSTFIX;
-terminal                    DIRECT_ASSIGN, SUM_ASSIGN, DIFF_ASSIGN, MULT_ASSIGN, DIVIDE_ASSIGN, MOD_ASSIGN;
-terminal                    IF, ELSE, RETURN, BREAK, CONTINUE;
-terminal                    SWITCH, OF, CASE, DEFAULT, BEGIN, END;
-terminal                    FOR, REPEAT, UNTIL, FOREACH, IN;
-terminal                    SIZEOF, CONST;
-terminal Integer            INT_CONST;
-terminal Long               LONG_CONST;
-terminal Double             DOUBLE_CONST;
-terminal Float              FLOAT_CONST;
-terminal Integer            BOOL_CONST;
-terminal Character          CHAR_CONST;
-terminal String             STRING_CONST;
+terminal                                SEMICOLON;
+terminal                                PLUS, MINUS, MULTIPLY, DIVIDE, MOD;
+terminal                                BITWISE_AND, BITWISE_OR, BITWISE_XOR, BITWISE_NOT;
+terminal                                EQUAL, NOT_EQUAL, LESS_EQUAL, LESS, GREATER, GREATER_EQUAL, NOT, AND, OR;
+terminal                                UNARY_MINUS;
+terminal                                LPAREN, RPAREN, LBRACKET, RBRACKET, LRBRACKET;
+terminal String                         IDENTIFIER;
+terminal                                RECORD, FUNCTION, EXTERN, NEW;
+terminal                                INT, LONG, FLOAT, DOUBLE, BOOL, CHAR, STRING, VOID, AUTO;
+terminal                                DOT, COMMA, COLON;
+terminal                                PLUSPLUS, MINUSMINUS, PLUSPLUS_POSTFIX, MINUSMINUS_POSTFIX;
+terminal                                DIRECT_ASSIGN, SUM_ASSIGN, DIFF_ASSIGN, MULT_ASSIGN, DIVIDE_ASSIGN, MOD_ASSIGN;
+terminal                                IF, ELSE, RETURN, BREAK, CONTINUE;
+terminal                                SWITCH, OF, CASE, DEFAULT, BEGIN, END;
+terminal                                FOR, REPEAT, UNTIL, FOREACH, IN;
+terminal                                SIZEOF, CONST, LEN;
+terminal Integer                        INT_CONST;
+terminal Long                           LONG_CONST;
+terminal Double                         DOUBLE_CONST;
+terminal Float                          FLOAT_CONST;
+terminal Integer                        BOOL_CONST;
+terminal Character                      CHAR_CONST;
+terminal String                         STRING_CONST;
+terminal                                CAST_PREC;
+terminal                                PRINTLN, INPUT;
+terminal                                START;
 
 /* Non terminals */
-non terminal                program;
-non terminal                method_cal, parameters;
-non terminal                variable, array_part_val;
-non terminal                base_type, type;
-non terminal                assignment, assign_mark;
-non terminal                cond_stmt, loop_stmt, statement;
-non terminal Block          block;
-non terminal                block_body, block_part;
-non terminal                else_part, case_part;
-non terminal                for_init_part, for_step_part;
-non terminal                var_declrations, var_dcl, var_dcl_p, const_var_dcl_p;
-non terminal                struct_dcl;
-non terminal                function_dcl, fun_signature, arguments, argument, array_part_no_val, extern_dcl;
-non terminal Expression     expr;
-non terminal Expression     const_val;
+non terminal                            program;
+non terminal                            class_code;
+non terminal Expression                 method_cal;
+non terminal List<Expression>           parameters;
+non terminal Variable                   variable;
+non terminal String                     base_type, typeName;
+non terminal Statement                  assignment;
+non terminal Statement                  cond_stmt, loop_stmt;
+non terminal Statement                  statement;
+non terminal Block                      block;
+non terminal                            block_body;
+non terminal                            block_part;
+non terminal List<Case>                 case_part;
+non terminal Statement                  for_init_part;
+non terminal List<VariableDCLFactory>   const_var_dcl_p, var_dcl_p, var_dcl, var_declrations;
+non terminal ClassCode                  struct_dcl;
+non terminal ClassCode                  function_dcl;
+non terminal                            extern_dcl;
+non terminal Signature                  func_signature;
+non terminal List<Argument>             arguments;
+non terminal Integer                    array_part_no_val;
+non terminal List<Expression>           array_part_val;
+non terminal Expression                 expr;
+non terminal Expression                 const_val;
+non terminal                            begining;
 
 /* Precedences */
+precedence right MULT_ASSIGN, DIVIDE_ASSIGN, MOD_ASSIGN;
+precedence right SUM_ASSIGN, DIFF_ASSIGN;
 precedence left OR;
 precedence left AND;
 precedence left BITWISE_OR;
 precedence left BITWISE_XOR;
 precedence left BITWISE_AND;
-precedence nonassoc LESS, LESS_EQUAL;
-precedence nonassoc GREATER, GREATER_EQUAL;
 precedence nonassoc EQUAL, NOT_EQUAL;
+precedence nonassoc GREATER, GREATER_EQUAL;
+precedence nonassoc LESS, LESS_EQUAL;
 precedence left PLUS, MINUS;
 precedence left MULTIPLY, DIVIDE, MOD;
-precedence left UNARY_MINUS;
+precedence left NEW;
+precedence left SIZEOF, LEN;
+precedence left CAST_PREC;
 precedence right BITWISE_NOT, NOT;
-precedence left DOT;
-precedence left LBRACKET;
+precedence left UNARY_MINUS;
 precedence nonassoc MINUSMINUS, PLUSPLUS;
+precedence left DOT;
 precedence nonassoc MINUSMINUS_POSTFIX, PLUSPLUS_POSTFIX;
 
 /* The grammar */
-start with expr;
-program             ::= var_dcl program
-                        |
-                        function_dcl program
-                        |
-                        extern_dcl program
-                        |
-                        struct_dcl program
-                        |
+start with begining;
+begining            ::= {: Parser.semanticStack.addLast(new ClassDCL("Tester")); :}
+                        program
+                        {: finalResult = (ClassDCL) Parser.semanticStack.removeLast(); :}
                         ;
 
-extern_dcl          ::= EXTERN type IDENTIFIER SEMICOLON;
-
-function_dcl        ::= FUNCTION type fun_signature
+program             ::= class_code program
                         |
-                        FUNCTION VOID fun_signature;
-
-fun_signature       ::= IDENTIFIER LPAREN arguments RPAREN SEMICOLON
-                        |
-                        IDENTIFIER LPAREN RPAREN SEMICOLON
-                        |
-                        IDENTIFIER LPAREN arguments RPAREN block
-                        |
-                        IDENTIFIER LPAREN RPAREN block
+                        class_code
                         ;
 
-arguments           ::= argument COMMA arguments
-                        {: System.out.println("argument detected"); :}
+
+class_code             ::= var_dcl:fieldsFactory
+                        {:
+                        ClassDCL classDCL = (ClassDCL) Parser.semanticStack.getLast();
+                        for (VariableDCLFactory factory : fieldsFactory)
+                            classDCL.addClassCode(factory.createFieldVariable(true));
+                        :}
                         |
-                        argument
-                        {: System.out.println("argument detected"); :}
+                        function_dcl:functionDCL
+                        {:
+                        ClassDCL classDCL = (ClassDCL) Parser.semanticStack.getLast();
+                        classDCL.addClassCode(functionDCL);
+                        :}
+                        |
+                        struct_dcl:structDCL
+                        {:
+                        ClassDCL classDCL = (ClassDCL) Parser.semanticStack.getLast();
+                        classDCL.addClassCode(structDCL);
+                        :}
+//                      |
+//                      extern_dcl
                         ;
 
-argument            ::= type IDENTIFIER
+extern_dcl          ::= EXTERN typeName IDENTIFIER SEMICOLON;
+
+function_dcl        ::= FUNCTION typeName:returnType func_signature:signature
+                        {: RESULT = new MethodDCL("Tester", signature, returnType, true); :}
                         |
-                        type IDENTIFIER array_part_no_val;
-
-array_part_no_val   ::= LBRACKET RBRACKET array_part_no_val
+                        FUNCTION VOID func_signature:signature
+                        {: RESULT = new MethodDCL("Tester", signature, TypeTree.VOID_NAME, true); :}
                         |
-                        LBRACKET RBRACKET;
+                        FUNCTION VOID START LPAREN RPAREN block:body
+                        {: RESULT = new StartMethodDCL("Tester", body); :}
+                        ;
 
-struct_dcl          ::= RECORD IDENTIFIER BEGIN var_declrations END RECORD SEMICOLON;
+func_signature       ::= IDENTIFIER:name LPAREN arguments:args RPAREN SEMICOLON
+                        {: RESULT = new Signature(name, args, null); :}
+                        |
+                        IDENTIFIER:name LPAREN RPAREN SEMICOLON
+                        {: RESULT = new Signature(name, new ArrayList<Argument>(), null); :}
+                        |
+                        IDENTIFIER:name LPAREN arguments:args RPAREN block:body
+                        {: RESULT = new Signature(name, args, body); :}
+                        |
+                        IDENTIFIER:name LPAREN RPAREN block:body
+                        {: RESULT = new Signature(name, new ArrayList<Argument>(), body); :}
+                        ;
 
-var_declrations     ::= var_dcl var_declrations
+arguments           ::= typeName:baseType IDENTIFIER:name array_part_no_val:dimensions COMMA arguments:list
+                        {:
+                        RESULT = list;
+                        RESULT.add(new Argument(name, baseType, dimensions));
+                        :}
+                        |
+                        typeName:baseType IDENTIFIER:name array_part_no_val:dimensions
+                        {:
+                        RESULT = new ArrayList<Argument>();
+                        RESULT.add(new Argument(name, baseType, dimensions));
+                        :}
+                        ;
+
+array_part_no_val   ::= LRBRACKET array_part_no_val:count
+                        {: RESULT = 1 + count; :}
+                        |
+
+                        {: RESULT = 0; :}
+                        ;
+
+struct_dcl          ::= RECORD IDENTIFIER:name BEGIN var_declrations:fieldsFactory END SEMICOLON
+                        {:
+                        List<Field> fields = new ArrayList<>();
+                        for (VariableDCLFactory factory : fieldsFactory)
+                            fields.add(factory.createFieldVariable(false));
+                        RESULT = new RecordTypeDCL(name, fields);
+                        :}
+                        ;
+
+var_declrations     ::= var_dcl:other var_declrations:list
+                        {:
+                        if (list == null)
+                            list = new ArrayList<VariableDCLFactory>();
+                        list.addAll(other == null ? new ArrayList<>() : other);
+                        RESULT = list;
+                        :}
                        |
-                       var_dcl;
+                       var_dcl:other
+                       {: RESULT = other; :}
+                       ;
 
-var_dcl             ::= CONST type array_part_no_val const_var_dcl_p SEMICOLON
+var_dcl             ::= CONST typeName:typeName array_part_no_val:dimensions
+                        {:
+                        Parser.semanticStack.addLast(VariableDCLFactory.create()
+                                                        .setConstant(true)
+                                                        .setTypeName(typeName)
+                                                        .setDimensions(dimensions));
+                        :}
+                        const_var_dcl_p:list SEMICOLON
+                        {:
+                        Parser.semanticStack.removeLast();
+                        RESULT = list;
+                        :}
                         |
-                        CONST AUTO const_var_dcl_p SEMICOLON
+                        typeName:typeName array_part_no_val:dimensions
+                        {:
+                        Parser.semanticStack.addLast(VariableDCLFactory.create()
+                                                        .setConstant(false)
+                                                        .setTypeName(typeName)
+                                                        .setDimensions(dimensions));
+                        :}
+                        var_dcl_p:list SEMICOLON
+                        {:
+                        Parser.semanticStack.removeLast();
+                        RESULT = list;
+                        :}
                         |
-                        type array_part_no_val var_dcl_p SEMICOLON
+                        CONST AUTO
+                        {:
+                        Parser.semanticStack.addLast(VariableDCLFactory.create()
+                                                        .setConstant(true)
+                                                        .setTypeName(TypeTree.AUTO_NAME));
+                        :}
+                        const_var_dcl_p:list SEMICOLON
+                        {:
+                        Parser.semanticStack.removeLast();
+                        RESULT = list;
+                        :}
                         |
-                        AUTO const_var_dcl_p SEMICOLON
+                        AUTO
+                        {:
+                        Parser.semanticStack.addLast(VariableDCLFactory.create()
+                                                        .setConstant(false)
+                                                        .setTypeName(TypeTree.AUTO_NAME));
+                        :}
+                        const_var_dcl_p:list SEMICOLON
+                        {:
+                        Parser.semanticStack.removeLast();
+                        RESULT = list;
+                        :}
                         ;
 
-const_var_dcl_p     ::= IDENTIFIER DIRECT_ASSIGN expr COMMA const_var_dcl_p
+const_var_dcl_p     ::= IDENTIFIER:variableName DIRECT_ASSIGN expr:e COMMA const_var_dcl_p:list
+                        {:
+                        if (list == null)
+                            list = new ArrayList<VariableDCLFactory>();
+                        VariableDCLFactory factory = (VariableDCLFactory) Parser.semanticStack.getLast();
+                        list.add(factory.copy().setVariableName(variableName).setDefaultValue(e));
+                        RESULT = list;
+                        :}
                         |
-                        IDENTIFIER DIRECT_ASSIGN expr
+                        IDENTIFIER:variableName DIRECT_ASSIGN expr:e
+                        {:
+                        VariableDCLFactory factory = (VariableDCLFactory) Parser.semanticStack.getLast();
+                        RESULT = new ArrayList<VariableDCLFactory>();
+                        RESULT.add(factory.copy().setVariableName(variableName).setDefaultValue(e));
+                        :}
                         ;
 
-var_dcl_p           ::= IDENTIFIER COMMA var_dcl_p
-                        |
-                        IDENTIFIER DIRECT_ASSIGN expr COMMA var_dcl_p
-                        |
-                        IDENTIFIER DIRECT_ASSIGN expr
-                        |
-                        IDENTIFIER;
 
-
-block               ::= BEGIN block_part END
+var_dcl_p           ::= IDENTIFIER:variableName COMMA var_dcl_p:list
+                        {:
+                        if (list == null)
+                            list = new ArrayList<VariableDCLFactory>();
+                        VariableDCLFactory factory = (VariableDCLFactory) Parser.semanticStack.getLast();
+                        list.add(factory.copy().setVariableName(variableName));
+                        RESULT = list;
+                        :}
                         |
-                        BEGIN END;
+                        IDENTIFIER:variableName
+                        {:
+                        VariableDCLFactory factory = (VariableDCLFactory) Parser.semanticStack.getLast();
+                        RESULT = new ArrayList<VariableDCLFactory>();
+                        RESULT.add(factory.copy().setVariableName(variableName));
+                        :}
+                        |
+                        IDENTIFIER:variableName DIRECT_ASSIGN expr:e COMMA var_dcl_p:list
+                        {:
+                        if (list == null)
+                            list = new ArrayList<VariableDCLFactory>();
+                        VariableDCLFactory factory = (VariableDCLFactory) Parser.semanticStack.getLast();
+                        list.add(factory.copy().setVariableName(variableName).setDefaultValue(e));
+                        RESULT = list;
+                        :}
+                        |
+                        IDENTIFIER:variableName DIRECT_ASSIGN expr:e
+                        {:
+                        VariableDCLFactory factory = (VariableDCLFactory) Parser.semanticStack.getLast();
+                        RESULT = new ArrayList<VariableDCLFactory>();
+                        RESULT.add(factory.copy().setVariableName(variableName).setDefaultValue(e));
+                        :}
+                        ;
+
+block               ::= BEGIN
+                        {: Parser.semanticStack.addLast(new Block()); :}
+                        block_part
+                        {: RESULT = (Block) Parser.semanticStack.removeLast(); :}
+                        END
+                        |
+                        BEGIN END
+                        {: RESULT = new Block(); :}
+                        ;
 
 
 block_part          ::= block_body
@@ -163,221 +335,329 @@ block_part          ::= block_body
                         block_body block_part
                         ;
 
+block_body          ::= var_dcl:list
+                        {:
+                        Block currentBlock = (Block) Parser.semanticStack.getLast();
+                        for (VariableDCLFactory variableDCLFactory : list) {
+                            currentBlock.addBlockCodes(variableDCLFactory.createMethodVariable());
+                        }
+                        :}
+                        |
+                        statement:stat
+                        {:
+                        Block currentBlock = (Block) Parser.semanticStack.getLast();
+                        currentBlock.addBlockCode(stat);
+                        :}
+                        |
+                        method_cal:methodCall SEMICOLON
+                        {:
+                        Block currentBlock = (Block) Parser.semanticStack.getLast();
+                        ((Ignorable) methodCall).setIgnoreResult(true);
+                        currentBlock.addBlockCode((BlockCode) methodCall);
+                        :}
+                        |
+                        PRINTLN LPAREN expr:e RPAREN SEMICOLON
+                        {:
+                        Block currentBlock = (Block) Parser.semanticStack.getLast();
+                        currentBlock.addBlockCode(new PrintFunction(e));
+                        :}
+                        |
+                        PRINTLN LPAREN RPAREN SEMICOLON
+                        {:
+                        Block currentBlock = (Block) Parser.semanticStack.getLast();
+                        currentBlock.addBlockCode(new PrintFunction());
+                        :}
+                        ;
 
-block_body          ::= var_dcl
+statement           ::= assignment:stat SEMICOLON
+                        {: RESULT = stat; :}
                         |
-                        statement;
-
-statement           ::= assignment SEMICOLON
-                        {: System.out.println("assignment"); :}
+                        cond_stmt:stat
+                        {: RESULT = stat; :}
                         |
-                        method_cal SEMICOLON
-                        {: System.out.println("method cal"); :}
-                        |
-                        cond_stmt
-                        {: System.out.println("cond_stat"); :}
-                        |
-                        loop_stmt
-                        {: System.out.println("loop_stat"); :}
+                        loop_stmt:stat
+                        {: RESULT = stat; :}
                         |
                         RETURN SEMICOLON
-                        {: System.out.println("return stat"); :}
+                        {: RESULT = new ReturnStatement(); :}
                         |
-                        RETURN expr SEMICOLON
-                        {: System.out.println("return expr stat"); :}
+                        RETURN expr:e SEMICOLON
+                        {: RESULT = new ReturnStatement(e); :}
                         |
                         BREAK SEMICOLON
-                        {: System.out.println("break"); :}
+                        {: RESULT = new BreakStatement(); :}
                         |
                         CONTINUE SEMICOLON
-                        {: System.out.println("continue"); :}
+                        {: RESULT = new ContinueStatement(); :}
                         ;
 
-assignment          ::= variable assign_mark expr;
-
-assign_mark         ::= DIRECT_ASSIGN
+assignment          ::= variable:var DIRECT_ASSIGN expr:e
+                        {: RESULT = new DirectAssignment(var, e); :}
                         |
-                        SUM_ASSIGN
+                        variable:var SUM_ASSIGN expr:e
+                        {: RESULT = new PlusAssignment(var, e); :}
                         |
-                        DIFF_ASSIGN
+                        variable:var DIFF_ASSIGN expr:e
+                        {: RESULT = new MinusAssignment(var, e); :}
                         |
-                        MULT_ASSIGN
+                        variable:var MULT_ASSIGN expr:e
+                        {: RESULT = new MultiplyAssignment(var, e); :}
                         |
-                        DIVIDE_ASSIGN
+                        variable:var DIVIDE_ASSIGN expr:e
+                        {: RESULT = new DivideAssignment(var, e); :}
                         |
-                        MOD_ASSIGN;
-
-method_cal          ::= IDENTIFIER LPAREN parameters RPAREN
-                        {: System.out.println("method call"); :}
+                        variable:var MOD_ASSIGN expr:e
+                        {: RESULT = new ReminderAssignment(var, e); :}
                         ;
 
-parameters          ::= expr | expr COMMA parameters;
-
-cond_stmt           ::= IF LPAREN expr RPAREN block else_part
-                        {: System.out.println("if condition"); :}
+method_cal          ::= IDENTIFIER:methodName LPAREN parameters:parms RPAREN
+                        {: RESULT = new MethodCall(methodName, parms); :}
                         |
-                        SWITCH LPAREN IDENTIFIER RPAREN OF COLON
-                        BEGIN case_part DEFAULT COLON block END
-                        {: System.out.println("switch condition"); :}
+                        INPUT LPAREN typeName:typeName RPAREN
+                        {:
+                        RESULT = new ScannerFunction(typeName);
+                        :}
                         |
-                        SWITCH LPAREN IDENTIFIER RPAREN OF COLON
-                        BEGIN case_part END
-                        {: System.out.println("switch condition"); :}
+                        INPUT LPAREN RPAREN
+                        {:
+                        RESULT = new ScannerFunction();
+                        :}
+                        |
+                        LEN LPAREN expr:e RPAREN
+                        {: RESULT = new Len(e); :}
                         ;
 
-else_part           ::=
+parameters          ::= expr:e
+                        {:
+                        RESULT = new ArrayList<Expression>();
+                        RESULT.add(e);
+                        :}
                         |
-                        ELSE block
+                        expr:e COMMA parameters:list
+                        {:
+                        list.add(e);
+                        RESULT = list;
+                        :}
+                        ;
+
+cond_stmt           ::= IF LPAREN expr:e RPAREN block:mainBody ELSE block:elseBody
+                        {: RESULT = new IfElseThen(e, mainBody, elseBody); :}
+                        |
+                        IF LPAREN expr:e RPAREN block:mainBody
+                        {: RESULT = new IfElseThen(e, mainBody, null); :}
+                        |
+                        SWITCH LPAREN expr:e RPAREN OF COLON
+                        BEGIN case_part:cases DEFAULT COLON block:defaultBlock END
+                        {: RESULT = new Switch(e, cases, defaultBlock); :}
+                        |
+                        SWITCH LPAREN expr:e RPAREN OF COLON
+                        BEGIN case_part:cases END
+                        {: RESULT = new Switch(e, cases, null); :}
                         ;
 
 case_part           ::=
+                        {:
+                        RESULT = new ArrayList<Case>();
+                        :}
                         |
-                        CASE INT_CONST COLON block case_part
-                        {: System.out.println("case statement"); :}
+                        CASE INT_CONST:number COLON block:body case_part:list
+                        {:
+                        list.add(new Case(number, body));
+                        RESULT = list;
+                        :}
                         ;
 
-loop_stmt           ::= FOR LPAREN for_init_part SEMICOLON expr SEMICOLON for_step_part RPAREN block
-                        {: System.out.println("for stat"); :}
+loop_stmt           ::= FOR LPAREN for_init_part:initial SEMICOLON expr:e SEMICOLON assignment:stepAssignment RPAREN block:body
+                        {: RESULT = new ForLoop(initial, e, stepAssignment, body); :}
                         |
-                        REPEAT block UNTIL LPAREN expr RPAREN SEMICOLON
-                        {: System.out.println("repeat stat"); :}
+                        FOR LPAREN for_init_part:initial SEMICOLON expr:e SEMICOLON expr:stepExpr RPAREN block:body
+                        {: RESULT = new ForLoop(initial, e, stepExpr, body); :}
                         |
-                        FOREACH LPAREN IDENTIFIER IN expr RPAREN block
-                        {: System.out.println("foreach stat"); :}
+                        FOR LPAREN for_init_part:initial SEMICOLON expr:e SEMICOLON RPAREN block:body
+                        {: RESULT = new ForLoop(initial, e, body); :}
+                        |
+                        REPEAT block:body UNTIL LPAREN expr:condition RPAREN SEMICOLON
+                        {: RESULT = new RepeatUntil(condition, body); :}
+                        |
+                        FOREACH LPAREN IDENTIFIER:temp IN variable:iterator RPAREN block:body
+                        {: RESULT = new Foreach(temp, iterator, body); :}
                         ;
 
 for_init_part       ::=
+                        {: RESULT = null; :}
                         |
-                        assignment;
-
-for_step_part       ::=
-                        |
-                        assignment
-                        |
-                        expr;
+                        assignment:stat
+                        {: RESULT = stat; :}
+                        ;
 
 expr                ::= expr:e1 PLUS expr:e2
-                        {: RESULT = new Plus(e1, e2); list.add(RESULT); :}
+                        {: RESULT = new Plus(e1, e2); :}
                         |
                         expr:e1 MINUS expr:e2
-                        {: System.out.println("e1 - e2"); :}
+                        {: RESULT = new Minus(e1, e2); :}
                         |
                         expr:e1 MULTIPLY expr:e2
                         {: RESULT = new Multiply(e1, e2); :}
                         |
                         expr:e1 DIVIDE expr:e2
-                        {: System.out.println("e1 / e2"); :}
+                        {: RESULT = new Divide(e1, e2); :}
                         |
                         expr:e1 MOD expr:e2
-                        {: System.out.println("e1 % e2"); :}
+                        {: RESULT = new Reminder(e1, e2); :}
                         |
                         expr:e1 BITWISE_AND expr:e2
-                        {: System.out.println("e1 & e2"); :}
+                        {: RESULT = new BitwiseAnd(e1, e2); :}
                         |
                         expr:e1 BITWISE_XOR expr:e2
-                        {: System.out.println("e1 ^ e2"); :}
+                        {: RESULT = new BitwiseXOR(e1, e2); :}
                         |
                         expr:e1 BITWISE_OR expr:e2
-                        {: System.out.println("e1 | e2"); :}
+                        {: RESULT = new BitwiseOr(e1, e2); :}
                         |
                         expr:e1 EQUAL expr:e2
-                        {: System.out.println("e1 == e2"); :}
+                        {: RESULT = new Equal(e1, e2); :}
                         |
                         expr:e1 NOT_EQUAL expr:e2
-                        {: System.out.println("e1 != e2"); :}
+                        {: RESULT = new NotEqual(e1, e2); :}
                         |
                         expr:e1 GREATER_EQUAL expr:e2
-                        {: System.out.println("e1 >= e2"); :}
+                        {: RESULT = new GreaterEqual(e1, e2); :}
                         |
                         expr:e1 LESS_EQUAL expr:e2
-                        {: System.out.println("e1 <= e2"); :}
+                        {: RESULT = new LessEqual(e1, e2); :}
                         |
                         expr:e1 GREATER expr:e2
-                        {: System.out.println("e1 > e2"); :}
+                        {: RESULT = new Greater(e1, e2); :}
                         |
                         expr:e1 LESS expr:e2
-                        {: System.out.println("e1 < e2"); :}
+                        {: RESULT = new Less(e1, e2); :}
                         |
                         expr:e1 AND expr:e2
-                        {: System.out.println("e1 and e2"); :}
+                        {: RESULT = new And(e1, e2); :}
                         |
                         expr:e1 OR expr:e2
-                        {: System.out.println("e1 or e2"); :}
+                        {: RESULT = new Or(e1, e2); :}
                         |
                         LPAREN expr:val RPAREN
                         {: RESULT = val; :}
                         |
-                        variable
-                        {: System.out.println("variable"); :}
+                        variable:var
+                        {: RESULT = var; :}
                         |
-                        MINUSMINUS variable
+                        MINUSMINUS variable:var
+                        {: RESULT = new MinusMinusPrefix(var); :}
                         |
-                        PLUSPLUS variable
+                        PLUSPLUS variable:var
+                        {: RESULT = new PlusPlusPrefix(var); :}
                         |
-                        variable MINUSMINUS %prec MINUSMINUS_POSTFIX
+                        variable:var MINUSMINUS
+                        {: RESULT = new MinusMinusPostfix(var); :}
+                        %prec MINUSMINUS_POSTFIX
                         |
-                        variable PLUSPLUS %prec PLUSPLUS_POSTFIX
+                        variable:var PLUSPLUS
+                        {: RESULT = new PlusPlusPostfix(var); :}
+                        %prec PLUSPLUS_POSTFIX
                         |
-                        method_cal
-                        {: System.out.println("method call"); :}
+                        method_cal:methodCal
+                        {: RESULT = methodCal; :}
                         |
-                        MINUS expr
-                        {: System.out.println("-e"); :}
+                        MINUS expr:e
+                        {: RESULT = new Neg(e); :}
                         %prec UNARY_MINUS
                         |
-                        BITWISE_NOT expr
-                        {: System.out.println("~e"); :}
+                        BITWISE_NOT expr:e
+                        {: RESULT = new BitwiseNot(e); :}
                         |
                         NOT expr:e
-                        {: System.out.println("not e"); :}
+                        {: RESULT = new Not(e); :}
                         |
                         const_val:val
                         {: RESULT = val; :}
                         |
-                        SIZEOF LPAREN type RPAREN
+                        SIZEOF LPAREN typeName:typeName RPAREN
+                        {: RESULT = new Sizeof(typeName); :}
                         |
-                        LPAREN base_type RPAREN expr
+                        LPAREN base_type:typeName RPAREN expr:e
+                        {: RESULT = new Cast(typeName, e); :}
+                        %prec CAST_PREC
+                        |
+                        NEW typeName:typeName array_part_val:listOfDImensions
+                        {: RESULT = new NewArrayInstruction(typeName, listOfDImensions); :}
+                        |
+                        NEW typeName:typeName
+                        {: RESULT = new NewRecordInstruction(typeName); :}
+                        ;
+
+array_part_val      ::= array_part_val:list LBRACKET expr:e RBRACKET
+                        {:
+                        RESULT = list;
+                        RESULT.add(e);
+                        :}
+                        |
+                        LBRACKET expr:e RBRACKET
+                        {:
+                        RESULT = new ArrayList<Expression>();
+                        RESULT.add(e);
+                        :}
                         ;
 
 base_type           ::= INT
+                        {: RESULT = TypeTree.INTEGER_NAME; :}
                         |
                         LONG
+                        {: RESULT = TypeTree.LONG_NAME; :}
                         |
                         FLOAT
+                        {: RESULT = TypeTree.FLOAT_NAME; :}
                         |
                         DOUBLE
+                        {: RESULT = TypeTree.DOUBLE_NAME; :}
                         |
                         BOOL
+                        {: RESULT = TypeTree.BOOLEAN_NAME; :}
                         |
                         CHAR
+                        {: RESULT = TypeTree.CHAR_NAME; :}
                         |
                         STRING
+                        {: RESULT = TypeTree.STRING_NAME; :}
                         ;
 
-type                ::= base_type | IDENTIFIER;
-
-variable            ::= IDENTIFIER
+typeName                ::= base_type:typeName
+                        {: RESULT = typeName; :}
                         |
-                        variable array_part_val
-                        |
-                        variable DOT IDENTIFIER
+                        IDENTIFIER:name
+                        {: RESULT = name; :}
                         ;
 
-array_part_val      ::= LBRACKET expr RBRACKET
+variable            ::= IDENTIFIER:name
+                        {: RESULT = new SimpleVariableFactory(name, true); :}
                         |
-                        LBRACKET expr RBRACKET array_part_val;
+                        variable:var LBRACKET expr:requestedDimension RBRACKET
+                        {: RESULT = new ArrayVariable(var, requestedDimension); :}
+                        |
+                        variable:parent DOT IDENTIFIER:memberName
+                        {: RESULT = new MemberVariable(parent, memberName); :}
+                        ;
 
 const_val           ::= INT_CONST:val
+                        {: RESULT = new IntegerConst(val); :}
                         |
                         LONG_CONST:val
+                        {: RESULT = new LongConst(val); :}
                         |
                         DOUBLE_CONST:val
+                        {: RESULT = new DoubleConst(val); :}
                         |
                         FLOAT_CONST:val
+                        {: RESULT = new FloatConst(val); :}
                         |
                         CHAR_CONST:val
+                        {: RESULT = new CharConst(val); :}
                         |
                         BOOL_CONST:val
+                        {: RESULT = new BooleanConst(val); :}
                         |
                         STRING_CONST:val
+                        {: RESULT = new StringConst(val); :}
                         ;

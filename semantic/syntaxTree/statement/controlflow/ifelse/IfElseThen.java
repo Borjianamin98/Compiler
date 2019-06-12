@@ -12,7 +12,6 @@ import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.syntaxTree.statement.Statement;
-import semantic.syntaxTree.statement.assignment.Assignment;
 import semantic.syntaxTree.statement.controlflow.BreakStatement;
 import semantic.syntaxTree.statement.controlflow.ContinueStatement;
 import semantic.syntaxTree.statement.controlflow.ReturnStatement;
@@ -28,22 +27,17 @@ public class IfElseThen extends Statement {
         this.elseBody = elseBody;
     }
 
-    private void generateBodyCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Block code) {
+    private void generateBodyCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv,
+                                  Label breakLabel, Label continueLabel, Block code) {
         for (BlockCode blockCode : code.getBlockCodes()) {
-            if (blockCode instanceof BreakStatement) {
-                throw new RuntimeException("Break outside switch or loop");
-            } else if (blockCode instanceof ContinueStatement)
-                throw new RuntimeException("Continue outside of loop");
-            else if (blockCode instanceof ReturnStatement) {
-                blockCode.generateCode(currentClass, currentMethod, cv, mv);
+            blockCode.generateCode(currentClass, currentMethod, cv, mv, breakLabel, continueLabel);
+            if (blockCode instanceof ReturnStatement)
                 break; // other code in this block are unnecessary
-            } else
-                blockCode.generateCode(currentClass, currentMethod, cv, mv);
         }
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         Label elseLabel = new Label();
         Label outLabel = new Label();
 
@@ -53,14 +47,14 @@ public class IfElseThen extends Statement {
         // generate body code
         Display.add(true);
         if (ifBody != null) {
-            generateBodyCode(currentClass, currentMethod, cv, mv, ifBody);
+            generateBodyCode(currentClass, currentMethod, cv, mv, breakLabel, continueLabel, ifBody);
         }
         Display.pop();
         mv.visitJumpInsn(Opcodes.GOTO, outLabel);
         mv.visitLabel(elseLabel);
         Display.add(true);
         if (elseBody != null) {
-            generateBodyCode(currentClass, currentMethod, cv, mv, elseBody);
+            generateBodyCode(currentClass, currentMethod, cv, mv, breakLabel, continueLabel, elseBody);
         }
         Display.pop();
 

@@ -1,6 +1,7 @@
 package semantic.syntaxTree.expression.identifier;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.Utility;
@@ -33,18 +34,22 @@ public class ArrayVariable extends Variable {
 
     }
 
+    public RecordTypeDSCP getParentRecordDSCP() {
+        return parentRecordDSCP;
+    }
+
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         getDSCP();
         if (!getDSCP().isInitialized())
             throw new RuntimeException(String.format("Variable %s might not have been initialized", getChainName()));
 
-        parent.generateCode(currentClass, currentMethod, cv, mv);
+        parent.generateCode(currentClass, currentMethod, cv, mv, null, null);
 
-        requestedDimension.generateCode(currentClass, currentMethod, cv, mv);
+        requestedDimension.generateCode(currentClass, currentMethod, cv, mv, null, null);
         TypeTree.widen(mv, requestedDimension.getResultType(), TypeTree.INTEGER_DSCP);
 
-        mv.visitInsn(Utility.getOpcode(arrayTypeDSCP.getInternalType(), "ALOAD"));
+        mv.visitInsn(Utility.getOpcode(arrayTypeDSCP.getInternalType(), "ALOAD", true));
     }
 
     @Override
@@ -54,16 +59,17 @@ public class ArrayVariable extends Variable {
             throw new RuntimeException(String.format("Cannot assign a value to const variable %s. Variable %s already have been assigned",
                     getChainName(), getChainName()));
 
-        parent.generateCode(currentClass, currentMethod, cv, mv);
+        parent.generateCode(currentClass, currentMethod, cv, mv, null, null);
 
-        requestedDimension.generateCode(currentClass, currentMethod, cv, mv);
+        requestedDimension.generateCode(currentClass, currentMethod, cv, mv, null, null);
         TypeTree.widen(mv, requestedDimension.getResultType(), TypeTree.INTEGER_DSCP);
 
-        value.generateCode(currentClass, currentMethod, cv, mv);
+        value.generateCode(currentClass, currentMethod, cv, mv, null, null);
         TypeTree.widen(mv, value.getResultType(), getResultType()); // right value must be converted to type of variable
 
-        mv.visitInsn(Utility.getOpcode(arrayTypeDSCP.getInternalType(), "ASTORE"));
+        mv.visitInsn(Utility.getOpcode(arrayTypeDSCP.getInternalType(), "ASTORE", true));
         getDSCP().setInitialized(true);
+        setInitializationOfArray(value);
     }
 
     @Override

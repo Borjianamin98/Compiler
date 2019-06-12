@@ -25,7 +25,7 @@ public class ArrayDSCP extends VariableDSCP {
     @Override
     public int getAddress() {
         if (super.getAddress() == -1)
-            throw new RuntimeException("ArrayDSCP doesn't contain address");
+            throw new RuntimeException("ArrayDSCP doesn't contains address");
         return super.getAddress();
     }
 

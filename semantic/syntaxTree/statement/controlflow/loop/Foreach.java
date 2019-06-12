@@ -15,7 +15,7 @@ import semantic.syntaxTree.declaration.VariableDCL;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.constValue.IntegerConst;
 import semantic.syntaxTree.expression.identifier.ArrayVariable;
-import semantic.syntaxTree.expression.identifier.SimpleVariable;
+import semantic.syntaxTree.expression.identifier.SimpleLocalVariable;
 import semantic.syntaxTree.expression.identifier.Variable;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.syntaxTree.statement.Statement;
@@ -23,6 +23,7 @@ import semantic.syntaxTree.statement.assignment.DirectAssignment;
 import semantic.syntaxTree.statement.controlflow.BreakStatement;
 import semantic.syntaxTree.statement.controlflow.ContinueStatement;
 import semantic.syntaxTree.statement.controlflow.ReturnStatement;
+import semantic.typeTree.TypeTree;
 
 public class Foreach extends Statement {
     private String identifierName;
@@ -36,7 +37,7 @@ public class Foreach extends Statement {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         /***
          * Code like this:
          *
@@ -57,29 +58,34 @@ public class Foreach extends Statement {
         ArrayTypeDSCP arrayTypeDSCP = (ArrayTypeDSCP) iterator.getDSCP().getType();
         String varIteratorName = top.getTempName();
         String varCounterName = top.getTempName();
-        SimpleVariable varIterator = new SimpleVariable(varIteratorName);
-        SimpleVariable varCounter = new SimpleVariable(varCounterName);
-        SimpleVariable varIdentifier = new SimpleVariable(identifierName);
+        SimpleLocalVariable varIterator = new SimpleLocalVariable(varIteratorName);
+        SimpleLocalVariable varCounter = new SimpleLocalVariable(varCounterName);
+        SimpleLocalVariable varIdentifier = new SimpleLocalVariable(identifierName);
         Label outLabel = new Label();
         Label conditionLabel = new Label();
         Label stepLabel = new Label();
 
+        // we do this here because variable used as identifier in foreach
+        // can shadow other variables in outside block
+        Display.add(true);
+
         // create T[] a = Expression;
-        ArrayDCL arrayDCL = new ArrayDCL(varIteratorName, arrayTypeDSCP.getBaseType().getName(), arrayTypeDSCP.getDimensions(), false, false);
-        arrayDCL.generateCode(currentClass, currentMethod, cv, mv);
+        ArrayDCL arrayDCL = new ArrayDCL(varIteratorName, arrayTypeDSCP.getBaseType().getName(),
+                arrayTypeDSCP.getDimensions(), false, iterator.getDSCP().isInitialized());
+        arrayDCL.generateCode(currentClass, currentMethod, cv, mv, null, null);
         DirectAssignment iteratorAssignment = new DirectAssignment(varIterator, iterator);
-        iteratorAssignment.generateCode(currentClass, currentMethod, cv, mv);
+        iteratorAssignment.generateCode(currentClass, currentMethod, cv, mv, null, null);
 
         // create int i = 0;
-        VariableDCL varCounterDCL = new VariableDCL(varCounterName, "int", false, false);
-        varCounterDCL.generateCode(currentClass, currentMethod, cv, mv);
+        VariableDCL varCounterDCL = new VariableDCL(varCounterName, TypeTree.INTEGER_NAME, false, false);
+        varCounterDCL.generateCode(currentClass, currentMethod, cv, mv, null, null);
         DirectAssignment counterAssignment = new DirectAssignment(varCounter, new IntegerConst(0));
-        counterAssignment.generateCode(currentClass, currentMethod, cv, mv);
+        counterAssignment.generateCode(currentClass, currentMethod, cv, mv, null, null);
 
         // create (i < a.length) condition
         mv.visitLabel(conditionLabel);
-        varCounter.generateCode(currentClass, currentMethod, cv, mv);
-        varIterator.generateCode(currentClass, currentMethod, cv, mv);
+        varCounter.generateCode(currentClass, currentMethod, cv, mv, null, null);
+        varIterator.generateCode(currentClass, currentMethod, cv, mv, null, null);
         mv.visitInsn(Opcodes.ARRAYLENGTH);
         mv.visitJumpInsn(Opcodes.IF_ICMPGE, outLabel);
 
@@ -90,27 +96,20 @@ public class Foreach extends Statement {
                     arrayTypeDSCP.getInternalType().getDimensions(), false, false);
         else
             varIdentifierDCL = new VariableDCL(identifierName, arrayTypeDSCP.getInternalType().getName(), false, false);
-        varIdentifierDCL.generateCode(currentClass, currentMethod, cv, mv);
+        varIdentifierDCL.generateCode(currentClass, currentMethod, cv, mv, null, null);
 
         // create Identifier = a[i];
         ArrayVariable varId = new ArrayVariable(varIterator, varCounter);
         DirectAssignment identifierAssignment = new DirectAssignment(varIdentifier, varId);
-        identifierAssignment.generateCode(currentClass, currentMethod, cv, mv);
+        identifierAssignment.generateCode(currentClass, currentMethod, cv, mv, null, null);
 
         // create body
-        Display.add(true);
         for (BlockCode blockCode : body.getBlockCodes()) {
-            if (blockCode instanceof BreakStatement) {
-                mv.visitJumpInsn(Opcodes.GOTO, outLabel);
+            blockCode.generateCode(currentClass, currentMethod, cv, mv, outLabel, stepLabel);
+            if (blockCode instanceof ReturnStatement ||
+                    blockCode instanceof BreakStatement ||
+                    blockCode instanceof ContinueStatement)
                 break; // other code in this block are unnecessary
-            } else if (blockCode instanceof ContinueStatement) {
-                mv.visitJumpInsn(Opcodes.GOTO, stepLabel);
-                break; // other code in this block are unnecessary
-            } else if (blockCode instanceof ReturnStatement) {
-                blockCode.generateCode(currentClass, currentMethod, cv, mv);
-                break; // other code in this block are unnecessary
-            } else
-                blockCode.generateCode(currentClass, currentMethod, cv, mv);
         }
         Display.pop();
 

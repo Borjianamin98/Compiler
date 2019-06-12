@@ -3,6 +3,7 @@ package semantic.typeTree;
 
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import semantic.symbolTable.Display;
 import semantic.symbolTable.descriptor.type.SimpleTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 
@@ -18,7 +19,7 @@ public class TypeTree {
     public static final SimpleTypeDSCP BOOLEAN_DSCP = new SimpleTypeDSCP(TypeTree.BOOLEAN_NAME, TypeTree.INTEGER_SIZE);
     public static final SimpleTypeDSCP LONG_DSCP = new SimpleTypeDSCP(TypeTree.LONG_NAME, TypeTree.LONG_SIZE);
     public static final SimpleTypeDSCP FLOAT_DSCP = new SimpleTypeDSCP(TypeTree.FLOAT_NAME, TypeTree.FLOAT_SIZE);
-    public static final SimpleTypeDSCP DOUBLE_DSCP = new SimpleTypeDSCP(TypeTree.DOUBLE_NAME,TypeTree.DOUBLE_SIZE);
+    public static final SimpleTypeDSCP DOUBLE_DSCP = new SimpleTypeDSCP(TypeTree.DOUBLE_NAME, TypeTree.DOUBLE_SIZE);
     public static final SimpleTypeDSCP CHAR_DSCP = new SimpleTypeDSCP(TypeTree.CHAR_NAME, TypeTree.CHAR_SIZE);
     public static final SimpleTypeDSCP STRING_DSCP = new SimpleTypeDSCP(TypeTree.STRING_NAME, TypeTree.STRING_SIZE);
     public static final SimpleTypeDSCP VOID_DSCP = new SimpleTypeDSCP(TypeTree.VOID_NAME, 0);
@@ -36,15 +37,16 @@ public class TypeTree {
     public static final String CHAR_NAME = typePrefix + "C";
     public static final String STRING_NAME = typePrefix + "Ljava/lang/String;";
     public static final String VOID_NAME = typePrefix + "V";
+    public static final String AUTO_NAME = typePrefix + "AUTO";
 
     private static final int INTEGER_SIZE = 1;
     private static final int LONG_SIZE = 2;
     private static final int FLOAT_SIZE = 1;
     private static final int DOUBLE_SIZE = 2;
     private static final int CHAR_SIZE = 1;
-    private static final int STRING_SIZE = -1;
+    private static final int STRING_SIZE = 1;
 
-    static {
+    public static void init() {
         wideningTree.put(DOUBLE_DSCP, new TypeNode(null, DOUBLE_DSCP, 0));
         wideningTree.put(FLOAT_DSCP, new TypeNode(wideningTree.get(DOUBLE_DSCP), FLOAT_DSCP));
         wideningTree.put(LONG_DSCP, new TypeNode(wideningTree.get(FLOAT_DSCP), LONG_DSCP));
@@ -80,6 +82,7 @@ public class TypeTree {
 
     /**
      * generate byte code to convert (widen) type1 to type2
+     *
      * @param type1 real type of operand on top of operand stack
      * @param type2 type to which operand stack will converted (widened)
      * @throws RuntimeException if type1 can not widen to type2
@@ -114,6 +117,7 @@ public class TypeTree {
 
     /**
      * generate byte code to convert (narrow) type1 to type2
+     *
      * @param type1 real type of operand on top of operand stack
      * @param type2 type to which operand stack will converted (narrowed)
      * @throws RuntimeException if type1 can not narrow to type2
@@ -135,7 +139,7 @@ public class TypeTree {
             else
                 throwIncompatibleTypeException(type1, type2);
         } else if (type1.getTypeCode() == FLOAT_DSCP.getTypeCode()) {
-           if (type2.getTypeCode() == LONG_DSCP.getTypeCode())
+            if (type2.getTypeCode() == LONG_DSCP.getTypeCode())
                 mv.visitInsn(Opcodes.F2L);
             else if (type2.getTypeCode() == INTEGER_DSCP.getTypeCode() ||
                     type2.getTypeCode() == CHAR_DSCP.getTypeCode() ||
@@ -162,8 +166,13 @@ public class TypeTree {
         return type.getTypeCode() == STRING_DSCP.getTypeCode();
     }
 
+    public static boolean isVoid(TypeDSCP type) {
+        return type.getTypeCode() == VOID_DSCP.getTypeCode();
+    }
+
     /**
      * check type is integer or long
+     *
      * @param type type
      * @return true if type is integer or long
      */
@@ -173,6 +182,7 @@ public class TypeTree {
 
     /**
      * check whether type1 can be converted (widened) to type2
+     *
      * @param type1 type1
      * @param type2 type2
      * @return true if convert (widen) can happen
@@ -192,6 +202,7 @@ public class TypeTree {
 
     /**
      * return level difference of two type in tree (0 if two type are equal)
+     *
      * @param type1 type1
      * @param type2 type2
      * @return level(type2) - level(type1)

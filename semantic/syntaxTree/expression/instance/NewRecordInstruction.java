@@ -1,12 +1,14 @@
 package semantic.syntaxTree.expression.instance;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
+import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
@@ -23,10 +25,10 @@ public class NewRecordInstruction extends Expression {
 
     private RecordTypeDSCP getTypeDSCP() {
         if (typeDSCP == null) {
-            Optional<DSCP> fetchedDSCP = Display.find(type);
-            if (!fetchedDSCP.isPresent() || !(fetchedDSCP.get() instanceof RecordTypeDSCP))
-                throw new RuntimeException("Type " + type + " not found");
-            typeDSCP = (RecordTypeDSCP) fetchedDSCP.get();
+            TypeDSCP fetchedDSCP = Display.getType(type);
+            if (!(fetchedDSCP instanceof RecordTypeDSCP))
+                throw new RuntimeException("Type " + type + " is not declared");
+            typeDSCP = (RecordTypeDSCP) fetchedDSCP;
         }
         return typeDSCP;
     }
@@ -41,7 +43,7 @@ public class NewRecordInstruction extends Expression {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         getTypeDSCP();
         mv.visitTypeInsn(Opcodes.NEW, type);
         mv.visitInsn(Opcodes.DUP);

@@ -1,6 +1,7 @@
 package semantic.syntaxTree.expression.identifier;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
@@ -27,11 +28,11 @@ public class MemberVariable extends Variable {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         getDSCP();
         if (!getDSCP().isInitialized())
             throw new RuntimeException(String.format("Variable %s might not have been initialized", getChainName()));
-        parent.generateCode(currentClass, currentMethod, cv, mv);
+        parent.generateCode(currentClass, currentMethod, cv, mv, null, null);
         mv.visitFieldInsn(Opcodes.GETFIELD, recordTypeDSCP.getName(), memberName, dscp.getDescriptor());
     }
 
@@ -41,11 +42,12 @@ public class MemberVariable extends Variable {
         if (getDSCP().isConstant() && getDSCP().isInitialized())
             throw new RuntimeException(String.format("Cannot assign a value to const variable %s. Variable %s already have been assigned",
                     getChainName(), getChainName()));
-        parent.generateCode(currentClass, currentMethod, cv, mv);
-        value.generateCode(currentClass, currentMethod, cv, mv);
+        parent.generateCode(currentClass, currentMethod, cv, mv, null, null);
+        value.generateCode(currentClass, currentMethod, cv, mv, null, null);
         TypeTree.widen(mv, value.getResultType(), getResultType()); // right value must be converted to type of variable
         mv.visitFieldInsn(Opcodes.PUTFIELD, recordTypeDSCP.getName(), memberName, dscp.getDescriptor());
         getDSCP().setInitialized(true);
+        setInitializationOfArray(value);
     }
 
     @Override

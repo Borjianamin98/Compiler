@@ -8,83 +8,90 @@ package syntax;
 /** CUP generated class containing symbol constants. */
 public class ParserSym {
   /* terminals */
+  public static final int LEN = 72;
   public static final int BITWISE_XOR = 10;
-  public static final int IDENTIFIER = 26;
-  public static final int BOOL = 34;
-  public static final int MOD_ASSIGN = 51;
-  public static final int CONST = 69;
-  public static final int BOOL_CONST = 74;
-  public static final int FLOAT_CONST = 73;
-  public static final int UNTIL = 65;
+  public static final int IDENTIFIER = 27;
+  public static final int BOOL = 36;
+  public static final int MOD_ASSIGN = 53;
+  public static final int CONST = 71;
+  public static final int BOOL_CONST = 77;
+  public static final int FLOAT_CONST = 76;
+  public static final int UNTIL = 67;
+  public static final int CAST_PREC = 80;
   public static final int BITWISE_OR = 9;
-  public static final int SIZEOF = 68;
-  public static final int COMMA = 40;
-  public static final int SUM_ASSIGN = 47;
+  public static final int SIZEOF = 70;
+  public static final int COMMA = 42;
+  public static final int SUM_ASSIGN = 49;
   public static final int RPAREN = 23;
   public static final int UNARY_MINUS = 21;
-  public static final int DOUBLE = 33;
-  public static final int STRING_CONST = 76;
+  public static final int DOUBLE = 35;
+  public static final int STRING_CONST = 79;
   public static final int LPAREN = 22;
-  public static final int PLUSPLUS_POSTFIX = 44;
+  public static final int PLUSPLUS_POSTFIX = 46;
   public static final int NOT = 18;
   public static final int BITWISE_NOT = 11;
-  public static final int FLOAT = 32;
-  public static final int DOUBLE_CONST = 72;
-  public static final int RECORD = 27;
+  public static final int FLOAT = 34;
+  public static final int DOUBLE_CONST = 75;
+  public static final int RECORD = 28;
+  public static final int PRINTLN = 81;
   public static final int MOD = 7;
   public static final int MULTIPLY = 5;
-  public static final int DIFF_ASSIGN = 48;
-  public static final int MINUSMINUS_POSTFIX = 45;
-  public static final int LONG = 31;
+  public static final int DIFF_ASSIGN = 50;
+  public static final int MINUSMINUS_POSTFIX = 47;
+  public static final int LONG = 33;
   public static final int PLUS = 3;
+  public static final int LRBRACKET = 26;
   public static final int DIVIDE = 6;
   public static final int EQUAL = 12;
-  public static final int CHAR = 35;
-  public static final int DIRECT_ASSIGN = 46;
-  public static final int SWITCH = 57;
-  public static final int FOR = 63;
+  public static final int CHAR = 37;
+  public static final int DIRECT_ASSIGN = 48;
+  public static final int INPUT = 82;
+  public static final int SWITCH = 59;
+  public static final int FOR = 65;
   public static final int GREATER = 16;
-  public static final int VOID = 37;
-  public static final int EXTERN = 29;
-  public static final int RETURN = 54;
-  public static final int INT_CONST = 70;
-  public static final int ELSE = 53;
-  public static final int BREAK = 55;
-  public static final int DOT = 39;
-  public static final int INT = 30;
+  public static final int VOID = 39;
+  public static final int EXTERN = 30;
+  public static final int RETURN = 56;
+  public static final int INT_CONST = 73;
+  public static final int ELSE = 55;
+  public static final int BREAK = 57;
+  public static final int DOT = 41;
+  public static final int INT = 32;
   public static final int EOF = 0;
   public static final int SEMICOLON = 2;
-  public static final int MULT_ASSIGN = 49;
-  public static final int DEFAULT = 60;
-  public static final int FUNCTION = 28;
-  public static final int REPEAT = 64;
-  public static final int DIVIDE_ASSIGN = 50;
+  public static final int MULT_ASSIGN = 51;
+  public static final int DEFAULT = 62;
+  public static final int FUNCTION = 29;
+  public static final int REPEAT = 66;
+  public static final int DIVIDE_ASSIGN = 52;
   public static final int MINUS = 4;
-  public static final int IN = 67;
+  public static final int IN = 69;
   public static final int OR = 20;
-  public static final int CHAR_CONST = 75;
+  public static final int CHAR_CONST = 78;
   public static final int error = 1;
   public static final int NOT_EQUAL = 13;
-  public static final int CONTINUE = 56;
-  public static final int IF = 52;
-  public static final int MINUSMINUS = 43;
+  public static final int START = 83;
+  public static final int CONTINUE = 58;
+  public static final int IF = 54;
+  public static final int MINUSMINUS = 45;
   public static final int GREATER_EQUAL = 17;
-  public static final int OF = 58;
-  public static final int END = 62;
-  public static final int COLON = 41;
+  public static final int OF = 60;
+  public static final int END = 64;
+  public static final int COLON = 43;
   public static final int LESS_EQUAL = 14;
-  public static final int FOREACH = 66;
-  public static final int LONG_CONST = 71;
+  public static final int FOREACH = 68;
+  public static final int LONG_CONST = 74;
   public static final int RBRACKET = 25;
-  public static final int BEGIN = 61;
-  public static final int CASE = 59;
-  public static final int PLUSPLUS = 42;
-  public static final int STRING = 36;
+  public static final int BEGIN = 63;
+  public static final int CASE = 61;
+  public static final int PLUSPLUS = 44;
+  public static final int NEW = 31;
+  public static final int STRING = 38;
   public static final int LESS = 15;
   public static final int AND = 19;
   public static final int LBRACKET = 24;
   public static final int BITWISE_AND = 8;
-  public static final int AUTO = 38;
+  public static final int AUTO = 40;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
@@ -112,10 +119,12 @@ public class ParserSym {
   "RPAREN",
   "LBRACKET",
   "RBRACKET",
+  "LRBRACKET",
   "IDENTIFIER",
   "RECORD",
   "FUNCTION",
   "EXTERN",
+  "NEW",
   "INT",
   "LONG",
   "FLOAT",
@@ -156,13 +165,18 @@ public class ParserSym {
   "IN",
   "SIZEOF",
   "CONST",
+  "LEN",
   "INT_CONST",
   "LONG_CONST",
   "DOUBLE_CONST",
   "FLOAT_CONST",
   "BOOL_CONST",
   "CHAR_CONST",
-  "STRING_CONST"
+  "STRING_CONST",
+  "CAST_PREC",
+  "PRINTLN",
+  "INPUT",
+  "START"
   };
 }
 

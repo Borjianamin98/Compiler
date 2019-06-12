@@ -9,7 +9,6 @@ import java.util.Optional;
 
 public class SymbolTable {
     public static SymbolTable symbolTable = new SymbolTable();
-    private static int freeType;
 
     private HashMap<String, DSCP> symbols;
     private int freeAddress;
@@ -38,27 +37,20 @@ public class SymbolTable {
         symbols.put(name, descriptor);
     }
 
-    public static void addType(String name, TypeDSCP descriptor) {
-        if (Display.mainSymbolTable.symbols.containsKey(name)) {
-            throw new RuntimeException("Type " + name + " declared more than once");
-        }
-        // TODO add all types to main symbol table
-        descriptor.setTypeCode(freeType);
-        freeType++;
-        Display.mainSymbolTable.symbols.put(name, descriptor);
-    }
-
     public static TypeDSCP getType(String name) {
         return (TypeDSCP) Display.mainSymbolTable.symbols.get(name);
     }
 
-    public boolean contain(String name) {
+    public boolean contains(String name) {
         return symbols.containsKey(name);
     }
 
+    /**
+     * get a symbol form current symbol table
+     * @param name name of symbol
+     * @return symbol DSCP if found, otherwise Optional.empty
+     */
     public Optional<DSCP> getDSCP(String name) {
-        if (!symbols.containsKey(name))
-            return Optional.empty();
         return Optional.ofNullable(symbols.get(name));
     }
 

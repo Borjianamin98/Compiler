@@ -1,6 +1,7 @@
 package semantic.syntaxTree.expression.instance;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.Utility;
@@ -26,13 +27,16 @@ public class NewArrayInstruction extends Expression {
         this.dimensions = dimensions;
     }
 
-    private TypeDSCP getTypeDSCP() {
-        if (typeDSCP == null) {
-            Optional<DSCP> fetchedDSCP = Display.find(type);
-            if (!fetchedDSCP.isPresent() || !(fetchedDSCP.get() instanceof TypeDSCP))
-                throw new RuntimeException("Type " + type + " not found");
-            typeDSCP = (TypeDSCP) fetchedDSCP.get();
-        }
+    public int getDimensionsCount() {
+        return dimensions.size();
+    }
+
+    /**
+     * @return TypeDSCP of base type which is created by new array instruction
+     */
+    public TypeDSCP getTypeDSCP() {
+        if (typeDSCP == null)
+            typeDSCP = Display.getType(type);
         return typeDSCP;
     }
 
@@ -48,12 +52,13 @@ public class NewArrayInstruction extends Expression {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         if (dimensions == null || dimensions.size() == 0)
-            throw new RuntimeException("Array declaration must contain at least one dimension");
+            throw new RuntimeException("Array declaration must contains at least one dimension");
 
+        getResultType();
         for (Expression dim : dimensions) {
-            dim.generateCode(currentClass, currentMethod, cv, mv);
+            dim.generateCode(currentClass, currentMethod, cv, mv, null, null);
             if (dim.getResultType().getTypeCode() != TypeTree.INTEGER_DSCP.getTypeCode())
                 throw new RuntimeException("Dimension of array must be integer type");
         }

@@ -16,6 +16,12 @@ public class Block {
         blockCodes.add(blockCode);
     }
 
+    public void addBlockCodes(List<BlockCode> codes) {
+        if (codes == null)
+            throw new IllegalArgumentException("Block code must be not null");
+        this.blockCodes.addAll(codes);
+    }
+
     public List<BlockCode> getBlockCodes() {
         return blockCodes;
     }

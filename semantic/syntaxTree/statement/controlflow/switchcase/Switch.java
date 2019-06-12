@@ -28,28 +28,20 @@ public class Switch extends Statement {
         this.defaultCase = defaultCase;
     }
 
-    public Switch(Expression expression, List<Case> cases) {
-        this(expression, cases, null);
-    }
-
-    private void generateCaseCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Block caseBlock, Label outLabel) {
+    private void generateCaseCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv,
+                                  Label outLabel, Label continueLabel, Block caseBlock) {
         for (BlockCode blockCode : caseBlock.getBlockCodes()) {
-            if (blockCode instanceof BreakStatement) {
-                mv.visitJumpInsn(Opcodes.GOTO, outLabel);
+            blockCode.generateCode(currentClass, currentMethod, cv, mv, outLabel, continueLabel);
+            if (blockCode instanceof ReturnStatement ||
+                    blockCode instanceof BreakStatement)
                 break; // other code in this block are unnecessary
-            } else if (blockCode instanceof ContinueStatement)
-                throw new RuntimeException("Continue outside of loop");
-            else if (blockCode instanceof ReturnStatement) {
-                blockCode.generateCode(currentClass, currentMethod, cv, mv);
-                break; // other code in this block are unnecessary
-            } else
-                blockCode.generateCode(currentClass, currentMethod, cv, mv);
         }
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
-        expression.generateCode(currentClass, currentMethod, cv, mv);
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv,
+                             Label breakLabel, Label continueLabel) {
+        expression.generateCode(currentClass, currentMethod, cv, mv, null, null);
         Label defaultLabel = new Label();
         Label outLabel = new Label();
         Label[] caseLabels = new Label[cases.size()];
@@ -62,12 +54,12 @@ public class Switch extends Statement {
             Case aCase = cases.get(i);
             Label caseLable = caseLabels[i];
             mv.visitLabel(caseLable);
-            generateCaseCode(currentClass, currentMethod, cv, mv, aCase.getBlock(), outLabel);
+            generateCaseCode(currentClass, currentMethod, cv, mv, outLabel, continueLabel, aCase.getBlock());
             mv.visitJumpInsn(Opcodes.GOTO, outLabel);
         }
         mv.visitLabel(defaultLabel);
         if (defaultCase != null)
-            generateCaseCode(currentClass, currentMethod, cv, mv, defaultCase, outLabel);
+            generateCaseCode(currentClass, currentMethod, cv, mv, outLabel, continueLabel, defaultCase);
         mv.visitLabel(outLabel);
     }
 }

@@ -1,6 +1,7 @@
 package semantic.syntaxTree.statement.assignment;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
@@ -14,9 +15,9 @@ public class MultiplyAssignment extends Assignment {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         Multiply multiply = new Multiply(getVariable(), getValue());
         DirectAssignment assignment = new DirectAssignment(getVariable(), multiply);
-        assignment.generateCode(currentClass, currentMethod, cv, mv);
+        assignment.generateCode(currentClass, currentMethod, cv, mv, null, null);
     }
 }

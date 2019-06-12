@@ -17,13 +17,13 @@ public class Less extends Relational {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         TypeDSCP compareType = TypeTree.max(getFirstOperand().getResultType(), getSecondOperand().getResultType());
 
-        getFirstOperand().generateCode(currentClass, currentMethod, cv, mv);
+        getFirstOperand().generateCode(currentClass, currentMethod, cv, mv, null, null);
         TypeTree.widen(mv, getFirstOperand().getResultType(), compareType);
 
-        getSecondOperand().generateCode(currentClass, currentMethod, cv, mv);
+        getSecondOperand().generateCode(currentClass, currentMethod, cv, mv, null, null);
         TypeTree.widen(mv, getSecondOperand().getResultType(), compareType);
 
         Label setFalseLabel = new Label();

@@ -5,13 +5,15 @@ import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 
+import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 
 public class Parameter {
     protected String name;
-    private String baseType;
-    private int dimensions;
-    private TypeDSCP baseTypeDSCP;
+    protected String baseType;
+    protected int dimensions;
+    protected TypeDSCP baseTypeDSCP;
 
     public Parameter(String name, String baseType, int dimensions) {
         this.name = name;
@@ -40,19 +42,30 @@ public class Parameter {
     }
 
     public TypeDSCP getBaseTypeDSCP() {
-        if (baseTypeDSCP == null) {
-            Optional<DSCP> typeDSCP = Display.find(baseType);
-            if (!typeDSCP.isPresent() || !(typeDSCP.get() instanceof TypeDSCP))
-                throw new RuntimeException(baseType + " is not declared");
-            baseTypeDSCP =((TypeDSCP) typeDSCP.get());
-        }
+        if (baseTypeDSCP == null)
+            baseTypeDSCP = Display.getType(baseType);
         return baseTypeDSCP;
     }
 
     public TypeDSCP getType() {
-        Optional<DSCP> typeDSCP = Display.find(getDescriptor());
-        if (!typeDSCP.isPresent() || !(typeDSCP.get() instanceof TypeDSCP))
-            throw new RuntimeException(getDescriptor() + " is not declared");
-        return ((TypeDSCP) typeDSCP.get());
+        if (dimensions == 0)
+            return getBaseTypeDSCP();
+        else
+            return Display.getType(Utility.getDescriptor(getBaseTypeDSCP(), dimensions));
     }
+
+    /**
+     * two argument are equal if they have same type (same baseType and same dimensions)
+     * @param o other argument
+     * @return true if two argument have same type
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Parameter parameter = (Parameter) o;
+        return dimensions == parameter.dimensions &&
+                baseType.equals(parameter.baseType);
+    }
+
 }

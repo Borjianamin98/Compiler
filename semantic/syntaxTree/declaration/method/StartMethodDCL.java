@@ -7,13 +7,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StartMethodDCL extends MethodDCL {
-    private static List<Argument> arguments;
+    private static Signature signature;
+
     static {
-        arguments = new ArrayList<>();
+        List<Argument> arguments = new ArrayList<>();
         arguments.add(new Argument("args", TypeTree.STRING_NAME, 1));
+        signature = new Signature("main", arguments, null);
     }
 
     public StartMethodDCL(String owner, Block body) {
-        super(owner, "main", arguments, body, true);
+        super(owner, signature,TypeTree.VOID_NAME, true);
+        signature.setBody(body);
     }
 }

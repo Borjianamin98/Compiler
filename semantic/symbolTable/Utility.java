@@ -16,7 +16,6 @@ import semantic.syntaxTree.expression.constValue.LongConst;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.typeTree.TypeTree;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,13 +26,17 @@ public class Utility {
     /**
      * return prefix appropriate for a opcode of a type
      * @param type type
+     * @param realReturn if true, return 'c' instead of 'i' for character and same for other types
+     *                   purpose of this is because of reference to char array. fo some opcode like
+     *                   castore, caload, ... we must use prefix 'c' instead of 'i'
      * @return appropriate prefix
      */
-    private static String getTypePrefix(TypeDSCP type) {
+    private static String getTypePrefix(TypeDSCP type, boolean realReturn) {
         if (type.getTypeCode() == TypeTree.INTEGER_DSCP.getTypeCode() ||
-                type.getTypeCode() == TypeTree.BOOLEAN_DSCP.getTypeCode() ||
-                type.getTypeCode() == TypeTree.CHAR_DSCP.getTypeCode()) {
+                type.getTypeCode() == TypeTree.BOOLEAN_DSCP.getTypeCode()) {
             return "I";
+        } else if (type.getTypeCode() == TypeTree.CHAR_DSCP.getTypeCode()) {
+            return realReturn ? "C" : "I";
         } else if (type.getTypeCode() == TypeTree.LONG_DSCP.getTypeCode()) {
             return "L";
         } else if (type.getTypeCode() == TypeTree.DOUBLE_DSCP.getTypeCode()) {
@@ -64,12 +67,13 @@ public class Utility {
      * return opcode created by prefix + instruction based on type
      * @param type type of opcode
      * @param instruction main instruction
+     * @param realReturn if true, return 'c' instead of 'i' for character and same for other types
      * @return appropriate opcode
      * @throws RuntimeException if opcode not found
      */
-    public static int getOpcode(TypeDSCP type, String instruction) {
+    public static int getOpcode(TypeDSCP type, String instruction, boolean realReturn) {
         try {
-            return (int) Opcodes.class.getDeclaredField(getTypePrefix(type) + instruction).get(null);
+            return (int) Opcodes.class.getDeclaredField(getTypePrefix(type, realReturn) + instruction).get(null);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Not found requested opcode");
         }
@@ -92,7 +96,7 @@ public class Utility {
             TypeDSCP typeDSCP;
             if ((typeDSCP = SymbolTable.getType("[" + lastDimensionType.getDescriptor())) == null) {
                 typeDSCP = new ArrayTypeDSCP(lastDimensionType, baseType);
-                SymbolTable.addType(typeDSCP.getName(), typeDSCP);
+                Display.addType(typeDSCP.getName(), typeDSCP);
             }
             lastDimensionType = typeDSCP;
         }
@@ -181,7 +185,7 @@ public class Utility {
     public static void evaluateBooleanExpressionFalse(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv,
                                                       Expression booleanExpr, Label falseJumpLabel) {
         TypeDSCP booleanExprType = booleanExpr.getResultType();
-        booleanExpr.generateCode(currentClass, currentMethod, cv, mv);
+        booleanExpr.generateCode(currentClass, currentMethod, cv, mv, null, null);
         if (booleanExprType.getTypeCode() == TypeTree.INTEGER_DSCP.getTypeCode()) {
             mv.visitJumpInsn(org.objectweb.asm.Opcodes.IFEQ, falseJumpLabel);
         } else if (booleanExprType.getTypeCode() == TypeTree.LONG_DSCP.getTypeCode()) {
@@ -218,7 +222,7 @@ public class Utility {
     public static void evaluateBooleanExpressionTrue(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv,
                                                      Expression booleanExpr, Label trueJumpLabel) {
         TypeDSCP booleanExprType = booleanExpr.getResultType();
-        booleanExpr.generateCode(currentClass, currentMethod, cv, mv);
+        booleanExpr.generateCode(currentClass, currentMethod, cv, mv, null, null);
         if (booleanExprType.getTypeCode() == TypeTree.INTEGER_DSCP.getTypeCode()) {
             mv.visitJumpInsn(org.objectweb.asm.Opcodes.IFNE, trueJumpLabel);
         } else if (booleanExprType.getTypeCode() == TypeTree.LONG_DSCP.getTypeCode()) {
@@ -246,12 +250,9 @@ public class Utility {
      * @param type  type of expression
      * @param value value of expression
      * @return expression of type with constant value
-     * @throws IllegalArgumentException if value is not zero (0) or one (1)
-     *                                  or type is not a primitive type (except void and string type)
+     * @throws IllegalArgumentException if type is not a primitive type (except void and string type)
      */
     public static Expression getSimpleConstant(TypeDSCP type, int value) {
-        if (value != 0 && value != 1)
-            throw new IllegalArgumentException("Value must be 0 or 1");
         if (type.getTypeCode() == TypeTree.INTEGER_DSCP.getTypeCode())
             return new IntegerConst(value);
         else if (type.getTypeCode() == TypeTree.LONG_DSCP.getTypeCode()) {
@@ -263,4 +264,16 @@ public class Utility {
         } else
             throw new IllegalArgumentException("Type must be a primitive type: " + type.getConventionalName());
     }
+
+    /**
+     * check if a type is reference or not. a reference type can contains null value
+     * @param type type
+     * @return true if type is a reference, otherwise false
+     */
+    public static boolean isReferenceType(TypeDSCP type) {
+        return !type.isPrimitive() ||
+                TypeTree.isString(type) ||
+                TypeTree.isVoid(type);
+    }
+
 }
