@@ -1,5 +1,6 @@
 package semantic.syntaxTree.expression.identifier;
 
+import exception.DuplicateDeclarationException;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -49,7 +50,7 @@ public class SimpleLocalVariable extends Variable {
         if (dscp == null) {
             Optional<DSCP> fetchedDSCP = Display.find(getName());
             if (!fetchedDSCP.isPresent())
-                throw new RuntimeException(getChainName() + " is not declared");
+                throw new DuplicateDeclarationException(getChainName());
             if (fetchedDSCP.get() instanceof VariableDSCP) {
                 dscp = (VariableDSCP) fetchedDSCP.get();
             } else

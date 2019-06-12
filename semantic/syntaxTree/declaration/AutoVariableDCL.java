@@ -1,5 +1,6 @@
 package semantic.syntaxTree.declaration;
 
+import exception.DuplicateDeclarationException;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -34,7 +35,7 @@ public class AutoVariableDCL extends Declaration {
         // otherwise this declaration shadows other declarations
         SymbolTable top = Display.top();
         if (top.contains(getName()))
-            throw new RuntimeException(getName() + " declared more than one time");
+            throw new DuplicateDeclarationException(getName());
 
         getTypeDSCP();
         Declaration variable;
