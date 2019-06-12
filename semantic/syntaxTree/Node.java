@@ -24,11 +24,11 @@ public abstract class Node {
 
     /**
      * this method is used to create code of Node for current class and method which wrap this Node
-     * if code of Node can contain return and continue code (like code od block, ...) then maybe continueLabel
+     * if code of Node can contains return and continue code (like code od block, ...) then maybe continueLabel
      * and breakLabel of outer Node is necessary for creating code of Node. They are provided by Node who call
      * generateCode of this node.
      * If breakLabel or continueLabel are null, its mean that they are not provided because it is illegal to use
-     * them in this context, So if this node contain break or continue, it may throw exception because it is illegal
+     * them in this context, So if this node contains break or continue, it may throw exception because it is illegal
      * to have them in this context.
      *
      * @param currentClass current class

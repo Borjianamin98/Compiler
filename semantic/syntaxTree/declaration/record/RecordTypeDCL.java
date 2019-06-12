@@ -2,9 +2,9 @@ package semantic.syntaxTree.declaration.record;
 
 import org.objectweb.asm.*;
 import semantic.symbolTable.Display;
-import semantic.symbolTable.SymbolTable;
 import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
 import semantic.syntaxTree.BlockCode;
+import semantic.syntaxTree.ClassCode;
 import semantic.syntaxTree.Node;
 import semantic.syntaxTree.declaration.Declaration;
 import semantic.syntaxTree.declaration.method.MethodDCL;
@@ -15,7 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-public class RecordTypeDCL extends Declaration implements BlockCode {
+public class RecordTypeDCL extends Declaration implements BlockCode, ClassCode {
     private List<Field> fields;
 
     public RecordTypeDCL(String name, List<Field> fields) {
@@ -75,6 +75,6 @@ public class RecordTypeDCL extends Declaration implements BlockCode {
             throw new RuntimeException(getName() + " declared more than one time");
         }
         RecordTypeDSCP recordDSCP = new RecordTypeDSCP(getName(), 1, Display.pop());
-        SymbolTable.addType(getName(), recordDSCP);
+        Display.addType(getName(), recordDSCP);
     }
 }

@@ -1,9 +1,10 @@
 package syntax;
 import java_cup.runtime.*;
 
-import semantic.syntaxTree.BlockCode;
+import semantic.syntaxTree.*;
 import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.*;
+import semantic.syntaxTree.declaration.method.*;
 import semantic.syntaxTree.declaration.record.*;
 import semantic.syntaxTree.expression.*;
 import semantic.syntaxTree.expression.call.*;
@@ -22,6 +23,7 @@ import semantic.syntaxTree.statement.controlflow.*;
 import semantic.syntaxTree.statement.controlflow.ifelse.*;
 import semantic.syntaxTree.statement.controlflow.switchcase.*;
 import semantic.syntaxTree.statement.controlflow.loop.*;
+import semantic.syntaxTree.program.ClassDCL;
 
 import semantic.typeTree.TypeTree;
 
@@ -33,9 +35,8 @@ class Parser;
 
 parser code
 {:
-    public static List<Expression> list = new ArrayList<>();
     public static ArrayDeque<Object> semanticStack = new ArrayDeque<>();
-    public static Object finalR;
+    public static ClassDCL finalResult;
 :}
 
 /* Terminals (tokens returned by the scanner). */
@@ -64,9 +65,11 @@ terminal Character                      CHAR_CONST;
 terminal String                         STRING_CONST;
 terminal                                CAST_PREC;
 terminal                                PRINTLN, INPUT;
+terminal                                START;
 
 /* Non terminals */
 non terminal                            program;
+non terminal                            class_code;
 non terminal Expression                 method_cal;
 non terminal List<Expression>           parameters;
 non terminal Variable                   variable;
@@ -80,8 +83,11 @@ non terminal                            block_part;
 non terminal List<Case>                 case_part;
 non terminal Statement                  for_init_part;
 non terminal List<VariableDCLFactory>   const_var_dcl_p, var_dcl_p, var_dcl, var_declrations;
-non terminal Declaration                struct_dcl;
-non terminal                            function_dcl, func_signature, arguments, argument, extern_dcl;
+non terminal ClassCode                  struct_dcl;
+non terminal ClassCode                  function_dcl;
+non terminal                            extern_dcl;
+non terminal Signature                  func_signature;
+non terminal List<Argument>             arguments;
 non terminal Integer                    array_part_no_val;
 non terminal List<Expression>           array_part_val;
 non terminal Expression                 expr;
@@ -112,41 +118,76 @@ precedence nonassoc MINUSMINUS_POSTFIX, PLUSPLUS_POSTFIX;
 
 /* The grammar */
 start with begining;
-program             ::= var_dcl program
+begining            ::= {: Parser.semanticStack.addLast(new ClassDCL("Tester")); :}
+                        program
+                        {: finalResult = (ClassDCL) Parser.semanticStack.removeLast(); :}
+                        ;
+
+program             ::= class_code program
                         |
-                        function_dcl program
+                        class_code
+                        ;
+
+
+class_code             ::= var_dcl:fieldsFactory
+                        {:
+                        ClassDCL classDCL = (ClassDCL) Parser.semanticStack.getLast();
+                        for (VariableDCLFactory factory : fieldsFactory)
+                            classDCL.addClassCode(factory.createFieldVariable(false));
+                        :}
                         |
-                        extern_dcl program
+                        function_dcl:functionDCL
+                        {:
+                        ClassDCL classDCL = (ClassDCL) Parser.semanticStack.getLast();
+                        classDCL.addClassCode(functionDCL);
+                        :}
                         |
-                        struct_dcl program
-                        |
+                        struct_dcl:structDCL
+                        {:
+                        ClassDCL classDCL = (ClassDCL) Parser.semanticStack.getLast();
+                        classDCL.addClassCode(structDCL);
+                        :}
+//                      |
+//                      extern_dcl
                         ;
 
 extern_dcl          ::= EXTERN typeName IDENTIFIER SEMICOLON;
 
-function_dcl        ::= FUNCTION typeName func_signature
+function_dcl        ::= FUNCTION typeName:returnType func_signature:signature
+                        {: RESULT = new MethodDCL("Tester", signature, returnType, true); :}
                         |
-                        FUNCTION VOID func_signature;
-
-func_signature       ::= IDENTIFIER LPAREN arguments RPAREN SEMICOLON
+                        FUNCTION VOID func_signature:signature
+                        {: RESULT = new MethodDCL("Tester", signature, TypeTree.VOID_NAME, true); :}
                         |
-                        IDENTIFIER LPAREN RPAREN SEMICOLON
-                        |
-                        IDENTIFIER LPAREN arguments RPAREN block
-                        |
-                        IDENTIFIER LPAREN RPAREN block
+                        FUNCTION VOID START LPAREN RPAREN block:body
+                        {: RESULT = new StartMethodDCL("Tester", body); :}
                         ;
 
-arguments           ::= argument COMMA arguments
-                        {: System.out.println("argument detected"); :}
+func_signature       ::= IDENTIFIER:name LPAREN arguments:args RPAREN SEMICOLON
+                        {: RESULT = new Signature(name, args, null); :}
                         |
-                        argument
-                        {: System.out.println("argument detected"); :}
+                        IDENTIFIER:name LPAREN RPAREN SEMICOLON
+                        {: RESULT = new Signature(name, null, null); :}
+                        |
+                        IDENTIFIER:name LPAREN arguments:args RPAREN block:body
+                        {: RESULT = new Signature(name, args, body); :}
+                        |
+                        IDENTIFIER:name LPAREN RPAREN block:body
+                        {: RESULT = new Signature(name, null, body); :}
                         ;
 
-argument            ::= typeName IDENTIFIER
+arguments           ::= typeName:baseType IDENTIFIER:name array_part_no_val:dimensions COMMA arguments:list
+                        {:
+                        RESULT = list;
+                        RESULT.add(new Argument(name, baseType, dimensions));
+                        :}
                         |
-                        typeName IDENTIFIER array_part_no_val;
+                        typeName:baseType IDENTIFIER:name array_part_no_val:dimensions
+                        {:
+                        RESULT = new ArrayList<Argument>();
+                        RESULT.add(new Argument(name, baseType, dimensions));
+                        :}
+                        ;
 
 array_part_no_val   ::= LRBRACKET array_part_no_val:count
                         {: RESULT = 1 + count; :}
@@ -276,11 +317,6 @@ var_dcl_p           ::= IDENTIFIER:variableName COMMA var_dcl_p:list
                         RESULT = new ArrayList<VariableDCLFactory>();
                         RESULT.add(factory.copy().setVariableName(variableName).setDefaultValue(e));
                         :}
-                        ;
-
-
-begining            ::= block:bl
-                        {: finalR = bl; :}
                         ;
 
 block               ::= BEGIN

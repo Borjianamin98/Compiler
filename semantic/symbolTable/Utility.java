@@ -96,7 +96,7 @@ public class Utility {
             TypeDSCP typeDSCP;
             if ((typeDSCP = SymbolTable.getType("[" + lastDimensionType.getDescriptor())) == null) {
                 typeDSCP = new ArrayTypeDSCP(lastDimensionType, baseType);
-                SymbolTable.addType(typeDSCP.getName(), typeDSCP);
+                Display.addType(typeDSCP.getName(), typeDSCP);
             }
             lastDimensionType = typeDSCP;
         }
@@ -266,7 +266,7 @@ public class Utility {
     }
 
     /**
-     * check if a type is reference or not. a reference type can contain null value
+     * check if a type is reference or not. a reference type can contains null value
      * @param type type
      * @return true if type is a reference, otherwise false
      */

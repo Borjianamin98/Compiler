@@ -33,7 +33,7 @@ public class AutoVariableDCL extends Declaration {
         // Only check current block table
         // otherwise this declaration shadows other declarations
         SymbolTable top = Display.top();
-        if (top.contain(getName()))
+        if (top.contains(getName()))
             throw new RuntimeException(getName() + " declared more than one time");
 
         getTypeDSCP();

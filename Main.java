@@ -37,12 +37,7 @@ public class Main implements Opcodes {
         try {
             parser.debug_parse();
 
-            List<MethodDCL> methodDCLS = new ArrayList<>();
-            Block body = (Block) Parser.finalR;
-            methodDCLS.add(new StartMethodDCL("Tester", body));
-
-
-            ClassDCL clazz = new ClassDCL("Tester", null, methodDCLS, null);
+            ClassDCL clazz = Parser.finalResult;
             clazz.generateCode(null, null, null, null, null, null);
         } catch (Exception e) {
             e.printStackTrace();

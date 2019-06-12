@@ -10,6 +10,7 @@ import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.hastype.FieldDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
+import semantic.syntaxTree.ClassCode;
 import semantic.syntaxTree.declaration.Declaration;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.program.ClassDCL;
@@ -40,12 +41,8 @@ public class SimpleFieldDCL extends Declaration {
     }
 
     public TypeDSCP getTypeDSCP() {
-        if (typeDSCP == null) {
-            Optional<DSCP> fetchedDSCP = Display.find(type);
-            if (!fetchedDSCP.isPresent() || !(fetchedDSCP.get() instanceof TypeDSCP))
-                throw new RuntimeException("Type " + type + " not found");
-            typeDSCP = (TypeDSCP) fetchedDSCP.get();
-        }
+        if (typeDSCP == null)
+            typeDSCP = Display.getType(type);
         return typeDSCP;
     }
 
@@ -54,7 +51,7 @@ public class SimpleFieldDCL extends Declaration {
         // Only check current block table
         // otherwise this declaration shadows other declarations
         SymbolTable top = Display.top();
-        if (top.contain(getName()))
+        if (top.contains(getName()))
             throw new RuntimeException(getName() + " declared more than one time");
 
         getTypeDSCP();

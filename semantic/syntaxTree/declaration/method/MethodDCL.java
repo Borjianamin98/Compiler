@@ -11,6 +11,7 @@ import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.MethodDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.BlockCode;
+import semantic.syntaxTree.ClassCode;
 import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.ArrayDCL;
 import semantic.syntaxTree.declaration.Declaration;
@@ -19,33 +20,29 @@ import semantic.syntaxTree.program.ClassDCL;
 import semantic.syntaxTree.statement.controlflow.BreakStatement;
 import semantic.syntaxTree.statement.controlflow.ContinueStatement;
 import semantic.syntaxTree.statement.controlflow.ReturnStatement;
+import semantic.typeTree.TypeTree;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class MethodDCL extends Declaration {
+public class MethodDCL extends Declaration implements ClassCode {
     private String owner;
-    private TypeDSCP returnType;
-    private Block body;
-    private List<Argument> arguments;
+    private Signature signature;
+    private String returnType;
+    private TypeDSCP returnTypeDSCP;
     private boolean isStatic;
 
-    public MethodDCL(String owner, String name, List<Argument> arguments, Block body, boolean isStatic) {
-        super(name, false);
+    public MethodDCL(String owner, Signature signature, String returnType, boolean isStatic) {
+        super(signature.getName(), false);
         this.owner = owner;
-        this.body = body;
-        this.arguments = arguments;
+        this.signature = signature;
         this.isStatic = isStatic;
-    }
-
-    public MethodDCL(String owner, String name, List<Argument> arguments, Block body, TypeDSCP returnType, boolean isStatic) {
-        this(owner, name, arguments, body, isStatic);
         this.returnType = returnType;
     }
 
     public boolean hasReturn() {
-        return returnType != null;
+        return getReturnType().getTypeCode() != TypeTree.VOID_DSCP.getTypeCode();
     }
 
     public String getOwner() {
@@ -53,11 +50,13 @@ public class MethodDCL extends Declaration {
     }
 
     public String getDescriptor() {
-        return Utility.createMethodDescriptor(arguments, hasReturn(), returnType);
+        return Utility.createMethodDescriptor(signature.getArguments(), hasReturn(), getReturnType());
     }
 
     public TypeDSCP getReturnType() {
-        return returnType;
+        if (returnTypeDSCP == null)
+            returnTypeDSCP = Display.getType(returnType);
+        return returnTypeDSCP;
     }
 
     @Override
@@ -70,16 +69,14 @@ public class MethodDCL extends Declaration {
                 throw new RuntimeException(getName() + " declared more than one time");
             methodDSCP = (MethodDSCP) fetchedDSCP.get();
         } else {
-            methodDSCP = new MethodDSCP(owner, getName(), returnType);
+            methodDSCP = new MethodDSCP(owner, getName(), getReturnType());
             top.addSymbol(getName(), methodDSCP);
         }
 
-        if (methodDSCP.hasReturn() && (!hasReturn() || methodDSCP.getReturnType().getTypeCode() == getReturnType().getTypeCode()))
-            throw new RuntimeException("Overloaded method " + getName() + " must have same return type");
-        else if (!methodDSCP.hasReturn() && hasReturn())
+        if (methodDSCP.getReturnType().getTypeCode() != getReturnType().getTypeCode())
             throw new RuntimeException("Overloaded method " + getName() + " must have same return type");
 
-        methodDSCP.addArguments(arguments == null ? new ArrayList<>() : arguments);
+        methodDSCP.addArguments(signature.getArguments() == null ? new ArrayList<>() : signature.getArguments());
 
         // Generate Code
         int access = Opcodes.ACC_PUBLIC;
@@ -89,8 +86,8 @@ public class MethodDCL extends Declaration {
 
         // Add function symbol table
         Display.add(false);
-        if (arguments != null) {
-            for (Argument argument : arguments) {
+        if (signature.getArguments() != null) {
+            for (Argument argument : signature.getArguments()) {
                 Declaration argDCL;
                 if (argument.isArray())
                     argDCL = new ArrayDCL(argument.getName(), argument.getBaseType(), argument.getDimensions(), false, true);
@@ -102,8 +99,8 @@ public class MethodDCL extends Declaration {
 
         // Generate body code
         boolean hasReturnStatement = false;
-        if (body != null) {
-            for (BlockCode blockCode : body.getBlockCodes()) {
+        if (signature.getBody() != null) {
+            for (BlockCode blockCode : signature.getBody().getBlockCodes()) {
                 if (hasReturnStatement) // code after return statement is useless
                     throw new RuntimeException("Unreachable statement after return of function");
                 if (blockCode instanceof ReturnStatement)

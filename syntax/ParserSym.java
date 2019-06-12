@@ -69,6 +69,7 @@ public class ParserSym {
   public static final int CHAR_CONST = 77;
   public static final int error = 1;
   public static final int NOT_EQUAL = 13;
+  public static final int START = 82;
   public static final int CONTINUE = 58;
   public static final int IF = 54;
   public static final int MINUSMINUS = 45;
@@ -172,7 +173,8 @@ public class ParserSym {
   "STRING_CONST",
   "CAST_PREC",
   "PRINTLN",
-  "INPUT"
+  "INPUT",
+  "START"
   };
 }
 

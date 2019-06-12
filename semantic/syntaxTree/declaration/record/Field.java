@@ -3,11 +3,12 @@ package semantic.syntaxTree.declaration.record;
 import semantic.symbolTable.descriptor.type.ArrayTypeDSCP;
 import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
 import semantic.symbolTable.descriptor.type.SimpleTypeDSCP;
+import semantic.syntaxTree.ClassCode;
 import semantic.syntaxTree.declaration.Declaration;
 import semantic.syntaxTree.declaration.Parameter;
 import semantic.syntaxTree.expression.Expression;
 
-public class Field extends Parameter {
+public class Field extends Parameter implements ClassCode {
     private Expression defaultValue;
     private boolean constant;
     private boolean isStatic;

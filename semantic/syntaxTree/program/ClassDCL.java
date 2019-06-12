@@ -2,6 +2,7 @@ package semantic.syntaxTree.program;
 
 import org.objectweb.asm.*;
 import semantic.symbolTable.Display;
+import semantic.syntaxTree.ClassCode;
 import semantic.syntaxTree.Node;
 import semantic.syntaxTree.declaration.Declaration;
 import semantic.syntaxTree.declaration.method.MethodDCL;
@@ -12,19 +13,20 @@ import semantic.syntaxTree.declaration.record.SimpleFieldDCL;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClassDCL extends Node {
     private String name;
-    private List<Field> fields;
-    private List<MethodDCL> methods;
-    private List<RecordTypeDCL> records;
+    private List<ClassCode> classCodes;
 
-    public ClassDCL(String name, List<Field> fields, List<MethodDCL> methods, List<RecordTypeDCL> records) {
+    public ClassDCL(String name) {
         this.name = name;
-        this.fields = fields;
-        this.methods = methods;
-        this.records = records;
+        this.classCodes = new ArrayList<>();
+    }
+
+    public void addClassCode(ClassCode classCode) {
+        classCodes.add(classCode);
     }
 
     @Override
@@ -32,59 +34,24 @@ public class ClassDCL extends Node {
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         classWriter.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC | Opcodes.ACC_SUPER, name, null, "java/lang/Object", null);
 
-        Display.add(false); // Class symbol table
-        if (fields != null) {
-            for (Field field : fields) {
-                Declaration fieldDCL;
-                if (field.isArray()) {
-                    fieldDCL = new ArrayFieldDCL(name, field.getName(), field.getBaseType(), field.getDimensions(),
-                            field.isConstant(), field.getDefaultValue() != null, false);
-                } else {
-                    fieldDCL = new SimpleFieldDCL(name, field.getName(), field.getBaseType(), field.isConstant(),
-                            field.getDefaultValue() != null, false);
-                }
-                fieldDCL.generateCode(this, null, classWriter, null, null, null);
-            }
-        }
-
         // Default constructor of class
         MethodVisitor methodVisitor = classWriter.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
         methodVisitor.visitCode();
         methodVisitor.visitVarInsn(Opcodes.ALOAD, 0);
         methodVisitor.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
-        if (fields != null) {
-            for (Field field : fields) {
-                if (field.getDefaultValue() != null) {
-                    if (field.isStatic()) {
-                        field.getDefaultValue().generateCode(this, null, classWriter, methodVisitor, null, null);
-                        methodVisitor.visitFieldInsn(Opcodes.PUTSTATIC, name, field.getName(), field.getDescriptor());
-                    } else {
-                        methodVisitor.visitVarInsn(Opcodes.ALOAD, 0); // load "this"
-                        field.getDefaultValue().generateCode(this, null, classWriter, methodVisitor, null, null);
-                        methodVisitor.visitFieldInsn(Opcodes.PUTFIELD, name, field.getName(), field.getDescriptor());
-                    }
-                }
-            }
+        Display.add(false); // Class symbol table
+
+        for (ClassCode classCode : classCodes) {
+            if (classCode instanceof Field)
+                createFieldCode(classWriter, methodVisitor, (Field) classCode);
+            else if (classCode instanceof MethodDCL || classCode instanceof RecordTypeDCL)
+                ((Declaration) classCode).generateCode(this, null, classWriter, null, null, null);
         }
 
         methodVisitor.visitInsn(Opcodes.RETURN);
         methodVisitor.visitMaxs(0, 0);
         methodVisitor.visitEnd();
         classWriter.visitEnd();
-
-        // Generate Methods
-        if (methods != null) {
-            for (MethodDCL method : methods) {
-                method.generateCode(this, null, classWriter, mv, null, null);
-            }
-        }
-
-        // Generate Records
-        if (records != null) {
-            for (RecordTypeDCL record : records) {
-                record.generateCode(null, null, classWriter, mv, null, null);
-            }
-        }
 
         // Generate class file
         try (FileOutputStream fos = new FileOutputStream(Node.outputPath + name + ".class")) {
@@ -98,4 +65,30 @@ public class ClassDCL extends Node {
             throw new RuntimeException("Identifier " + name + " declared more than one time");
         }
     }
+
+    private void createFieldCode(ClassWriter classWriter, MethodVisitor methodVisitor, Field field) {
+        // Create field
+        Declaration fieldDCL;
+        if (field.isArray()) {
+            fieldDCL = new ArrayFieldDCL(name, field.getName(), field.getBaseType(), field.getDimensions(),
+                    field.isConstant(), field.getDefaultValue() != null, false);
+        } else {
+            fieldDCL = new SimpleFieldDCL(name, field.getName(), field.getBaseType(), field.isConstant(),
+                    field.getDefaultValue() != null, false);
+        }
+        fieldDCL.generateCode(this, null, classWriter, null, null, null);
+
+        // initialize field
+        if (field.getDefaultValue() != null) {
+            if (field.isStatic()) {
+                field.getDefaultValue().generateCode(this, null, classWriter, methodVisitor, null, null);
+                methodVisitor.visitFieldInsn(Opcodes.PUTSTATIC, name, field.getName(), field.getDescriptor());
+            } else {
+                methodVisitor.visitVarInsn(Opcodes.ALOAD, 0); // load "this"
+                field.getDefaultValue().generateCode(this, null, classWriter, methodVisitor, null, null);
+                methodVisitor.visitFieldInsn(Opcodes.PUTFIELD, name, field.getName(), field.getDescriptor());
+            }
+        }
+    }
 }
+

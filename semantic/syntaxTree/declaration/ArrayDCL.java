@@ -14,8 +14,6 @@ import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.program.ClassDCL;
 
-import java.util.Optional;
-
 public class ArrayDCL extends Declaration {
     private String type;
     private TypeDSCP typeDSCP;
@@ -36,10 +34,7 @@ public class ArrayDCL extends Declaration {
 
     public ArrayTypeDSCP getTypeDSCP() {
         if (typeDSCP == null) {
-            Optional<DSCP> fetchedDSCP = Display.find(type);
-            if (!fetchedDSCP.isPresent() || !(fetchedDSCP.get() instanceof TypeDSCP))
-                throw new RuntimeException("Type " + type + " not found");
-            baseType = (TypeDSCP) fetchedDSCP.get();
+            baseType = Display.getType(type);
             typeDSCP = Utility.addArrayType(baseType, dimensions);
         }
         return (ArrayTypeDSCP) typeDSCP;
@@ -48,10 +43,10 @@ public class ArrayDCL extends Declaration {
     @Override
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         SymbolTable top = Display.top();
-        if (top.contain(getName()))
+        if (top.contains(getName()))
             throw new RuntimeException(getName() + " declared more than one time");
         if (dimensions == 0)
-            throw new RuntimeException("Array declaration must contain at least one dimension");
+            throw new RuntimeException("Array declaration must contains at least one dimension");
 
         TypeDSCP lastDimensionType = getTypeDSCP();
         String lastDSCPName = getName();

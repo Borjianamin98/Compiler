@@ -35,12 +35,8 @@ public class NewArrayInstruction extends Expression {
      * @return TypeDSCP of base type which is created by new array instruction
      */
     public TypeDSCP getTypeDSCP() {
-        if (typeDSCP == null) {
-            Optional<DSCP> fetchedDSCP = Display.find(type);
-            if (!fetchedDSCP.isPresent() || !(fetchedDSCP.get() instanceof TypeDSCP))
-                throw new RuntimeException("Type " + type + " not found");
-            typeDSCP = (TypeDSCP) fetchedDSCP.get();
-        }
+        if (typeDSCP == null)
+            typeDSCP = Display.getType(type);
         return typeDSCP;
     }
 
@@ -58,7 +54,7 @@ public class NewArrayInstruction extends Expression {
     @Override
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         if (dimensions == null || dimensions.size() == 0)
-            throw new RuntimeException("Array declaration must contain at least one dimension");
+            throw new RuntimeException("Array declaration must contains at least one dimension");
 
         for (Expression dim : dimensions) {
             dim.generateCode(currentClass, currentMethod, cv, mv, null, null);

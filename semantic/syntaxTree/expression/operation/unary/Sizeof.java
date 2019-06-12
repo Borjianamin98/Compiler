@@ -29,16 +29,7 @@ public class Sizeof extends Expression {
 
     @Override
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
-        // find type
-        TypeDSCP typeDSCP;
-        Optional<DSCP> fetchedDSCP = Display.find(typeName);
-        if (!fetchedDSCP.isPresent())
-            throw new RuntimeException("Type " + typeName + " is not declared");
-        if (fetchedDSCP.get() instanceof TypeDSCP) {
-            typeDSCP = (TypeDSCP) fetchedDSCP.get();
-        } else
-            throw new RuntimeException(typeName + " is not a type");
-
+        TypeDSCP typeDSCP = Display.getType(typeName);
         int size;
         if (typeDSCP.isPrimitive()) {
             if (typeDSCP.getTypeCode() == TypeTree.INTEGER_DSCP.getTypeCode()) {

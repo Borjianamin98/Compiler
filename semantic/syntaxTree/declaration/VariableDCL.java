@@ -25,12 +25,8 @@ public class VariableDCL extends Declaration {
     }
 
     public TypeDSCP getTypeDSCP() {
-        if (typeDSCP == null) {
-            Optional<DSCP> fetchedDSCP = Display.find(type);
-            if (!fetchedDSCP.isPresent() || !(fetchedDSCP.get() instanceof TypeDSCP))
-                throw new RuntimeException("Type " + type + " not found");
-            typeDSCP = (TypeDSCP) fetchedDSCP.get();
-        }
+        if (typeDSCP == null)
+            typeDSCP = Display.getType(type);
         return typeDSCP;
     }
 
@@ -39,7 +35,7 @@ public class VariableDCL extends Declaration {
         // Only check current block table
         // otherwise this declaration shadows other declarations
         SymbolTable top = Display.top();
-        if (top.contain(getName()))
+        if (top.contains(getName()))
             throw new RuntimeException(getName() + " declared more than one time");
 
         getTypeDSCP();

@@ -5,6 +5,7 @@ import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 
+import java.util.Collections;
 import java.util.Optional;
 
 public class Parameter {
@@ -40,19 +41,12 @@ public class Parameter {
     }
 
     public TypeDSCP getBaseTypeDSCP() {
-        if (baseTypeDSCP == null) {
-            Optional<DSCP> typeDSCP = Display.find(baseType);
-            if (!typeDSCP.isPresent() || !(typeDSCP.get() instanceof TypeDSCP))
-                throw new RuntimeException(baseType + " is not declared");
-            baseTypeDSCP =((TypeDSCP) typeDSCP.get());
-        }
+        if (baseTypeDSCP == null)
+            baseTypeDSCP = Display.getType(baseType);
         return baseTypeDSCP;
     }
 
     public TypeDSCP getType() {
-        Optional<DSCP> typeDSCP = Display.find(getDescriptor());
-        if (!typeDSCP.isPresent() || !(typeDSCP.get() instanceof TypeDSCP))
-            throw new RuntimeException(getDescriptor() + " is not declared");
-        return ((TypeDSCP) typeDSCP.get());
+        return Display.getType(String.join("", Collections.nCopies(dimensions, "[")) + getBaseTypeDSCP().getName());
     }
 }

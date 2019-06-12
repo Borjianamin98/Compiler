@@ -3,6 +3,7 @@ package semantic.symbolTable.descriptor;
 import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.Argument;
+import semantic.typeTree.TypeTree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,7 @@ public class MethodDSCP extends DSCP {
     private String name;
     private TypeDSCP returnType;
     /**
-     * contain a list of arguments for each method overloading
+     * contains a list of arguments for each method overloading
      */
     private List<List<Argument>> arguments;
 
@@ -41,7 +42,7 @@ public class MethodDSCP extends DSCP {
     }
 
     public boolean hasReturn() {
-        return returnType != null;
+        return returnType.getTypeCode() != TypeTree.VOID_DSCP.getTypeCode();
     }
 
     public TypeDSCP getReturnType() {

@@ -55,12 +55,8 @@ public class ScannerFunction extends Expression implements BlockCode, Ignorable 
     public TypeDSCP getResultType() {
         if (requestLine)
             return TypeTree.STRING_DSCP;
-        if (requestedTypeDSCP == null) {
-            Optional<DSCP> fetchedDSCP = Display.find(requestedType);
-            if (!fetchedDSCP.isPresent() || !(fetchedDSCP.get() instanceof TypeDSCP))
-                throw new RuntimeException("Type " + requestedType + " not found");
-            requestedTypeDSCP = (TypeDSCP) fetchedDSCP.get();
-        }
+        if (requestedTypeDSCP == null)
+            requestedTypeDSCP = Display.getType(requestedType);
         if (!requestedTypeDSCP.isPrimitive() ||
                 requestedTypeDSCP.getTypeCode() == TypeTree.VOID_DSCP.getTypeCode() ||
                 requestedTypeDSCP.getTypeCode() == TypeTree.CHAR_DSCP.getTypeCode())
