@@ -2,22 +2,11 @@ import java_cup.runtime.ComplexSymbolFactory;
 import lexical.LexicalAnalyzer;
 import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Display;
-import semantic.syntaxTree.BlockCode;
+import semantic.syntaxTree.Node;
 import semantic.syntaxTree.block.Block;
-import semantic.syntaxTree.declaration.AutoVariableDCL;
-import semantic.syntaxTree.declaration.method.Argument;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.declaration.method.StartMethodDCL;
-import semantic.syntaxTree.declaration.record.Field;
-import semantic.syntaxTree.expression.Expression;
-import semantic.syntaxTree.expression.call.MethodCall;
-import semantic.syntaxTree.expression.identifier.SimpleVariable;
-import semantic.syntaxTree.expression.instance.NewArrayInstruction;
-import semantic.syntaxTree.expression.instance.NewRecordInstruction;
-import semantic.syntaxTree.expression.operation.relational.*;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.syntaxTree.statement.controlflow.ReturnStatement;
-import semantic.syntaxTree.statement.controlflow.loop.*;
 import semantic.typeTree.TypeTree;
 import syntax.Parser;
 
@@ -37,6 +26,7 @@ public class Main implements Opcodes {
 //        }
 
         // order of initialization is important
+        Node.init();
         Display.init();
         TypeTree.init();
         parseInput(symbolFactory);
@@ -53,7 +43,7 @@ public class Main implements Opcodes {
 
 
             ClassDCL clazz = new ClassDCL("Tester", null, methodDCLS, null);
-            clazz.generateCode(null, null, null, null);
+            clazz.generateCode(null, null, null, null, null, null);
         } catch (Exception e) {
             e.printStackTrace();
         }

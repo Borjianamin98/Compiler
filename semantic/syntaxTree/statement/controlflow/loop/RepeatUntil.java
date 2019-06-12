@@ -26,7 +26,7 @@ public class RepeatUntil extends Statement {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         Label bodyLabel = new Label();
         Label conditionLabel = new Label();
         Label outLabel = new Label();
@@ -34,17 +34,11 @@ public class RepeatUntil extends Statement {
 
         Display.add(true);
         for (BlockCode blockCode : body.getBlockCodes()) {
-            if (blockCode instanceof BreakStatement) {
-                mv.visitJumpInsn(Opcodes.GOTO, outLabel);
+            blockCode.generateCode(currentClass, currentMethod, cv, mv, outLabel, conditionLabel);
+            if (blockCode instanceof ReturnStatement ||
+                    blockCode instanceof BreakStatement ||
+                    blockCode instanceof ContinueStatement)
                 break; // other code in this block are unnecessary
-            } else if (blockCode instanceof ContinueStatement) {
-                mv.visitJumpInsn(Opcodes.GOTO, conditionLabel);
-                break; // other code in this block are unnecessary
-            } else if (blockCode instanceof ReturnStatement) {
-                blockCode.generateCode(currentClass, currentMethod, cv, mv);
-                break; // other code in this block are unnecessary
-            } else
-                blockCode.generateCode(currentClass, currentMethod, cv, mv);
         }
         Display.pop();
 

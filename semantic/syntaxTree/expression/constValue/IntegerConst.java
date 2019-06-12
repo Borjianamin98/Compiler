@@ -1,6 +1,7 @@
 package semantic.syntaxTree.expression.constValue;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Utility;
@@ -23,7 +24,7 @@ public class IntegerConst extends Expression {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         if (value == -1)
             mv.visitInsn(Opcodes.ICONST_M1);
         else if (value >= 0 && value <= 5)

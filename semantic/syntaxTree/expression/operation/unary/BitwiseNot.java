@@ -1,6 +1,7 @@
 package semantic.syntaxTree.expression.operation.unary;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
@@ -30,9 +31,9 @@ public class BitwiseNot extends Expression {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
-        operand.generateCode(currentClass, currentMethod, cv, mv);
-        Utility.getSimpleConstant(getResultType(), -1).generateCode(currentClass, currentMethod, cv, mv);
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
+        operand.generateCode(currentClass, currentMethod, cv, mv, null, null);
+        Utility.getSimpleConstant(getResultType(), -1).generateCode(currentClass, currentMethod, cv, mv, null, null);
         mv.visitInsn(Utility.getOpcode(getResultType(), "XOR", false));
     }
 }

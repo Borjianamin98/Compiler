@@ -48,10 +48,10 @@ public class ForLoop extends Statement {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         // Generate initial statement
         if (initialAssignment != null)
-            initialAssignment.generateCode(currentClass, currentMethod, cv, mv);
+            initialAssignment.generateCode(currentClass, currentMethod, cv, mv, null, null);
 
         Label conditionLabel = new Label();
         Label stepLabel = new Label();
@@ -65,17 +65,11 @@ public class ForLoop extends Statement {
         Display.add(true);
         if (body != null) {
             for (BlockCode blockCode : body.getBlockCodes()) {
-                if (blockCode instanceof BreakStatement) {
-                    mv.visitJumpInsn(Opcodes.GOTO, outLabel);
+                blockCode.generateCode(currentClass, currentMethod, cv, mv, outLabel, stepLabel);
+                if (blockCode instanceof ReturnStatement ||
+                        blockCode instanceof BreakStatement ||
+                        blockCode instanceof ContinueStatement)
                     break; // other code in this block are unnecessary
-                } else if (blockCode instanceof ContinueStatement) {
-                    mv.visitJumpInsn(Opcodes.GOTO, stepLabel);
-                    break; // other code in this block are unnecessary
-                } else if (blockCode instanceof ReturnStatement) {
-                    blockCode.generateCode(currentClass, currentMethod, cv, mv);
-                    break; // other code in this block are unnecessary
-                } else
-                    blockCode.generateCode(currentClass, currentMethod, cv, mv);
             }
         }
         Display.pop();
@@ -84,9 +78,9 @@ public class ForLoop extends Statement {
         // generate step assigment
         mv.visitLabel(stepLabel);
         if (stepAssignment != null)
-            stepAssignment.generateCode(currentClass, currentMethod, cv, mv);
+            stepAssignment.generateCode(currentClass, currentMethod, cv, mv, null, null);
         if (stepExpression != null) {
-            stepExpression.generateCode(currentClass, currentMethod, cv, mv);
+            stepExpression.generateCode(currentClass, currentMethod, cv, mv, null, null);
             mv.visitInsn(Opcodes.POP);
         }
 

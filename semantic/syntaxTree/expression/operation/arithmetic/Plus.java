@@ -1,6 +1,7 @@
 package semantic.syntaxTree.expression.operation.arithmetic;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Utility;
@@ -32,7 +33,7 @@ public class Plus extends Arithmetic {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         if (getResultType().getTypeCode() == TypeTree.STRING_DSCP.getTypeCode()) {
             /**
              * firstOperand:String + secondOperand:String
@@ -43,17 +44,17 @@ public class Plus extends Arithmetic {
             mv.visitInsn(Opcodes.DUP);
             mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false);
 
-            getFirstOperand().generateCode(currentClass, currentMethod, cv, mv);
+            getFirstOperand().generateCode(currentClass, currentMethod, cv, mv, null, null);
             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(" +
                     Utility.getDescriptor(getFirstOperand().getResultType(), 0) + ")Ljava/lang/StringBuilder;", false);
 
-            getSecondOperand().generateCode(currentClass, currentMethod, cv, mv);
+            getSecondOperand().generateCode(currentClass, currentMethod, cv, mv, null, null);
             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(" +
                     Utility.getDescriptor(getSecondOperand().getResultType(), 0) + ")Ljava/lang/StringBuilder;", false);
 
             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false);
         } else {
-            super.generateCode(currentClass, currentMethod, cv, mv);
+            super.generateCode(currentClass, currentMethod, cv, mv, breakLabel, continueLabel);
         }
     }
 }

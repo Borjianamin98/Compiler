@@ -3,14 +3,10 @@ package semantic.syntaxTree.expression.operation.unary;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Utility;
-import semantic.symbolTable.descriptor.type.ArrayTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
-import semantic.syntaxTree.expression.constValue.IntegerConst;
-import semantic.syntaxTree.expression.operation.arithmetic.Multiply;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.typeTree.TypeTree;
 
@@ -36,8 +32,8 @@ public class Neg extends Expression {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
-        operand.generateCode(currentClass, currentMethod, cv, mv);
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
+        operand.generateCode(currentClass, currentMethod, cv, mv, null, null);
         mv.visitInsn(Utility.getOpcode(getResultType(), "NEG", false));
     }
 }

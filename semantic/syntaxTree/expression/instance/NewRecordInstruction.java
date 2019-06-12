@@ -1,6 +1,7 @@
 package semantic.syntaxTree.expression.instance;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Display;
@@ -41,7 +42,7 @@ public class NewRecordInstruction extends Expression {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         getTypeDSCP();
         mv.visitTypeInsn(Opcodes.NEW, type);
         mv.visitInsn(Opcodes.DUP);

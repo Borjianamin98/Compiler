@@ -1,6 +1,7 @@
 package semantic.syntaxTree.declaration;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
@@ -45,7 +46,7 @@ public class ArrayDCL extends Declaration {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         SymbolTable top = Display.top();
         if (top.contain(getName()))
             throw new RuntimeException(getName() + " declared more than one time");

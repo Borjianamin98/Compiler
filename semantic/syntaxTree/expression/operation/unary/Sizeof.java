@@ -1,6 +1,7 @@
 package semantic.syntaxTree.expression.operation.unary;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.descriptor.DSCP;
@@ -27,7 +28,7 @@ public class Sizeof extends Expression {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         // find type
         TypeDSCP typeDSCP;
         Optional<DSCP> fetchedDSCP = Display.find(typeName);
@@ -58,6 +59,6 @@ public class Sizeof extends Expression {
                 size = 0; // void typeName
         } else
             size = Integer.BYTES; // a pointer/reference
-        new IntegerConst(size).generateCode(currentClass, currentMethod, cv, mv);
+        new IntegerConst(size).generateCode(currentClass, currentMethod, cv, mv, null, null);
     }
 }

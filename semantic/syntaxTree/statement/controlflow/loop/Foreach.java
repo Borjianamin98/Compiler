@@ -37,7 +37,7 @@ public class Foreach extends Statement {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         /***
          * Code like this:
          *
@@ -68,20 +68,20 @@ public class Foreach extends Statement {
         // create T[] a = Expression;
         ArrayDCL arrayDCL = new ArrayDCL(varIteratorName, arrayTypeDSCP.getBaseType().getName(),
                 arrayTypeDSCP.getDimensions(), false, iterator.getDSCP().isInitialized());
-        arrayDCL.generateCode(currentClass, currentMethod, cv, mv);
+        arrayDCL.generateCode(currentClass, currentMethod, cv, mv, null, null);
         DirectAssignment iteratorAssignment = new DirectAssignment(varIterator, iterator);
-        iteratorAssignment.generateCode(currentClass, currentMethod, cv, mv);
+        iteratorAssignment.generateCode(currentClass, currentMethod, cv, mv, null, null);
 
         // create int i = 0;
         VariableDCL varCounterDCL = new VariableDCL(varCounterName, TypeTree.INTEGER_NAME, false, false);
-        varCounterDCL.generateCode(currentClass, currentMethod, cv, mv);
+        varCounterDCL.generateCode(currentClass, currentMethod, cv, mv, null, null);
         DirectAssignment counterAssignment = new DirectAssignment(varCounter, new IntegerConst(0));
-        counterAssignment.generateCode(currentClass, currentMethod, cv, mv);
+        counterAssignment.generateCode(currentClass, currentMethod, cv, mv, null, null);
 
         // create (i < a.length) condition
         mv.visitLabel(conditionLabel);
-        varCounter.generateCode(currentClass, currentMethod, cv, mv);
-        varIterator.generateCode(currentClass, currentMethod, cv, mv);
+        varCounter.generateCode(currentClass, currentMethod, cv, mv, null, null);
+        varIterator.generateCode(currentClass, currentMethod, cv, mv, null, null);
         mv.visitInsn(Opcodes.ARRAYLENGTH);
         mv.visitJumpInsn(Opcodes.IF_ICMPGE, outLabel);
 
@@ -92,27 +92,21 @@ public class Foreach extends Statement {
                     arrayTypeDSCP.getInternalType().getDimensions(), false, false);
         else
             varIdentifierDCL = new VariableDCL(identifierName, arrayTypeDSCP.getInternalType().getName(), false, false);
-        varIdentifierDCL.generateCode(currentClass, currentMethod, cv, mv);
+        varIdentifierDCL.generateCode(currentClass, currentMethod, cv, mv, null, null);
 
         // create Identifier = a[i];
         ArrayVariable varId = new ArrayVariable(varIterator, varCounter);
         DirectAssignment identifierAssignment = new DirectAssignment(varIdentifier, varId);
-        identifierAssignment.generateCode(currentClass, currentMethod, cv, mv);
+        identifierAssignment.generateCode(currentClass, currentMethod, cv, mv, null, null);
 
         // create body
         Display.add(true);
         for (BlockCode blockCode : body.getBlockCodes()) {
-            if (blockCode instanceof BreakStatement) {
-                mv.visitJumpInsn(Opcodes.GOTO, outLabel);
+            blockCode.generateCode(currentClass, currentMethod, cv, mv, outLabel, stepLabel);
+            if (blockCode instanceof ReturnStatement ||
+                    blockCode instanceof BreakStatement ||
+                    blockCode instanceof ContinueStatement)
                 break; // other code in this block are unnecessary
-            } else if (blockCode instanceof ContinueStatement) {
-                mv.visitJumpInsn(Opcodes.GOTO, stepLabel);
-                break; // other code in this block are unnecessary
-            } else if (blockCode instanceof ReturnStatement) {
-                blockCode.generateCode(currentClass, currentMethod, cv, mv);
-                break; // other code in this block are unnecessary
-            } else
-                blockCode.generateCode(currentClass, currentMethod, cv, mv);
         }
         Display.pop();
 

@@ -1,6 +1,7 @@
 package semantic.syntaxTree.expression.call;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Display;
@@ -67,7 +68,7 @@ public class MethodCall extends Expression implements BlockCode, Ignorable {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         getTypeDSCP();
         List<List<Argument>> argumentsDSCP = getTypeDSCP().getAllArguments();
         List<List<Argument>> collectedArguments = argumentsDSCP.stream().filter(arguments -> arguments.size() == parameters.size()).collect(Collectors.toList());
@@ -101,7 +102,7 @@ public class MethodCall extends Expression implements BlockCode, Ignorable {
         // Generate call expression code and do type conversion
         for (int i = 0; i < parameters.size(); i++) {
             Expression parameter = parameters.get(i);
-            parameter.generateCode(currentClass, currentMethod, cv, mv);
+            parameter.generateCode(currentClass, currentMethod, cv, mv, null, null);
             TypeTree.widen(mv, parameter.getResultType(), overloadMethodArguments.get(i).getType());
         }
 

@@ -1,6 +1,7 @@
 package semantic.syntaxTree.declaration.record;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Display;
@@ -49,7 +50,7 @@ public class SimpleFieldDCL extends Declaration {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         // Only check current block table
         // otherwise this declaration shadows other declarations
         SymbolTable top = Display.top();

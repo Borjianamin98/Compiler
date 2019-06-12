@@ -1,9 +1,6 @@
 package semantic.syntaxTree.program;
 
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.*;
 import semantic.symbolTable.Display;
 import semantic.syntaxTree.Node;
 import semantic.syntaxTree.declaration.Declaration;
@@ -31,7 +28,7 @@ public class ClassDCL extends Node {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         classWriter.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC | Opcodes.ACC_SUPER, name, null, "java/lang/Object", null);
 
@@ -46,7 +43,7 @@ public class ClassDCL extends Node {
                     fieldDCL = new SimpleFieldDCL(name, field.getName(), field.getBaseType(), field.isConstant(),
                             field.getDefaultValue() != null, false);
                 }
-                fieldDCL.generateCode(this, null, classWriter, null);
+                fieldDCL.generateCode(this, null, classWriter, null, null, null);
             }
         }
 
@@ -59,11 +56,11 @@ public class ClassDCL extends Node {
             for (Field field : fields) {
                 if (field.getDefaultValue() != null) {
                     if (field.isStatic()) {
-                        field.getDefaultValue().generateCode(this, null, classWriter, methodVisitor);
+                        field.getDefaultValue().generateCode(this, null, classWriter, methodVisitor, null, null);
                         methodVisitor.visitFieldInsn(Opcodes.PUTSTATIC, name, field.getName(), field.getDescriptor());
                     } else {
                         methodVisitor.visitVarInsn(Opcodes.ALOAD, 0); // load "this"
-                        field.getDefaultValue().generateCode(this, null, classWriter, methodVisitor);
+                        field.getDefaultValue().generateCode(this, null, classWriter, methodVisitor, null, null);
                         methodVisitor.visitFieldInsn(Opcodes.PUTFIELD, name, field.getName(), field.getDescriptor());
                     }
                 }
@@ -78,14 +75,14 @@ public class ClassDCL extends Node {
         // Generate Methods
         if (methods != null) {
             for (MethodDCL method : methods) {
-                method.generateCode(this, null, classWriter, mv);
+                method.generateCode(this, null, classWriter, mv, null, null);
             }
         }
 
         // Generate Records
         if (records != null) {
             for (RecordTypeDCL record : records) {
-                record.generateCode(null, null, classWriter, mv);
+                record.generateCode(null, null, classWriter, mv, null, null);
             }
         }
 

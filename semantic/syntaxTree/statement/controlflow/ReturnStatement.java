@@ -1,6 +1,7 @@
 package semantic.syntaxTree.statement.controlflow;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Utility;
@@ -29,9 +30,9 @@ public class ReturnStatement extends Statement {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         if (value != null) {
-            value.generateCode(currentClass, currentMethod, cv, mv);
+            value.generateCode(currentClass, currentMethod, cv, mv, null, null);
             mv.visitInsn(Utility.getOpcode(value.getResultType(), "RETURN", false));
             if (!currentMethod.hasReturn())
                 throw new RuntimeException("Unexpected return type: " + value.getResultType().getName());

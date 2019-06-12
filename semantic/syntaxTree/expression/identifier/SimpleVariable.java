@@ -1,6 +1,7 @@
 package semantic.syntaxTree.expression.identifier;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.Utility;
@@ -23,7 +24,7 @@ public class SimpleVariable extends Variable {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         getDSCP();
         if (!getDSCP().isInitialized())
             throw new RuntimeException(String.format("Variable %s might not have been initialized", getChainName()));
@@ -36,7 +37,7 @@ public class SimpleVariable extends Variable {
         if (getDSCP().isConstant() && getDSCP().isInitialized())
             throw new RuntimeException(String.format("Cannot assign a value to const variable %s. Variable %s already have been assigned",
                     getChainName(), getChainName()));
-        value.generateCode(currentClass, currentMethod, cv, mv);
+        value.generateCode(currentClass, currentMethod, cv, mv, null, null);
         TypeTree.widen(mv, value.getResultType(), getResultType()); // right value must be converted to type of variable
         mv.visitVarInsn(Utility.getOpcode(dscp.getType(), "STORE", false), dscp.getAddress());
         getDSCP().setInitialized(true);

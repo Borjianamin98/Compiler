@@ -1,6 +1,7 @@
 package semantic.syntaxTree.declaration;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
@@ -34,7 +35,7 @@ public class VariableDCL extends Declaration {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         // Only check current block table
         // otherwise this declaration shadows other declarations
         SymbolTable top = Display.top();

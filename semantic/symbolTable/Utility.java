@@ -16,7 +16,6 @@ import semantic.syntaxTree.expression.constValue.LongConst;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.typeTree.TypeTree;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -186,7 +185,7 @@ public class Utility {
     public static void evaluateBooleanExpressionFalse(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv,
                                                       Expression booleanExpr, Label falseJumpLabel) {
         TypeDSCP booleanExprType = booleanExpr.getResultType();
-        booleanExpr.generateCode(currentClass, currentMethod, cv, mv);
+        booleanExpr.generateCode(currentClass, currentMethod, cv, mv, null, null);
         if (booleanExprType.getTypeCode() == TypeTree.INTEGER_DSCP.getTypeCode()) {
             mv.visitJumpInsn(org.objectweb.asm.Opcodes.IFEQ, falseJumpLabel);
         } else if (booleanExprType.getTypeCode() == TypeTree.LONG_DSCP.getTypeCode()) {
@@ -223,7 +222,7 @@ public class Utility {
     public static void evaluateBooleanExpressionTrue(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv,
                                                      Expression booleanExpr, Label trueJumpLabel) {
         TypeDSCP booleanExprType = booleanExpr.getResultType();
-        booleanExpr.generateCode(currentClass, currentMethod, cv, mv);
+        booleanExpr.generateCode(currentClass, currentMethod, cv, mv, null, null);
         if (booleanExprType.getTypeCode() == TypeTree.INTEGER_DSCP.getTypeCode()) {
             mv.visitJumpInsn(org.objectweb.asm.Opcodes.IFNE, trueJumpLabel);
         } else if (booleanExprType.getTypeCode() == TypeTree.LONG_DSCP.getTypeCode()) {

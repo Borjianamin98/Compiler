@@ -1,6 +1,7 @@
 package semantic.syntaxTree.expression.call;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Display;
@@ -68,7 +69,7 @@ public class ScannerFunction extends Expression implements BlockCode, Ignorable 
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         getResultType();
         // choose method name
         String scannerMethodName;

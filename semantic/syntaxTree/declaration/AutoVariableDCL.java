@@ -1,24 +1,19 @@
 package semantic.syntaxTree.declaration;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
-import semantic.symbolTable.descriptor.DSCP;
-import semantic.symbolTable.descriptor.hastype.VariableDSCP;
 import semantic.symbolTable.descriptor.type.ArrayTypeDSCP;
 import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
 import semantic.symbolTable.descriptor.type.SimpleTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
-import semantic.syntaxTree.declaration.record.RecordTypeDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.expression.identifier.SimpleVariable;
-import semantic.syntaxTree.expression.identifier.Variable;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.syntaxTree.statement.assignment.DirectAssignment;
-
-import java.util.Optional;
 
 public class AutoVariableDCL extends Declaration {
     private TypeDSCP typeDSCP;
@@ -34,7 +29,7 @@ public class AutoVariableDCL extends Declaration {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         // Only check current block table
         // otherwise this declaration shadows other declarations
         SymbolTable top = Display.top();
@@ -53,7 +48,7 @@ public class AutoVariableDCL extends Declaration {
         } else {
             throw new RuntimeException("Can not detect type for auto variable");
         }
-        variable.generateCode(currentClass, currentMethod, cv, mv);
-        new DirectAssignment(new SimpleVariable(getName()), defaultValue).generateCode(currentClass, currentMethod, cv, mv);
+        variable.generateCode(currentClass, currentMethod, cv, mv, null, null);
+        new DirectAssignment(new SimpleVariable(getName()), defaultValue).generateCode(currentClass, currentMethod, cv, mv, null, null);
     }
 }

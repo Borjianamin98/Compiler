@@ -1,6 +1,7 @@
 package semantic.syntaxTree.expression.identifier;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Display;
@@ -29,7 +30,7 @@ public class SimpleField extends Variable {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         getDSCP();
         if (!getDSCP().isInitialized())
             throw new RuntimeException(String.format("Variable %s might not have been initialized", getChainName()));
@@ -48,12 +49,12 @@ public class SimpleField extends Variable {
             throw new RuntimeException(String.format("Cannot assign a value to const variable %s. Variable %s already have been assigned",
                     getChainName(), getChainName()));
         if (isStatic) {
-            value.generateCode(currentClass, currentMethod, cv, mv);
+            value.generateCode(currentClass, currentMethod, cv, mv, null, null);
             TypeTree.widen(mv, getResultType(), value.getResultType()); // right value must be converted to type of variable
             mv.visitFieldInsn(Opcodes.PUTSTATIC, owner, name, dscp.getDescriptor());
         } else {
             mv.visitVarInsn(Opcodes.ALOAD, 0); // load "this"
-            value.generateCode(currentClass, currentMethod, cv, mv);
+            value.generateCode(currentClass, currentMethod, cv, mv, null, null);
             TypeTree.widen(mv, value.getResultType(), getResultType()); // right value must be converted to type of variable
             mv.visitFieldInsn(Opcodes.PUTFIELD, owner, name, dscp.getDescriptor());
         }

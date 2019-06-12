@@ -1,6 +1,7 @@
 package semantic.syntaxTree.expression.operation.unary;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.descriptor.DSCP;
@@ -37,8 +38,8 @@ public class Cast extends Expression {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
-        operand.generateCode(currentClass, currentMethod, cv, mv);
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
+        operand.generateCode(currentClass, currentMethod, cv, mv, null, null);
         try {
             // maybe a implicit (widen) cast is enough
             TypeTree.widen(mv, operand.getResultType(), getResultType());

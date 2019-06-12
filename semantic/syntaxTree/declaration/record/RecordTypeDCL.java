@@ -1,9 +1,6 @@
 package semantic.syntaxTree.declaration.record;
 
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.*;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
 import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
@@ -26,7 +23,7 @@ public class RecordTypeDCL extends Declaration {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         classWriter.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC | Opcodes.ACC_SUPER, getName(), null, "java/lang/Object", null);
 
@@ -42,7 +39,7 @@ public class RecordTypeDCL extends Declaration {
                 fieldDCL = new SimpleFieldDCL(getName(), field.getName(), field.getBaseType(), field.isConstant(),
                         field.getDefaultValue() != null, field.isStatic());
             }
-            fieldDCL.generateCode(null, null, classWriter, null);
+            fieldDCL.generateCode(null, null, classWriter, null, null, null);
         }
 
         // Constructor of record
@@ -53,7 +50,7 @@ public class RecordTypeDCL extends Declaration {
         for (Field field : fields) {
             if (field.getDefaultValue() != null) {
                 methodVisitor.visitVarInsn(Opcodes.ALOAD, 0); // load "this"
-                field.getDefaultValue().generateCode(null, null, classWriter, methodVisitor);
+                field.getDefaultValue().generateCode(null, null, classWriter, methodVisitor, null, null);
                 TypeTree.widen(mv, field.getDefaultValue().getResultType(), field.getType()); // right value must be converted to type of variable
                 methodVisitor.visitFieldInsn(Opcodes.PUTFIELD, getName(), field.getName(), field.getDescriptor());
             }

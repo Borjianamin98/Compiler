@@ -1,6 +1,7 @@
 package semantic.syntaxTree.statement;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Utility;
@@ -28,10 +29,10 @@ public class PrintFunction extends Statement {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
         if (value != null) {
-            value.generateCode(currentClass, currentMethod, cv, mv);
+            value.generateCode(currentClass, currentMethod, cv, mv, null, null);
             if (value.getResultType().isPrimitive())
                 mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println",
                         "(" + Utility.getPrimitiveTypeName(value.getResultType()) + ")V", false);

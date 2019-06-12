@@ -1,6 +1,7 @@
 package semantic.syntaxTree.expression.operation.arithmetic;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
@@ -40,11 +41,11 @@ public class Arithmetic extends BinaryOperation {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
-        getFirstOperand().generateCode(currentClass, currentMethod, cv, mv);
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
+        getFirstOperand().generateCode(currentClass, currentMethod, cv, mv, null, null);
         TypeTree.widen(mv, getFirstOperand().getResultType(), getResultType());
 
-        getSecondOperand().generateCode(currentClass, currentMethod, cv, mv);
+        getSecondOperand().generateCode(currentClass, currentMethod, cv, mv, null, null);
         TypeTree.widen(mv, getSecondOperand().getResultType(), getResultType());
 
         mv.visitInsn(Utility.getOpcode(getResultType(), mainOpcode, false));

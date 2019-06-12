@@ -1,6 +1,7 @@
 package semantic.syntaxTree.declaration.method;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Display;
@@ -60,7 +61,7 @@ public class MethodDCL extends Declaration {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         SymbolTable top = Display.top();
         Optional<DSCP> fetchedDSCP = Display.find(getName());
         MethodDSCP methodDSCP;
@@ -95,7 +96,7 @@ public class MethodDCL extends Declaration {
                     argDCL = new ArrayDCL(argument.getName(), argument.getBaseType(), argument.getDimensions(), false, true);
                 else
                     argDCL = new VariableDCL(argument.getName(), argument.getBaseType(), false, true);
-                argDCL.generateCode(currentClass, this, cv, mv);
+                argDCL.generateCode(currentClass, this, cv, mv, null, null);
             }
         }
 
@@ -103,17 +104,11 @@ public class MethodDCL extends Declaration {
         boolean hasReturnStatement = false;
         if (body != null) {
             for (BlockCode blockCode : body.getBlockCodes()) {
-                if (blockCode instanceof BreakStatement)
-                    throw new RuntimeException("Break outside of loop");
-                else if (blockCode instanceof ContinueStatement)
-                    throw new RuntimeException("Continue outside of loop");
-                else {
-                    if (hasReturnStatement) // code after return statement is useless
-                        throw new RuntimeException("Unreachable statement after return of function");
-                    if (blockCode instanceof ReturnStatement)
-                        hasReturnStatement = true;
-                    blockCode.generateCode(currentClass, this, cv, methodVisitor);
-                }
+                if (hasReturnStatement) // code after return statement is useless
+                    throw new RuntimeException("Unreachable statement after return of function");
+                if (blockCode instanceof ReturnStatement)
+                    hasReturnStatement = true;
+                blockCode.generateCode(currentClass, this, cv, methodVisitor, breakLabel, continueLabel);
             }
         }
         if (!hasReturnStatement)

@@ -1,6 +1,7 @@
 package semantic.syntaxTree.expression.instance;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.Utility;
@@ -55,12 +56,12 @@ public class NewArrayInstruction extends Expression {
     }
 
     @Override
-    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv) {
+    public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         if (dimensions == null || dimensions.size() == 0)
             throw new RuntimeException("Array declaration must contain at least one dimension");
 
         for (Expression dim : dimensions) {
-            dim.generateCode(currentClass, currentMethod, cv, mv);
+            dim.generateCode(currentClass, currentMethod, cv, mv, null, null);
             if (dim.getResultType().getTypeCode() != TypeTree.INTEGER_DSCP.getTypeCode())
                 throw new RuntimeException("Dimension of array must be integer type");
         }
