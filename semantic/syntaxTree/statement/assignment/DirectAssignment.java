@@ -10,7 +10,7 @@ import semantic.syntaxTree.program.ClassDCL;
 
 public class DirectAssignment extends Assignment {
     public DirectAssignment(Variable variable, Expression value) {
-        super(variable, value);
+        super("=", variable, value);
     }
 
     @Override

@@ -33,4 +33,9 @@ public class BooleanConst extends Expression {
         else
             mv.visitInsn(Opcodes.ICONST_0);
     }
+
+    @Override
+    public String getCodeRepresentation() {
+        return String.valueOf(value);
+    }
 }

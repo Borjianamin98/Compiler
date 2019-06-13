@@ -50,4 +50,10 @@ public class Arithmetic extends BinaryOperation {
 
         mv.visitInsn(Utility.getOpcode(getResultType(), mainOpcode, false));
     }
+
+    @Override
+    public String getCodeRepresentation() {
+        return "(" + getFirstOperand().getCodeRepresentation() + " " + getArithmeticSign() + " " +
+                getSecondOperand().getCodeRepresentation() + ")";
+    }
 }

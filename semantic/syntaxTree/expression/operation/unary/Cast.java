@@ -44,4 +44,9 @@ public class Cast extends Expression {
             TypeTree.narrow(mv, operand.getResultType(), getResultType());
         }
     }
+
+    @Override
+    public String getCodeRepresentation() {
+        return "(" + getResultType().getConventionalName() + ")(" + operand.getCodeRepresentation() + ")";
+    }
 }

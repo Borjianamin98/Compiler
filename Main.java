@@ -35,10 +35,11 @@ public class Main implements Opcodes {
     private static void parseInput(ComplexSymbolFactory symbolFactory) throws IOException {
         Parser parser = new Parser(new LexicalAnalyzer(new FileReader("test.txt"), symbolFactory), symbolFactory);
         try {
-            parser.debug_parse();
+            parser.parse();
 
             ClassDCL clazz = Parser.finalResult;
             clazz.generateCode(null, null, null, null, null, null);
+            System.out.println("Code compiled successfully");
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -13,7 +13,7 @@ import semantic.typeTree.TypeTree;
 public class NotEqual extends Relational {
 
     public NotEqual(Expression firstOperand, Expression secondOperand) {
-        super(firstOperand, secondOperand);
+        super("!=", firstOperand, secondOperand);
     }
 
     @Override

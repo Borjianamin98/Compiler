@@ -38,4 +38,9 @@ public class Not extends Expression {
 
         mv.visitLabel(outLabel);
     }
+
+    @Override
+    public String getCodeRepresentation() {
+        return "not(" + operand.getCodeRepresentation() + ")";
+    }
 }

@@ -25,4 +25,9 @@ public class CharConst extends Expression {
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         mv.visitLdcInsn((int) value);
     }
+
+    @Override
+    public String getCodeRepresentation() {
+        return String.valueOf(value);
+    }
 }

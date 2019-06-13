@@ -1,5 +1,6 @@
 package semantic.syntaxTree.declaration.record;
 
+import exception.DuplicateDeclarationException;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -10,14 +11,14 @@ import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.hastype.ArrayDSCP;
 import semantic.symbolTable.descriptor.hastype.FieldDSCP;
+import semantic.symbolTable.descriptor.hastype.VariableDSCP;
 import semantic.symbolTable.descriptor.type.ArrayTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
-import semantic.syntaxTree.ClassCode;
 import semantic.syntaxTree.declaration.Declaration;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.program.ClassDCL;
 
-import java.util.Optional;
+import java.util.Collections;
 
 public class ArrayFieldDCL extends Declaration {
     private String owner;
@@ -57,7 +58,7 @@ public class ArrayFieldDCL extends Declaration {
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         SymbolTable top = Display.top();
         if (top.contains(getName()))
-            throw new RuntimeException(getName() + " declared more than one time");
+            throw new DuplicateDeclarationException(getName());
         if (dimensions <= 0)
             throw new RuntimeException("Filed array declaration must contains at least one dimension");
 
@@ -66,17 +67,37 @@ public class ArrayFieldDCL extends Declaration {
         access |= isConstant() ? Opcodes.ACC_FINAL : 0;
         access |= isStatic() ? Opcodes.ACC_STATIC : 0;
         cv.visitField(access, getName(), getDescriptor(), null, null).visitEnd();
+
+        // it's type will set after creating all of it's child DSCP
+        String finalName = getName() + String.join("", Collections.nCopies(dimensions, "[]"));
+        FieldDSCP fieldDSCP = new FieldDSCP(owner, finalName, null, isConstant(), initialized);
+
+        // generate child DSCP
         TypeDSCP lastDimensionType = getTypeDSCP();
         String lastDSCPName = getName();
         for (int i = 0; i <= dimensions - 1; i++) {
             ArrayTypeDSCP arrayTypeDSCP = (ArrayTypeDSCP) lastDimensionType;
             DSCP descriptor = new ArrayDSCP(lastDSCPName, arrayTypeDSCP, arrayTypeDSCP.getInternalType(), baseTypeDSCP,
-                    i == 0 ? top.getFreeAddress() : -1, false, initialized);
+                    fieldDSCP, i == 0 ? top.getFreeAddress() : -1, false, initialized);
             top.addSymbol(descriptor.getName(), descriptor);
             lastDimensionType = arrayTypeDSCP.getInternalType();
             lastDSCPName = lastDSCPName + "[]";
         }
-        FieldDSCP fieldDSCP = new FieldDSCP(owner, lastDSCPName, lastDimensionType, isConstant(), initialized);
+
+        fieldDSCP.setType(lastDimensionType);
         top.addSymbol(lastDSCPName, fieldDSCP);
+    }
+
+    @Override
+    public String getCodeRepresentation() {
+        StringBuilder represent = new StringBuilder();
+        if (isConstant())
+            represent.append("const ");
+        represent.append(Utility.getConvetionalRepresent(type));
+        for (int i = 0; i < dimensions; i++) {
+            represent.append("[]");
+        }
+        represent.append(" ").append(getName());
+        return represent.toString();
     }
 }

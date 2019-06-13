@@ -13,7 +13,7 @@ import semantic.typeTree.TypeTree;
 public class Less extends Relational {
 
     public Less(Expression firstOperand, Expression secondOperand) {
-        super(firstOperand, secondOperand);
+        super("<", firstOperand, secondOperand);
     }
 
     @Override

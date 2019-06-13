@@ -32,4 +32,9 @@ public class IntegerConst extends Expression {
         else
             mv.visitLdcInsn(value);
     }
+
+    @Override
+    public String getCodeRepresentation() {
+        return String.valueOf(value);
+    }
 }

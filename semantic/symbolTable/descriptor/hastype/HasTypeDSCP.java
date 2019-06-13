@@ -28,6 +28,10 @@ public class HasTypeDSCP extends DSCP {
         return type;
     }
 
+    public void setType(TypeDSCP type) {
+        this.type = type;
+    }
+
     public boolean isInitialized() {
         return initialized;
     }

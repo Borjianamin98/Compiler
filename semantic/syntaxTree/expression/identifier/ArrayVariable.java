@@ -99,4 +99,9 @@ public class ArrayVariable extends Variable {
         }
         return dscp;
     }
+
+    @Override
+    public String getCodeRepresentation() {
+        return parent.getCodeRepresentation() + "[" + requestedDimension.getCodeRepresentation() + "]";
+    }
 }

@@ -27,7 +27,7 @@ public class NewRecordInstruction extends Expression {
         if (typeDSCP == null) {
             TypeDSCP fetchedDSCP = Display.getType(type);
             if (!(fetchedDSCP instanceof RecordTypeDSCP))
-                throw new RuntimeException("Type " + type + " is not declared");
+                throw new RuntimeException("Type '" + fetchedDSCP.getConventionalName() + "' is not a record");
             typeDSCP = (RecordTypeDSCP) fetchedDSCP;
         }
         return typeDSCP;
@@ -49,4 +49,11 @@ public class NewRecordInstruction extends Expression {
         mv.visitInsn(Opcodes.DUP);
         mv.visitMethodInsn(Opcodes.INVOKESPECIAL, type, "<init>", "()V", false);
     }
+
+    @Override
+    public String getCodeRepresentation() {
+        return "new " + Utility.getConvetionalRepresent(type);
+    }
+
+
 }

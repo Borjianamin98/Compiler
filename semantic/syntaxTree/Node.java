@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public abstract class Node {
+public abstract class Node implements HasRepresentation {
     public static String outputPath = "compile/";
 
     public static void init() {

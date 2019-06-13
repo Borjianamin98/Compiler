@@ -43,4 +43,8 @@ public class PrintFunction extends Statement {
         } else
             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "()V", false);
     }
+
+    public String getCodeRepresentation() {
+        return "println(" + value.getCodeRepresentation() + ")";
+    }
 }

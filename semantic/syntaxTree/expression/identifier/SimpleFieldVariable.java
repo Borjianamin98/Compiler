@@ -1,5 +1,6 @@
 package semantic.syntaxTree.expression.identifier;
 
+import exception.DuplicateDeclarationException;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -65,7 +66,7 @@ public class SimpleFieldVariable extends Variable {
         if (dscp == null) {
             Optional<DSCP> fetchedDSCP = Display.find(getName());
             if (!fetchedDSCP.isPresent())
-                throw new RuntimeException(getName() + " is not declared");
+                throw new DuplicateDeclarationException(getName());
             if (fetchedDSCP.get() instanceof ArrayDSCP || fetchedDSCP.get() instanceof FieldDSCP) {
                 dscp = (HasTypeDSCP) fetchedDSCP.get();
             } else
@@ -78,4 +79,8 @@ public class SimpleFieldVariable extends Variable {
         return name;
     }
 
+    @Override
+    public String getCodeRepresentation() {
+        return name;
+    }
 }

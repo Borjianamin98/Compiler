@@ -1,5 +1,6 @@
 package semantic.syntaxTree.declaration.method;
 
+import exception.DuplicateDeclarationException;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -61,7 +62,7 @@ public class MethodDCL extends Declaration implements ClassCode {
         MethodDSCP methodDSCP;
         if (fetchedDSCP.isPresent()) {
             if (!(fetchedDSCP.get() instanceof MethodDSCP))
-                throw new RuntimeException(getName() + " declared more than one time");
+                throw new DuplicateDeclarationException(getName());
             methodDSCP = (MethodDSCP) fetchedDSCP.get();
         } else {
             methodDSCP = new MethodDSCP(owner, getName(), getReturnType());
@@ -135,10 +136,19 @@ public class MethodDCL extends Declaration implements ClassCode {
             }
         }
         if (!hasReturnStatement)
-            throw new RuntimeException("Missing return statement");
+            throw new RuntimeException("Missing return statement: " + getName());
         Display.pop();
 
         methodVisitor.visitMaxs(0, 0);
         methodVisitor.visitEnd();
+    }
+
+    @Override
+    public String getCodeRepresentation() {
+        return "function " +
+                (signature.hasBody() ? "" : "prototype ") +
+                Utility.getConvetionalRepresent(returnType) +
+                " " +
+                signature.getCodeRepresentation();
     }
 }

@@ -3,11 +3,11 @@ package semantic.typeTree;
 
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import semantic.symbolTable.Display;
 import semantic.symbolTable.descriptor.type.SimpleTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TypeTree {
     /**
@@ -225,6 +225,4 @@ public class TypeTree {
             throwIncompatibleTypeException(type1, type2);
         throw new AssertionError("doesn't happen");
     }
-
-
 }

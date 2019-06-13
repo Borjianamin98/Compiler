@@ -51,4 +51,11 @@ public class ReturnStatement extends Statement {
             mv.visitInsn(Opcodes.RETURN);
         }
     }
+
+    public String getCodeRepresentation() {
+        if (value != null)
+            return "return " + value.getCodeRepresentation();
+        else
+            return "return";
+    }
 }

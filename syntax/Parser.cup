@@ -47,7 +47,7 @@ terminal                                EQUAL, NOT_EQUAL, LESS_EQUAL, LESS, GREA
 terminal                                UNARY_MINUS;
 terminal                                LPAREN, RPAREN, LBRACKET, RBRACKET, LRBRACKET;
 terminal String                         IDENTIFIER;
-terminal                                RECORD, FUNCTION, EXTERN, NEW;
+terminal                                RECORD, FUNCTION, NEW;
 terminal                                INT, LONG, FLOAT, DOUBLE, BOOL, CHAR, STRING, VOID, AUTO;
 terminal                                DOT, COMMA, COLON;
 terminal                                PLUSPLUS, MINUSMINUS, PLUSPLUS_POSTFIX, MINUSMINUS_POSTFIX;
@@ -65,6 +65,7 @@ terminal Character                      CHAR_CONST;
 terminal String                         STRING_CONST;
 terminal                                CAST_PREC;
 terminal                                PRINTLN, INPUT;
+//terminal                                EXTERN;
 terminal                                START;
 
 /* Non terminals */
@@ -85,7 +86,7 @@ non terminal Statement                  for_init_part;
 non terminal List<VariableDCLFactory>   const_var_dcl_p, var_dcl_p, var_dcl, var_declrations;
 non terminal ClassCode                  struct_dcl;
 non terminal ClassCode                  function_dcl;
-non terminal                            extern_dcl;
+//non terminal                            extern_dcl;
 non terminal Signature                  func_signature;
 non terminal List<Argument>             arguments;
 non terminal Integer                    array_part_no_val;
@@ -123,7 +124,7 @@ begining            ::= {: Parser.semanticStack.addLast(new ClassDCL("Tester"));
                         {: finalResult = (ClassDCL) Parser.semanticStack.removeLast(); :}
                         ;
 
-program             ::= class_code program
+program             ::= program class_code
                         |
                         class_code
                         ;
@@ -151,7 +152,7 @@ class_code             ::= var_dcl:fieldsFactory
 //                      extern_dcl
                         ;
 
-extern_dcl          ::= EXTERN typeName IDENTIFIER SEMICOLON;
+//extern_dcl          ::= EXTERN typeName IDENTIFIER SEMICOLON;
 
 function_dcl        ::= FUNCTION typeName:returnType func_signature:signature
                         {: RESULT = new MethodDCL("Tester", signature, returnType, true); :}
@@ -176,7 +177,7 @@ func_signature       ::= IDENTIFIER:name LPAREN arguments:args RPAREN SEMICOLON
                         {: RESULT = new Signature(name, new ArrayList<Argument>(), body); :}
                         ;
 
-arguments           ::= typeName:baseType IDENTIFIER:name array_part_no_val:dimensions COMMA arguments:list
+arguments           ::= arguments:list COMMA typeName:baseType IDENTIFIER:name array_part_no_val:dimensions
                         {:
                         RESULT = list;
                         RESULT.add(new Argument(name, baseType, dimensions));
@@ -205,7 +206,7 @@ struct_dcl          ::= RECORD IDENTIFIER:name BEGIN var_declrations:fieldsFacto
                         :}
                         ;
 
-var_declrations     ::= var_dcl:other var_declrations:list
+var_declrations     ::= var_declrations:list var_dcl:other
                         {:
                         if (list == null)
                             list = new ArrayList<VariableDCLFactory>();
@@ -268,7 +269,7 @@ var_dcl             ::= CONST typeName:typeName array_part_no_val:dimensions
                         :}
                         ;
 
-const_var_dcl_p     ::= IDENTIFIER:variableName DIRECT_ASSIGN expr:e COMMA const_var_dcl_p:list
+const_var_dcl_p     ::= const_var_dcl_p:list COMMA IDENTIFIER:variableName DIRECT_ASSIGN expr:e
                         {:
                         if (list == null)
                             list = new ArrayList<VariableDCLFactory>();
@@ -286,7 +287,7 @@ const_var_dcl_p     ::= IDENTIFIER:variableName DIRECT_ASSIGN expr:e COMMA const
                         ;
 
 
-var_dcl_p           ::= IDENTIFIER:variableName COMMA var_dcl_p:list
+var_dcl_p           ::= var_dcl_p:list COMMA IDENTIFIER:variableName
                         {:
                         if (list == null)
                             list = new ArrayList<VariableDCLFactory>();
@@ -302,7 +303,7 @@ var_dcl_p           ::= IDENTIFIER:variableName COMMA var_dcl_p:list
                         RESULT.add(factory.copy().setVariableName(variableName));
                         :}
                         |
-                        IDENTIFIER:variableName DIRECT_ASSIGN expr:e COMMA var_dcl_p:list
+                        var_dcl_p:list COMMA IDENTIFIER:variableName DIRECT_ASSIGN expr:e
                         {:
                         if (list == null)
                             list = new ArrayList<VariableDCLFactory>();
@@ -433,7 +434,7 @@ parameters          ::= expr:e
                         RESULT.add(e);
                         :}
                         |
-                        expr:e COMMA parameters:list
+                        parameters:list COMMA expr:e
                         {:
                         list.add(e);
                         RESULT = list;
@@ -448,7 +449,7 @@ cond_stmt           ::= IF LPAREN expr:e RPAREN block:mainBody ELSE block:elseBo
                         |
                         SWITCH LPAREN expr:e RPAREN OF COLON
                         BEGIN case_part:cases DEFAULT COLON block:defaultBlock END
-                        {: RESULT = new Switch(e, cases, defaultBlock); :}
+                        {: RESULT = new Switch(e, cases, new DefaultCase(defaultBlock)); :}
                         |
                         SWITCH LPAREN expr:e RPAREN OF COLON
                         BEGIN case_part:cases END

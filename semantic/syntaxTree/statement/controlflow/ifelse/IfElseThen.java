@@ -60,4 +60,8 @@ public class IfElseThen extends Statement {
 
         mv.visitLabel(outLabel);
     }
+
+    public String getCodeRepresentation() {
+        return "if (" + condition.getCodeRepresentation() + ") begin ... end";
+    }
 }

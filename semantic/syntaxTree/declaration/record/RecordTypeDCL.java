@@ -1,5 +1,6 @@
 package semantic.syntaxTree.declaration.record;
 
+import exception.DuplicateDeclarationException;
 import org.objectweb.asm.*;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
@@ -66,9 +67,14 @@ public class RecordTypeDCL extends Declaration implements BlockCode, ClassCode {
 
         // Update symbol table
         if (Display.find(getName()).isPresent()) {
-            throw new RuntimeException(getName() + " declared more than one time");
+            throw new DuplicateDeclarationException(getName());
         }
         RecordTypeDSCP recordDSCP = new RecordTypeDSCP(getName(), 1, Display.pop());
         Display.addType(getName(), recordDSCP);
+    }
+
+    @Override
+    public String getCodeRepresentation() {
+        return "record" + " " + getName() + " begin ... end";
     }
 }

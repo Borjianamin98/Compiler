@@ -62,4 +62,9 @@ public class MemberVariable extends Variable {
         }
         return dscp;
     }
+
+    @Override
+    public String getCodeRepresentation() {
+        return parent.getCodeRepresentation() + "." + memberName;
+    }
 }

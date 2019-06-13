@@ -1,5 +1,6 @@
 package semantic.syntaxTree.declaration;
 
+import exception.DuplicateDeclarationException;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -9,6 +10,7 @@ import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.hastype.VariableDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
+import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
 
 import java.util.Optional;
@@ -36,11 +38,21 @@ public class VariableDCL extends Declaration {
         // otherwise this declaration shadows other declarations
         SymbolTable top = Display.top();
         if (top.contains(getName()))
-            throw new RuntimeException(getName() + " declared more than one time");
+            throw new DuplicateDeclarationException(getName());
 
         getTypeDSCP();
         VariableDSCP variableDSCP = new VariableDSCP(getName(), getTypeDSCP(), getTypeDSCP().getSize(),
                 top.getFreeAddress(), isConstant(), initialized);
         top.addSymbol(getName(), variableDSCP);
+    }
+
+    @Override
+    public String getCodeRepresentation() {
+        StringBuilder represent = new StringBuilder();
+        if (isConstant())
+            represent.append("const ");
+        represent.append(type).append(" ");
+        represent.append(getName());
+        return represent.toString();
     }
 }

@@ -11,17 +11,11 @@ import semantic.syntaxTree.program.ClassDCL;
 import semantic.syntaxTree.statement.controlflow.BreakStatement;
 import semantic.syntaxTree.statement.controlflow.ReturnStatement;
 
-public class Case extends Node {
-    private int number;
+public class DefaultCase extends Node {
     private Block block;
 
-    public Case(int number, Block block) {
-        this.number = number;
+    public DefaultCase(Block block) {
         this.block = block;
-    }
-
-    public int getNumber() {
-        return number;
     }
 
     public Block getBlock() {
@@ -39,6 +33,6 @@ public class Case extends Node {
     }
 
     public String getCodeRepresentation() {
-        return "case " + number + ": begin ... end";
+        return "default : begin ... end";
     }
 }

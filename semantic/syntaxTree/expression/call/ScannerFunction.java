@@ -60,28 +60,27 @@ public class ScannerFunction extends Expression implements BlockCode, Ignorable 
         if (!requestedTypeDSCP.isPrimitive() ||
                 requestedTypeDSCP.getTypeCode() == TypeTree.VOID_DSCP.getTypeCode() ||
                 requestedTypeDSCP.getTypeCode() == TypeTree.CHAR_DSCP.getTypeCode())
-            throw new RuntimeException("Input a non-primitive value is not possible: " + requestedTypeDSCP.getConventionalName());
+            throw new RuntimeException("Input a non-primitive type is not possible: " + requestedTypeDSCP.getConventionalName());
         return requestedTypeDSCP;
     }
 
     @Override
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
-        getResultType();
         // choose method name
         String scannerMethodName;
         if (requestLine)
             scannerMethodName = "nextLine";
-        else if (requestedTypeDSCP.getTypeCode() == TypeTree.INTEGER_DSCP.getTypeCode())
+        else if (getResultType().getTypeCode() == TypeTree.INTEGER_DSCP.getTypeCode())
             scannerMethodName = "nextInt";
-        else if (requestedTypeDSCP.getTypeCode() == TypeTree.BOOLEAN_DSCP.getTypeCode())
+        else if (getResultType().getTypeCode() == TypeTree.BOOLEAN_DSCP.getTypeCode())
             scannerMethodName = "nextBoolean";
-        else if (requestedTypeDSCP.getTypeCode() == TypeTree.LONG_DSCP.getTypeCode())
+        else if (getResultType().getTypeCode() == TypeTree.LONG_DSCP.getTypeCode())
             scannerMethodName = "nextLong";
-        else if (requestedTypeDSCP.getTypeCode() == TypeTree.FLOAT_DSCP.getTypeCode())
+        else if (getResultType().getTypeCode() == TypeTree.FLOAT_DSCP.getTypeCode())
             scannerMethodName = "nextFloat";
-        else if (requestedTypeDSCP.getTypeCode() == TypeTree.DOUBLE_DSCP.getTypeCode())
+        else if (getResultType().getTypeCode() == TypeTree.DOUBLE_DSCP.getTypeCode())
             scannerMethodName = "nextDouble";
-        else if (requestedTypeDSCP.getTypeCode() == TypeTree.STRING_DSCP.getTypeCode())
+        else if (getResultType().getTypeCode() == TypeTree.STRING_DSCP.getTypeCode())
             scannerMethodName = "next";
         else
             throw new AssertionError("doesn't happen");
@@ -97,5 +96,10 @@ public class ScannerFunction extends Expression implements BlockCode, Ignorable 
         if (ignoreResult) {
             mv.visitInsn(Opcodes.POP);
         }
+    }
+
+    @Override
+    public String getCodeRepresentation() {
+        return "input(" + requestedType + ")";
     }
 }

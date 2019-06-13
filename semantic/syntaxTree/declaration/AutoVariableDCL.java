@@ -1,5 +1,6 @@
 package semantic.syntaxTree.declaration;
 
+import exception.DuplicateDeclarationException;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -34,7 +35,7 @@ public class AutoVariableDCL extends Declaration {
         // otherwise this declaration shadows other declarations
         SymbolTable top = Display.top();
         if (top.contains(getName()))
-            throw new RuntimeException(getName() + " declared more than one time");
+            throw new DuplicateDeclarationException(getName());
 
         getTypeDSCP();
         Declaration variable;
@@ -50,5 +51,15 @@ public class AutoVariableDCL extends Declaration {
         }
         variable.generateCode(currentClass, currentMethod, cv, mv, null, null);
         new DirectAssignment(new SimpleLocalVariable(getName()), defaultValue).generateCode(currentClass, currentMethod, cv, mv, null, null);
+    }
+
+    @Override
+    public String getCodeRepresentation() {
+        StringBuilder represent = new StringBuilder();
+        if (isConstant())
+            represent.append("const ");
+        represent.append("auto ");
+        represent.append(getName());
+        return represent.toString();
     }
 }

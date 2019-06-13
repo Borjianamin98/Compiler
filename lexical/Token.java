@@ -22,7 +22,7 @@ public enum Token {
     _if(ParserSym.IF), _switch(ParserSym.SWITCH), _else(ParserSym.ELSE), _case(ParserSym.CASE), _default(ParserSym.DEFAULT),
     _of(ParserSym.OF), _begin(ParserSym.BEGIN), _end(ParserSym.END),
 //    _register(SubType.Reserved), _static(SubType.Reserved), _typedef(SubType.Reserved),
-    _extern(ParserSym.EXTERN),
+//    _extern(ParserSym.EXTERN),
 //    _goto(SubType.Reserved), _volatile(SubType.Reserved),
     _sizeof(ParserSym.SIZEOF),
     _continue(ParserSym.CONTINUE), _break(ParserSym.BREAK), _return(ParserSym.RETURN),

@@ -4,6 +4,7 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import semantic.symbolTable.Display;
+import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.type.SimpleTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
@@ -51,5 +52,10 @@ public class Sizeof extends Expression {
         } else
             size = Integer.BYTES; // a pointer/reference
         new IntegerConst(size).generateCode(currentClass, currentMethod, cv, mv, null, null);
+    }
+
+    @Override
+    public String getCodeRepresentation() {
+        return "sizeof(" + Utility.getConvetionalRepresent(typeName) + ")";
     }
 }

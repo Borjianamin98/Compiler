@@ -64,4 +64,14 @@ public class NewArrayInstruction extends Expression {
         }
         mv.visitMultiANewArrayInsn(getDescriptor(), dimensions.size());
     }
+
+    @Override
+    public String getCodeRepresentation() {
+        StringBuilder represent = new StringBuilder();
+        represent.append("new ").append(Utility.getConvetionalRepresent(type));
+        for (Expression dimension : dimensions) {
+            represent.append("[").append(dimension.getCodeRepresentation()).append("]");
+        }
+        return represent.toString();
+    }
 }

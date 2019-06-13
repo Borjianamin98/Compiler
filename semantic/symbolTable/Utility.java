@@ -25,7 +25,8 @@ public class Utility {
 
     /**
      * return prefix appropriate for a opcode of a type
-     * @param type type
+     *
+     * @param type       type
      * @param realReturn if true, return 'c' instead of 'i' for character and same for other types
      *                   purpose of this is because of reference to char array. fo some opcode like
      *                   castore, caload, ... we must use prefix 'c' instead of 'i'
@@ -49,9 +50,10 @@ public class Utility {
 
     /**
      * return opcode created by prefix + instruction + postfix
-     * @param prefix prefix of opcode
+     *
+     * @param prefix      prefix of opcode
      * @param instruction main instruction
-     * @param postfix postfix of opcode
+     * @param postfix     postfix of opcode
      * @return appropriate opcode
      * @throws RuntimeException if opcode not found
      */
@@ -59,15 +61,16 @@ public class Utility {
         try {
             return (int) Opcodes.class.getDeclaredField(prefix + instruction + postfix).get(null);
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException("Not found requested opcode");
+            throw new RuntimeException("Not found requested opcode: " + prefix + instruction + postfix);
         }
     }
 
     /**
      * return opcode created by prefix + instruction based on type
-     * @param type type of opcode
+     *
+     * @param type        type of opcode
      * @param instruction main instruction
-     * @param realReturn if true, return 'c' instead of 'i' for character and same for other types
+     * @param realReturn  if true, return 'c' instead of 'i' for character and same for other types
      * @return appropriate opcode
      * @throws RuntimeException if opcode not found
      */
@@ -75,7 +78,7 @@ public class Utility {
         try {
             return (int) Opcodes.class.getDeclaredField(getTypePrefix(type, realReturn) + instruction).get(null);
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException("Not found requested opcode");
+            throw new RuntimeException("Not found requested opcode: " + getTypePrefix(type, realReturn) + instruction);
         }
     }
 
@@ -83,6 +86,7 @@ public class Utility {
     /**
      * get a base type and add all type of [[..(type) to current symbol table
      * if they are not present
+     *
      * @param baseType   base type of array
      * @param dimensions count of dimensions for type creating
      * @return last dimension which is created: ([[.. : length of it is dimension)(type)
@@ -105,18 +109,51 @@ public class Utility {
 
     /**
      * get primitive type name without prefix which is added to them (TypeTree.typePrefix)
+     *
      * @param type type
      * @return descriptor of primitive type
      * @throws RuntimeException if type is not primitive
      */
     public static String getPrimitiveTypeName(TypeDSCP type) {
         if (!type.isPrimitive())
-            throw new RuntimeException(type.getName() + " is not primitive");
+            throw new RuntimeException("'" + type.getName() + "' is not primitive");
         return type.getName().replace(TypeTree.typePrefix, "");
     }
 
     /**
+     * get a conventional represent for a type string
+     * it is used for creating code representation
+     *
+     * @param typeName type name
+     * @return conventional representation
+     */
+    public static String getConvetionalRepresent(String typeName) {
+        switch ((typeName)) {
+            case TypeTree.INTEGER_NAME:
+                return "int";
+            case TypeTree.BOOLEAN_NAME:
+                return "bool";
+            case TypeTree.LONG_NAME:
+                return "long";
+            case TypeTree.FLOAT_NAME:
+                return "float";
+            case TypeTree.DOUBLE_NAME:
+                return "double";
+            case TypeTree.CHAR_NAME:
+                return "char";
+            case TypeTree.STRING_NAME:
+                return "string";
+            case TypeTree.VOID_NAME:
+                return "void";
+            default:
+                return typeName; // reference or user defined type
+        }
+    }
+
+
+    /**
      * create descriptor of a type with requested dimensions
+     *
      * @param type       type
      * @param dimensions dimensions
      * @return descriptor of requested type
@@ -267,6 +304,7 @@ public class Utility {
 
     /**
      * check if a type is reference or not. a reference type can contains null value
+     *
      * @param type type
      * @return true if type is a reference, otherwise false
      */

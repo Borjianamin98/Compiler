@@ -36,4 +36,9 @@ public class Neg extends Expression {
         operand.generateCode(currentClass, currentMethod, cv, mv, null, null);
         mv.visitInsn(Utility.getOpcode(getResultType(), "NEG", false));
     }
+
+    @Override
+    public String getCodeRepresentation() {
+        return "-(" + operand.getCodeRepresentation() + ")";
+    }
 }

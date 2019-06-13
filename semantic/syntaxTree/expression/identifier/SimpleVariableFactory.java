@@ -55,9 +55,14 @@ public class SimpleVariableFactory extends Variable {
             Optional<DSCP> fetchedDSCP = Display.find(getName());
             if (!fetchedDSCP.isPresent())
                 throw new RuntimeException(getName() + " is not declared");
-            if (fetchedDSCP.get() instanceof ArrayDSCP || fetchedDSCP.get() instanceof FieldDSCP) {
+            DSCP dscp = fetchedDSCP.get();
+            // replace array DSCP with its base type DSCP
+            if (dscp instanceof ArrayDSCP)
+                dscp = ((ArrayDSCP) dscp).getBaseDSCP();
+
+            if (dscp instanceof FieldDSCP) {
                 internalVariable = new SimpleFieldVariable(name, isStatic);
-            } else if (fetchedDSCP.get() instanceof VariableDSCP) {
+            } else if (dscp instanceof VariableDSCP) {
                 internalVariable = new SimpleLocalVariable(name);
             } else
                 throw new RuntimeException(getName() + " is not a variable/field");
@@ -69,4 +74,8 @@ public class SimpleVariableFactory extends Variable {
         return name;
     }
 
+    @Override
+    public String getCodeRepresentation() {
+        return name;
+    }
 }

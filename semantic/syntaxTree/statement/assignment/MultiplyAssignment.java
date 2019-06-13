@@ -11,7 +11,7 @@ import semantic.syntaxTree.program.ClassDCL;
 
 public class MultiplyAssignment extends Assignment {
     public MultiplyAssignment(Variable variable, Expression value) {
-        super(variable, value);
+        super("*=", variable, value);
     }
 
     @Override

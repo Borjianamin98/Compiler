@@ -24,4 +24,9 @@ public class MinusMinusPrefix extends OneIncrementAndDecrement {
         new DirectAssignment(getVariable(), new Minus(getVariable(), oneConst)).generateCode(currentClass, currentMethod, cv, mv, null, null);
         getVariable().generateCode(currentClass, currentMethod, cv, mv, null, null);
     }
+
+    @Override
+    public String getCodeRepresentation() {
+        return "--( " + getVariable().getCodeRepresentation() + " )";
+    }
 }

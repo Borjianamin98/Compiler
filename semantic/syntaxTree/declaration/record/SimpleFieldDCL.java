@@ -1,5 +1,6 @@
 package semantic.syntaxTree.declaration.record;
 
+import exception.DuplicateDeclarationException;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -13,6 +14,7 @@ import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.ClassCode;
 import semantic.syntaxTree.declaration.Declaration;
 import semantic.syntaxTree.declaration.method.MethodDCL;
+import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
 
 import java.util.Optional;
@@ -52,7 +54,7 @@ public class SimpleFieldDCL extends Declaration {
         // otherwise this declaration shadows other declarations
         SymbolTable top = Display.top();
         if (top.contains(getName()))
-            throw new RuntimeException(getName() + " declared more than one time");
+            throw new DuplicateDeclarationException(getName());
 
         getTypeDSCP();
         int access = Opcodes.ACC_PUBLIC;
@@ -61,5 +63,15 @@ public class SimpleFieldDCL extends Declaration {
         cv.visitField(access, getName(), getDescriptor(), null, null).visitEnd();
         FieldDSCP fieldDSCP = new FieldDSCP(owner, getName(), getTypeDSCP(), isConstant(), initialized);
         top.addSymbol(getName(), fieldDSCP);
+    }
+
+    @Override
+    public String getCodeRepresentation() {
+        StringBuilder represent = new StringBuilder();
+        if (isConstant())
+            represent.append("const ");
+        represent.append(Utility.getConvetionalRepresent(type)).append(" ");
+        represent.append(getName());
+        return represent.toString();
     }
 }

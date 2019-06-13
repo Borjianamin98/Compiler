@@ -25,4 +25,9 @@ public class StringConst extends Expression {
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         mv.visitLdcInsn(value);
     }
+
+    @Override
+    public String getCodeRepresentation() {
+        return value;
+    }
 }

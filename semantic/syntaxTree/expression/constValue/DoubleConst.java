@@ -29,4 +29,9 @@ public class DoubleConst extends Expression {
         else
             mv.visitLdcInsn(value);
     }
+
+    @Override
+    public String getCodeRepresentation() {
+        return String.valueOf(value);
+    }
 }

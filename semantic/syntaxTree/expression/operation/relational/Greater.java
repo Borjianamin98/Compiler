@@ -13,7 +13,7 @@ import semantic.typeTree.TypeTree;
 public class Greater extends Relational {
 
     public Greater(Expression firstOperand, Expression secondOperand) {
-        super(firstOperand, secondOperand);
+        super(">", firstOperand, secondOperand);
     }
 
     @Override

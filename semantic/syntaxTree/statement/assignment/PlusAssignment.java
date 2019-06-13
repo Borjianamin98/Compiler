@@ -11,7 +11,7 @@ import semantic.syntaxTree.program.ClassDCL;
 
 public class PlusAssignment extends Assignment {
     public PlusAssignment(Variable variable, Expression value) {
-        super(variable, value);
+        super("+=", variable, value);
     }
 
     @Override

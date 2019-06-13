@@ -16,4 +16,9 @@ public class BreakStatement extends Statement {
         else
             throw new RuntimeException("Break outside of loop or switch");
     }
+
+    @Override
+    public String getCodeRepresentation() {
+        return "break";
+    }
 }

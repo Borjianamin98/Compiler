@@ -119,4 +119,8 @@ public class Foreach extends Statement {
         mv.visitJumpInsn(Opcodes.GOTO, conditionLabel);
         mv.visitLabel(outLabel);
     }
+
+    public String getCodeRepresentation() {
+        return "foreach (" + identifierName + " in " + iterator.getCodeRepresentation() + ") begin ... end";
+    }
 }

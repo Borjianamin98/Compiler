@@ -50,4 +50,10 @@ public class Bitwise extends BinaryOperation {
 
         mv.visitInsn(Utility.getOpcode(getResultType(), mainOpcode, false));
     }
+
+    @Override
+    public String getCodeRepresentation() {
+        return "(" + getFirstOperand().getCodeRepresentation() + " " + bitwiseSign + " " +
+                getSecondOperand().getCodeRepresentation() + ")";
+    }
 }
