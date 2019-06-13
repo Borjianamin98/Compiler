@@ -119,7 +119,7 @@ precedence nonassoc MINUSMINUS_POSTFIX, PLUSPLUS_POSTFIX;
 
 /* The grammar */
 start with begining;
-begining            ::= {: Parser.semanticStack.addLast(new ClassDCL("Tester")); :}
+begining            ::= {: Parser.semanticStack.addLast(new ClassDCL(TypeTree.DEFAULT_CLASS_NAME)); :}
                         program
                         {: finalResult = (ClassDCL) Parser.semanticStack.removeLast(); :}
                         ;
@@ -155,13 +155,13 @@ class_code             ::= var_dcl:fieldsFactory
 //extern_dcl          ::= EXTERN typeName IDENTIFIER SEMICOLON;
 
 function_dcl        ::= FUNCTION typeName:returnType func_signature:signature
-                        {: RESULT = new MethodDCL("Tester", signature, returnType, true); :}
+                        {: RESULT = new MethodDCL(signature, returnType, true); :}
                         |
                         FUNCTION VOID func_signature:signature
-                        {: RESULT = new MethodDCL("Tester", signature, TypeTree.VOID_NAME, true); :}
+                        {: RESULT = new MethodDCL(signature, TypeTree.VOID_NAME, true); :}
                         |
                         FUNCTION VOID START LPAREN RPAREN block:body
-                        {: RESULT = new StartMethodDCL("Tester", body); :}
+                        {: RESULT = new StartMethodDCL(body); :}
                         ;
 
 func_signature       ::= IDENTIFIER:name LPAREN arguments:args RPAREN SEMICOLON

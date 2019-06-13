@@ -49,6 +49,8 @@ public class TypeTree {
     public static final String SCANNER_FIELD_NAME = "field$scanner";
     public static final String SCANNER_JAVA_TYPE = "Ljava/util/Scanner;";
 
+    public static final String DEFAULT_CLASS_NAME = "Compiled";
+
     public static void init() {
         wideningTree.put(DOUBLE_DSCP, new TypeNode(null, DOUBLE_DSCP, 0));
         wideningTree.put(FLOAT_DSCP, new TypeNode(wideningTree.get(DOUBLE_DSCP), FLOAT_DSCP));

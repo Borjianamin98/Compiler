@@ -15,8 +15,8 @@ public class StartMethodDCL extends MethodDCL {
         signature = new Signature("main", arguments, null);
     }
 
-    public StartMethodDCL(String owner, Block body) {
-        super(owner, signature,TypeTree.VOID_NAME, true);
+    public StartMethodDCL(Block body) {
+        super(signature,TypeTree.VOID_NAME, true);
         signature.setBody(body);
     }
 }

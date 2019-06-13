@@ -5,6 +5,7 @@
 
 package syntax;
 
+import java_cup.runtime.*;
 import semantic.syntaxTree.*;
 import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.*;
@@ -32,6 +33,7 @@ import semantic.symbolTable.typeTree.TypeTree;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
   */
@@ -966,7 +968,7 @@ class CUP$Parser$actions {
           case 1: // NT$0 ::= 
             {
               Object RESULT =null;
- Parser.semanticStack.addLast(new ClassDCL("Tester")); 
+ Parser.semanticStack.addLast(new ClassDCL(TypeTree.DEFAULT_CLASS_NAME)); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("NT$0",29, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1056,7 +1058,7 @@ class CUP$Parser$actions {
 		int signatureleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int signatureright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Signature signature = (Signature)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new MethodDCL("Tester", signature, returnType, true); 
+		 RESULT = new MethodDCL(signature, returnType, true); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("function_dcl",21, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1068,7 +1070,7 @@ class CUP$Parser$actions {
 		int signatureleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int signatureright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Signature signature = (Signature)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new MethodDCL("Tester", signature, TypeTree.VOID_NAME, true); 
+		 RESULT = new MethodDCL(signature, TypeTree.VOID_NAME, true); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("function_dcl",21, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1080,7 +1082,7 @@ class CUP$Parser$actions {
 		int bodyleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int bodyright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Block body = (Block)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new StartMethodDCL("Tester", body); 
+		 RESULT = new StartMethodDCL(body); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("function_dcl",21, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-5)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;

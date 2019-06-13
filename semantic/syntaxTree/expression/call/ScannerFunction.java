@@ -94,6 +94,6 @@ public class ScannerFunction extends Expression implements BlockCode, Ignorable 
 
     @Override
     public String getCodeRepresentation() {
-        return "input(" + requestedType + ")";
+        return "input(" + Utility.getConvectionalRepresent(requestedType) + ")";
     }
 }

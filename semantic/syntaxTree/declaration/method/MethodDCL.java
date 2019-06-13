@@ -23,15 +23,13 @@ import semantic.symbolTable.typeTree.TypeTree;
 import java.util.Optional;
 
 public class MethodDCL extends Declaration implements ClassCode {
-    private String owner;
     private Signature signature;
     private String returnType;
     private TypeDSCP returnTypeDSCP;
     private boolean isStatic;
 
-    public MethodDCL(String owner, Signature signature, String returnType, boolean isStatic) {
+    public MethodDCL(Signature signature, String returnType, boolean isStatic) {
         super(signature.getName(), false);
-        this.owner = owner;
         this.signature = signature;
         this.isStatic = isStatic;
         this.returnType = returnType;
@@ -39,10 +37,6 @@ public class MethodDCL extends Declaration implements ClassCode {
 
     public boolean hasReturn() {
         return getReturnType().getTypeCode() != TypeTree.VOID_DSCP.getTypeCode();
-    }
-
-    public String getOwner() {
-        return owner;
     }
 
     public String getDescriptor() {
@@ -65,7 +59,7 @@ public class MethodDCL extends Declaration implements ClassCode {
                 throw new DuplicateDeclarationException(getName());
             methodDSCP = (MethodDSCP) fetchedDSCP.get();
         } else {
-            methodDSCP = new MethodDSCP(owner, getName(), getReturnType());
+            methodDSCP = new MethodDSCP(currentClass.getName(), getName(), getReturnType());
             top.addSymbol(getName(), methodDSCP);
         }
 
