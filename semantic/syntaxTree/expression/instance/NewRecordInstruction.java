@@ -6,14 +6,11 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.Utility;
-import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
-
-import java.util.Optional;
 
 public class NewRecordInstruction extends Expression {
     private String type;
@@ -52,7 +49,7 @@ public class NewRecordInstruction extends Expression {
 
     @Override
     public String getCodeRepresentation() {
-        return "new " + Utility.getConvetionalRepresent(type);
+        return "new " + Utility.getConvectionalRepresent(type);
     }
 
 

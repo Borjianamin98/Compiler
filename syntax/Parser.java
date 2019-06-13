@@ -5,7 +5,6 @@
 
 package syntax;
 
-import java_cup.runtime.*;
 import semantic.syntaxTree.*;
 import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.*;
@@ -29,11 +28,10 @@ import semantic.syntaxTree.statement.controlflow.ifelse.*;
 import semantic.syntaxTree.statement.controlflow.switchcase.*;
 import semantic.syntaxTree.statement.controlflow.loop.*;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
-import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
   */

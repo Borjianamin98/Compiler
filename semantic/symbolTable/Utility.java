@@ -14,7 +14,7 @@ import semantic.syntaxTree.expression.constValue.FloatConst;
 import semantic.syntaxTree.expression.constValue.IntegerConst;
 import semantic.syntaxTree.expression.constValue.LongConst;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 import java.util.Collections;
 import java.util.List;
@@ -127,7 +127,7 @@ public class Utility {
      * @param typeName type name
      * @return conventional representation
      */
-    public static String getConvetionalRepresent(String typeName) {
+    public static String getConvectionalRepresent(String typeName) {
         switch ((typeName)) {
             case TypeTree.INTEGER_NAME:
                 return "int";

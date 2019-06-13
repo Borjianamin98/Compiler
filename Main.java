@@ -3,17 +3,12 @@ import lexical.LexicalAnalyzer;
 import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Display;
 import semantic.syntaxTree.Node;
-import semantic.syntaxTree.block.Block;
-import semantic.syntaxTree.declaration.method.MethodDCL;
-import semantic.syntaxTree.declaration.method.StartMethodDCL;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 import syntax.Parser;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Main implements Opcodes {
 

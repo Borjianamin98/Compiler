@@ -3,7 +3,6 @@ package semantic.syntaxTree.expression.identifier;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.hastype.ArrayDSCP;
@@ -13,7 +12,6 @@ import semantic.symbolTable.descriptor.hastype.VariableDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
 
 import java.util.Optional;
 

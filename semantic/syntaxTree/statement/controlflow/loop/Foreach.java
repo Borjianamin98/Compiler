@@ -23,7 +23,7 @@ import semantic.syntaxTree.statement.assignment.DirectAssignment;
 import semantic.syntaxTree.statement.controlflow.BreakStatement;
 import semantic.syntaxTree.statement.controlflow.ContinueStatement;
 import semantic.syntaxTree.statement.controlflow.ReturnStatement;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 public class Foreach extends Statement {
     private String identifierName;

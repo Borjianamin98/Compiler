@@ -1,7 +1,6 @@
 package semantic.syntaxTree.declaration.record;
 
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Utility;
@@ -12,10 +11,8 @@ import semantic.syntaxTree.ClassCode;
 import semantic.syntaxTree.HasRepresentation;
 import semantic.syntaxTree.declaration.Declaration;
 import semantic.syntaxTree.declaration.Parameter;
-import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
-import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 public class Field extends Parameter implements ClassCode, HasRepresentation {
     private Expression defaultValue;
@@ -102,8 +99,8 @@ public class Field extends Parameter implements ClassCode, HasRepresentation {
         }
     }
 
-    public Expression getDefaultValue() {
-        return defaultValue;
+    public boolean hasDefaultValue() {
+        return defaultValue != null;
     }
 
     public boolean isConstant() {
@@ -123,7 +120,7 @@ public class Field extends Parameter implements ClassCode, HasRepresentation {
         StringBuilder represent = new StringBuilder();
         if (isConstant())
             represent.append("const ");
-        represent.append(Utility.getConvetionalRepresent(baseType));
+        represent.append(Utility.getConvectionalRepresent(baseType));
         for (int i = 0; i < getDimensions(); i++) {
             represent.append("[]");
         }

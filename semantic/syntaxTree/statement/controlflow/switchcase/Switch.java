@@ -4,16 +4,11 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import semantic.syntaxTree.BlockCode;
-import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.syntaxTree.statement.Statement;
-import semantic.syntaxTree.statement.controlflow.BreakStatement;
-import semantic.syntaxTree.statement.controlflow.ContinueStatement;
-import semantic.syntaxTree.statement.controlflow.ReturnStatement;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 import java.util.Comparator;
 import java.util.List;

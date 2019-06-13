@@ -6,16 +6,13 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.Utility;
-import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.BlockCode;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.expression.Ignorable;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
-
-import java.util.Optional;
+import semantic.symbolTable.typeTree.TypeTree;
 
 public class ScannerFunction extends Expression implements BlockCode, Ignorable {
     private String requestedType;
@@ -85,10 +82,7 @@ public class ScannerFunction extends Expression implements BlockCode, Ignorable 
         else
             throw new AssertionError("doesn't happen");
 
-        mv.visitTypeInsn(Opcodes.NEW, "java/util/Scanner");
-        mv.visitInsn(Opcodes.DUP);
-        mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "in", "Ljava/io/InputStream;");
-        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/Scanner", "<init>", "(Ljava/io/InputStream;)V", false);
+        mv.visitFieldInsn(Opcodes.GETSTATIC, currentClass.getName(), TypeTree.SCANNER_FIELD_NAME, TypeTree.SCANNER_JAVA_TYPE);
         mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/Scanner",
                 scannerMethodName,
                 "()" + Utility.getPrimitiveTypeName(getResultType()),

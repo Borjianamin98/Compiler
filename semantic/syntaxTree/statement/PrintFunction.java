@@ -8,7 +8,7 @@ import semantic.symbolTable.Utility;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 public class PrintFunction extends Statement {
     private Expression value;

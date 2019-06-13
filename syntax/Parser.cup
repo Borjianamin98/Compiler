@@ -25,7 +25,7 @@ import semantic.syntaxTree.statement.controlflow.switchcase.*;
 import semantic.syntaxTree.statement.controlflow.loop.*;
 import semantic.syntaxTree.program.ClassDCL;
 
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;

@@ -16,7 +16,7 @@ public class Argument extends Parameter {
 
     public String getCodeRepresentation() {
         StringBuilder represent = new StringBuilder();
-        represent.append(Utility.getConvetionalRepresent(baseType));
+        represent.append(Utility.getConvectionalRepresent(baseType));
         for (int i = 0; i < dimensions; i++) {
             represent.append("[]");
         }

@@ -1,4 +1,4 @@
-package semantic.typeTree;
+package semantic.symbolTable.typeTree;
 
 
 import org.objectweb.asm.MethodVisitor;
@@ -45,6 +45,9 @@ public class TypeTree {
     private static final int DOUBLE_SIZE = 2;
     private static final int CHAR_SIZE = 1;
     private static final int STRING_SIZE = 1;
+
+    public static final String SCANNER_FIELD_NAME = "field$scanner";
+    public static final String SCANNER_JAVA_TYPE = "Ljava/util/Scanner;";
 
     public static void init() {
         wideningTree.put(DOUBLE_DSCP, new TypeNode(null, DOUBLE_DSCP, 0));

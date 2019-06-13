@@ -1,4 +1,4 @@
-package semantic.typeTree;
+package semantic.symbolTable.typeTree;
 
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 

@@ -9,10 +9,7 @@ import semantic.syntaxTree.ClassCode;
 import semantic.syntaxTree.Node;
 import semantic.syntaxTree.declaration.Declaration;
 import semantic.syntaxTree.declaration.method.MethodDCL;
-import semantic.syntaxTree.declaration.record.ArrayFieldDCL;
-import semantic.syntaxTree.declaration.record.Field;
-import semantic.syntaxTree.declaration.record.RecordTypeDCL;
-import semantic.syntaxTree.declaration.record.SimpleFieldDCL;
+import semantic.syntaxTree.declaration.record.*;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -51,11 +48,13 @@ public class ClassDCL extends Node {
         Display.add(false); // Class symbol table
 
         List<Field> fields_need_initialized = new ArrayList<>();
+        // We add a scanner field for each class
+        classCodes.add(0, new ScannerField());
         for (ClassCode classCode : classCodes) {
             if (classCode instanceof Field) {
                 Field field = (Field) classCode;
                 field.createFieldDCL(name).generateCode(currentClass, null, classWriter, null, null, null);
-                if (field.getDefaultValue() != null)
+                if (field.hasDefaultValue())
                     fields_need_initialized.add(field);
             } else if (classCode instanceof MethodDCL || classCode instanceof RecordTypeDCL)
                 ((Declaration) classCode).generateCode(this, null, classWriter, null, null, null);

@@ -5,7 +5,7 @@ import semantic.syntaxTree.declaration.record.Field;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.expression.identifier.SimpleLocalVariable;
 import semantic.syntaxTree.statement.assignment.DirectAssignment;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 import java.util.ArrayList;
 import java.util.List;

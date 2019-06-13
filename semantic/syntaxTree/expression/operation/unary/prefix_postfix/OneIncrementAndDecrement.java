@@ -3,7 +3,7 @@ package semantic.syntaxTree.expression.operation.unary.prefix_postfix;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.expression.identifier.Variable;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 public abstract class OneIncrementAndDecrement extends Expression {
     private String operatorName;

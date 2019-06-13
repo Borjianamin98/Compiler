@@ -11,7 +11,6 @@ import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.hastype.ArrayDSCP;
 import semantic.symbolTable.descriptor.hastype.FieldDSCP;
-import semantic.symbolTable.descriptor.hastype.VariableDSCP;
 import semantic.symbolTable.descriptor.type.ArrayTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.Declaration;
@@ -93,7 +92,7 @@ public class ArrayFieldDCL extends Declaration {
         StringBuilder represent = new StringBuilder();
         if (isConstant())
             represent.append("const ");
-        represent.append(Utility.getConvetionalRepresent(type));
+        represent.append(Utility.getConvectionalRepresent(type));
         for (int i = 0; i < dimensions; i++) {
             represent.append("[]");
         }

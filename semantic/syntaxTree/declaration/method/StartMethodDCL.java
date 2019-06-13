@@ -1,7 +1,7 @@
 package semantic.syntaxTree.declaration.method;
 
 import semantic.syntaxTree.block.Block;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 import java.util.ArrayList;
 import java.util.List;

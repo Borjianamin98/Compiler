@@ -5,12 +5,11 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Utility;
-import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.syntaxTree.statement.Statement;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 public class ReturnStatement extends Statement {
     private Expression value;

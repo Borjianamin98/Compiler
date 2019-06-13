@@ -18,7 +18,7 @@ import semantic.syntaxTree.declaration.Declaration;
 import semantic.syntaxTree.declaration.VariableDCL;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.syntaxTree.statement.controlflow.ReturnStatement;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 import java.util.Optional;
 
@@ -147,7 +147,7 @@ public class MethodDCL extends Declaration implements ClassCode {
     public String getCodeRepresentation() {
         return "function " +
                 (signature.hasBody() ? "" : "prototype ") +
-                Utility.getConvetionalRepresent(returnType) +
+                Utility.getConvectionalRepresent(returnType) +
                 " " +
                 signature.getCodeRepresentation();
     }

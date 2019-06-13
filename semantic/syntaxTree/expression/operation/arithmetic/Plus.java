@@ -9,7 +9,7 @@ import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 public class Plus extends Arithmetic {
     public Plus(Expression firstOperand, Expression secondOperand) {

@@ -10,7 +10,6 @@ import semantic.syntaxTree.Node;
 import semantic.syntaxTree.declaration.Declaration;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -34,9 +33,11 @@ public class RecordTypeDCL extends Declaration implements BlockCode, ClassCode {
         Display.add(false);
         List<Field> fields_need_initialized = new ArrayList<>();
         for (Field field : fields) {
+            if (field.isStatic())
+                throw new RuntimeException("Fields of record must be non-static");
             field.setStatic(false);
             field.createFieldDCL(currentClass.getName()).generateCode(currentClass, null, classWriter, null, null, null);
-            if (field.getDefaultValue() != null)
+            if (field.hasDefaultValue())
                 fields_need_initialized.add(field);
         }
 

@@ -3,7 +3,7 @@ package semantic.syntaxTree.expression.operation.logical;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.expression.operation.BinaryOperation;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 public abstract class Logical extends BinaryOperation {
     private String logicalSign;
