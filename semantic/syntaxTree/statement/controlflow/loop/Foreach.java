@@ -7,12 +7,14 @@ import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
 import semantic.symbolTable.descriptor.type.ArrayTypeDSCP;
+import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.BlockCode;
 import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.ArrayDCL;
 import semantic.syntaxTree.declaration.Declaration;
 import semantic.syntaxTree.declaration.VariableDCL;
 import semantic.syntaxTree.declaration.method.MethodDCL;
+import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.expression.constValue.IntegerConst;
 import semantic.syntaxTree.expression.identifier.ArrayVariable;
 import semantic.syntaxTree.expression.identifier.SimpleLocalVariable;
@@ -53,9 +55,7 @@ public class Foreach extends Statement {
          */
         SymbolTable top = Display.top();
 
-        if (!(iterator.getDSCP().getType() instanceof ArrayTypeDSCP))
-            throw new RuntimeException(iterator.getDSCP().getName() + " is not iterable");
-        ArrayTypeDSCP arrayTypeDSCP = (ArrayTypeDSCP) iterator.getDSCP().getType();
+
         String varIteratorName = top.getTempName();
         String varCounterName = top.getTempName();
         SimpleLocalVariable varIterator = new SimpleLocalVariable(varIteratorName);
@@ -69,12 +69,25 @@ public class Foreach extends Statement {
         // can shadow other variables in outside block
         Display.add(true);
 
-        // create T[] a = Expression;
-        ArrayDCL arrayDCL = new ArrayDCL(varIteratorName, arrayTypeDSCP.getBaseType().getName(),
-                arrayTypeDSCP.getDimensions(), false, iterator.getDSCP().isInitialized());
-        arrayDCL.generateCode(currentClass, currentMethod, cv, mv, null, null);
-        DirectAssignment iteratorAssignment = new DirectAssignment(varIterator, iterator);
-        iteratorAssignment.generateCode(currentClass, currentMethod, cv, mv, null, null);
+        if (iterator.getDSCP().getType() instanceof ArrayTypeDSCP) {
+            ArrayTypeDSCP arrayTypeDSCP = (ArrayTypeDSCP) iterator.getDSCP().getType();
+
+            // create T[] a = Expression;
+            ArrayDCL arrayDCL = new ArrayDCL(varIteratorName, arrayTypeDSCP.getBaseType().getName(),
+                    arrayTypeDSCP.getDimensions(), false, iterator.getDSCP().isInitialized());
+            arrayDCL.generateCode(currentClass, currentMethod, cv, mv, null, null);
+            DirectAssignment iteratorAssignment = new DirectAssignment(varIterator, iterator);
+            iteratorAssignment.generateCode(currentClass, currentMethod, cv, mv, null, null);
+        } else if (TypeTree.isString(iterator.getDSCP().getType())) {
+
+            // create String a = Expression;
+            VariableDCL varDCL = new VariableDCL(varIteratorName, TypeTree.STRING_NAME, false, iterator.getDSCP().isInitialized());
+            varDCL.generateCode(currentClass, currentMethod, cv, mv, null, null);
+            DirectAssignment iteratorAssignment = new DirectAssignment(varIterator, iterator);
+            iteratorAssignment.generateCode(currentClass, currentMethod, cv, mv, null, null);
+        } else {
+            throw new RuntimeException(iterator.getDSCP().getName() + " is not iterable");
+        }
 
         // create int i = 0;
         VariableDCL varCounterDCL = new VariableDCL(varCounterName, TypeTree.INTEGER_NAME, false, false);
@@ -86,22 +99,41 @@ public class Foreach extends Statement {
         mv.visitLabel(conditionLabel);
         varCounter.generateCode(currentClass, currentMethod, cv, mv, null, null);
         varIterator.generateCode(currentClass, currentMethod, cv, mv, null, null);
-        mv.visitInsn(Opcodes.ARRAYLENGTH);
+        if (iterator.getDSCP().getType() instanceof ArrayTypeDSCP)
+            mv.visitInsn(Opcodes.ARRAYLENGTH);
+        else if (TypeTree.isString(iterator.getDSCP().getType()))
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/String", "length", "()I", false);
         mv.visitJumpInsn(Opcodes.IF_ICMPGE, outLabel);
 
-        // create Type Identifier;
-        Declaration varIdentifierDCL;
-        if (arrayTypeDSCP.getInternalType() instanceof ArrayTypeDSCP)
-            varIdentifierDCL = new ArrayDCL(identifierName, arrayTypeDSCP.getBaseType().getName(),
-                    arrayTypeDSCP.getInternalType().getDimensions(), false, false);
-        else
-            varIdentifierDCL = new VariableDCL(identifierName, arrayTypeDSCP.getInternalType().getName(), false, false);
-        varIdentifierDCL.generateCode(currentClass, currentMethod, cv, mv, null, null);
+        if (iterator.getDSCP().getType() instanceof ArrayTypeDSCP) {
+            ArrayTypeDSCP arrayTypeDSCP = (ArrayTypeDSCP) iterator.getDSCP().getType();
 
-        // create Identifier = a[i];
-        ArrayVariable varId = new ArrayVariable(varIterator, varCounter);
-        DirectAssignment identifierAssignment = new DirectAssignment(varIdentifier, varId);
-        identifierAssignment.generateCode(currentClass, currentMethod, cv, mv, null, null);
+            // create Type Identifier;
+            Declaration varIdentifierDCL;
+            if (arrayTypeDSCP.getInternalType() instanceof ArrayTypeDSCP)
+                varIdentifierDCL = new ArrayDCL(identifierName, arrayTypeDSCP.getBaseType().getName(),
+                        arrayTypeDSCP.getInternalType().getDimensions(), false, false);
+            else
+                varIdentifierDCL = new VariableDCL(identifierName, arrayTypeDSCP.getInternalType().getName(), false, false);
+            varIdentifierDCL.generateCode(currentClass, currentMethod, cv, mv, null, null);
+
+            // create Identifier = a[i];
+            ArrayVariable varId = new ArrayVariable(varIterator, varCounter);
+            DirectAssignment identifierAssignment = new DirectAssignment(varIdentifier, varId);
+            identifierAssignment.generateCode(currentClass, currentMethod, cv, mv, null, null);
+        } else if (TypeTree.isString(iterator.getDSCP().getType())) {
+
+            // create Type Identifier;
+            Declaration varIdentifierDCL = new VariableDCL(identifierName, TypeTree.CHAR_NAME, false, false);
+            varIdentifierDCL.generateCode(currentClass, currentMethod, cv, mv, null, null);
+
+            // create Identifier = a.charAt(i);
+            varIterator.generateCode(currentClass, currentMethod, cv, mv, null, null);
+            varCounter.generateCode(currentClass, currentMethod, cv, mv, null, null);
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/String", "charAt", "(I)C", false);
+            mv.visitVarInsn(Opcodes.ISTORE, varIdentifier.getDSCP().getAddress());
+            varIdentifier.getDSCP().setInitialized(true);
+        }
 
         // create body
         for (BlockCode blockCode : body.getBlockCodes()) {
