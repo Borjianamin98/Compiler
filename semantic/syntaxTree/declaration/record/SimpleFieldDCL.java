@@ -1,5 +1,6 @@
 package semantic.syntaxTree.declaration.record;
 
+import exception.DuplicateDeclarationException;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -52,7 +53,7 @@ public class SimpleFieldDCL extends Declaration {
         // otherwise this declaration shadows other declarations
         SymbolTable top = Display.top();
         if (top.contains(getName()))
-            throw new RuntimeException(getName() + " declared more than one time");
+            throw new DuplicateDeclarationException(getName());
 
         getTypeDSCP();
         int access = Opcodes.ACC_PUBLIC;

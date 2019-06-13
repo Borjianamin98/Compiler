@@ -65,7 +65,7 @@ public class Display {
      */
     public static void addType(String name, TypeDSCP descriptor) {
         if (Display.mainSymbolTable.contains(name))
-            throw new RuntimeException("Type " + name + " declared more than once");
+            throw new RuntimeException("Type '" + name + "' declared more than once");
 
         descriptor.setTypeCode(freeType);
         freeType++;
@@ -81,10 +81,10 @@ public class Display {
      */
     public static TypeDSCP getType(String name) {
         if (!Display.mainSymbolTable.contains(name))
-            throw new RuntimeException("Type " + name + " is not declared");
+            throw new RuntimeException("Type '" + name + "' is not declared");
         DSCP dscp = Display.mainSymbolTable.getSymbols().get(name);
         if (!(dscp instanceof TypeDSCP))
-            throw new RuntimeException(name + " is not a type");
+            throw new RuntimeException("'" + name + "' is not a type");
         return (TypeDSCP) dscp;
     }
 

@@ -1,5 +1,6 @@
 package semantic.syntaxTree.program;
 
+import exception.DuplicateDeclarationException;
 import org.objectweb.asm.*;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.descriptor.DSCP;
@@ -105,7 +106,7 @@ public class ClassDCL extends Node {
 
         // Update symbol table
         if (Display.find(name).isPresent()) {
-            throw new RuntimeException("Identifier " + name + " declared more than one time");
+            throw new DuplicateDeclarationException(name);
         }
     }
 }
