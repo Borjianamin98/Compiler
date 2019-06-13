@@ -14,7 +14,7 @@ import semantic.syntaxTree.expression.constValue.FloatConst;
 import semantic.syntaxTree.expression.constValue.IntegerConst;
 import semantic.syntaxTree.expression.constValue.LongConst;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 import java.util.Collections;
 import java.util.List;
@@ -119,6 +119,37 @@ public class Utility {
             throw new RuntimeException("'" + type.getName() + "' is not primitive");
         return type.getName().replace(TypeTree.typePrefix, "");
     }
+
+    /**
+     * get a conventional represent for a type string
+     * it is used for creating code representation
+     *
+     * @param typeName type name
+     * @return conventional representation
+     */
+    public static String getConvectionalRepresent(String typeName) {
+        switch ((typeName)) {
+            case TypeTree.INTEGER_NAME:
+                return "int";
+            case TypeTree.BOOLEAN_NAME:
+                return "bool";
+            case TypeTree.LONG_NAME:
+                return "long";
+            case TypeTree.FLOAT_NAME:
+                return "float";
+            case TypeTree.DOUBLE_NAME:
+                return "double";
+            case TypeTree.CHAR_NAME:
+                return "char";
+            case TypeTree.STRING_NAME:
+                return "string";
+            case TypeTree.VOID_NAME:
+                return "void";
+            default:
+                return typeName; // reference or user defined type
+        }
+    }
+
 
     /**
      * create descriptor of a type with requested dimensions

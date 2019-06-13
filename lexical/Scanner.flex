@@ -89,10 +89,10 @@ escapeCharacter = "'"{escapeChar}"'"
 
     /* literals */
     {integer}                   { return symbol("Integer", Token.getWithRepresentation("int_const").getSym(), Integer.valueOf(yytext())); }
-    {integer}[lL]               { return symbol("Long", Token.getWithRepresentation("long_const").getSym(), Long.valueOf(yytext())); }
-    {integer}[fF]               { return symbol("Float", Token.getWithRepresentation("float_const").getSym(), Float.valueOf(yytext())); }
+    {integer}[lL]               { return symbol("Long", Token.getWithRepresentation("long_const").getSym(), Long.valueOf(yytext().substring(0, yytext().length() - 1))); }
+    {integer}[fF]               { return symbol("Float", Token.getWithRepresentation("float_const").getSym(), Float.valueOf(yytext().substring(0, yytext().length() - 1))); }
     {real}                      { return symbol("Double", Token.getWithRepresentation("double_const").getSym(), Double.valueOf(yytext())); }
-    {real}[fF]                  { return symbol("Float", Token.getWithRepresentation("float_const").getSym(), Float.valueOf(yytext())); }
+    {real}[fF]                  { return symbol("Float", Token.getWithRepresentation("float_const").getSym(), Float.valueOf(yytext().substring(0, yytext().length() - 1))); }
     {character}                 { return symbol("Character", Token.getWithRepresentation("char_const").getSym(), yytext().substring(1, 2).charAt(0)); }
     {escapeCharacter}           {
                                 char ch;

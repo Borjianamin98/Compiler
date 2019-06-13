@@ -4,16 +4,14 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import semantic.symbolTable.Display;
-import semantic.symbolTable.descriptor.DSCP;
+import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.type.SimpleTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.expression.constValue.IntegerConst;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
-
-import java.util.Optional;
+import semantic.symbolTable.typeTree.TypeTree;
 
 public class Sizeof extends Expression {
     private String typeName;
@@ -51,5 +49,10 @@ public class Sizeof extends Expression {
         } else
             size = Integer.BYTES; // a pointer/reference
         new IntegerConst(size).generateCode(currentClass, currentMethod, cv, mv, null, null);
+    }
+
+    @Override
+    public String getCodeRepresentation() {
+        return "sizeof(" + Utility.getConvectionalRepresent(typeName) + ")";
     }
 }

@@ -11,7 +11,7 @@ import semantic.symbolTable.descriptor.hastype.VariableDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 import java.util.Optional;
 
@@ -63,4 +63,8 @@ public class SimpleLocalVariable extends Variable {
         return name;
     }
 
+    @Override
+    public String getCodeRepresentation() {
+        return name;
+    }
 }

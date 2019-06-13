@@ -9,7 +9,7 @@ import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.expression.operation.BinaryOperation;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 public class Bitwise extends BinaryOperation {
     private String bitwiseSign;
@@ -49,5 +49,11 @@ public class Bitwise extends BinaryOperation {
         TypeTree.widen(mv, getSecondOperand().getResultType(), getResultType());
 
         mv.visitInsn(Utility.getOpcode(getResultType(), mainOpcode, false));
+    }
+
+    @Override
+    public String getCodeRepresentation() {
+        return "(" + getFirstOperand().getCodeRepresentation() + " " + bitwiseSign + " " +
+                getSecondOperand().getCodeRepresentation() + ")";
     }
 }

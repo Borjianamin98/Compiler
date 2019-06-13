@@ -15,12 +15,11 @@ import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.expression.Ignorable;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class MethodCall extends Expression implements BlockCode, Ignorable {
     private String methodName;
@@ -57,7 +56,7 @@ public class MethodCall extends Expression implements BlockCode, Ignorable {
         if (methodDSCP == null) {
             Optional<DSCP> fetchedDSCP = Display.find(methodName);
             if (!fetchedDSCP.isPresent() || !(fetchedDSCP.get() instanceof MethodDSCP))
-                throw new RuntimeException("Function " + methodName + " is not declared");
+                throw new RuntimeException("Function '" + methodName + "' is not declared");
             methodDSCP = (MethodDSCP) fetchedDSCP.get();
         }
         return methodDSCP;
@@ -111,5 +110,18 @@ public class MethodCall extends Expression implements BlockCode, Ignorable {
         if (getTypeDSCP().hasReturn() && ignoreResult) {
             mv.visitInsn(Opcodes.POP);
         }
+    }
+
+    @Override
+    public String getCodeRepresentation() {
+        StringBuilder represent = new StringBuilder(methodName).append("(");
+        for (int i = 0; i < parameters.size(); i++) {
+            Expression parameter = parameters.get(i);
+            represent.append(parameter.getCodeRepresentation());
+            if (i < parameters.size() - 1)
+                represent.append(", ");
+        }
+        represent.append(")");
+        return represent.toString();
     }
 }

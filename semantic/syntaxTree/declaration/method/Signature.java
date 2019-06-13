@@ -37,11 +37,12 @@ public class Signature {
 
     @Override
     public String toString() {
-        return name + "(" + arguments + ")";
+        return name + "(" + arguments.toString().replace("[", "").replace("]", "") + ")";
     }
 
     /**
      * two signature are equals if they have same arguments in same order
+     *
      * @param o other signature
      * @return true, if they have same arguments in same order
      */
@@ -53,4 +54,16 @@ public class Signature {
         return arguments.equals(signature.arguments);
     }
 
+    public String getCodeRepresentation() {
+        StringBuilder represent = new StringBuilder();
+        represent.append(name).append("(");
+        for (int i = 0; i < arguments.size(); i++) {
+            Argument argument = arguments.get(i);
+            represent.append(argument.getCodeRepresentation());
+            if (i < arguments.size() - 1)
+                represent.append(", ");
+        }
+        represent.append(")");
+        return represent.toString();
+    }
 }

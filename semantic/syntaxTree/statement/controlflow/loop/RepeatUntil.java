@@ -48,4 +48,8 @@ public class RepeatUntil extends Statement {
 
         mv.visitLabel(outLabel);
     }
+
+    public String getCodeRepresentation() {
+        return "repeat begin ... end until (" + condition.getCodeRepresentation() + ")";
+    }
 }

@@ -9,7 +9,7 @@ import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 public class IntegerConst extends Expression {
     public int value;
@@ -31,5 +31,10 @@ public class IntegerConst extends Expression {
             mv.visitInsn(Utility.getOpcode("I", "CONST", "_" + value));
         else
             mv.visitLdcInsn(value);
+    }
+
+    @Override
+    public String getCodeRepresentation() {
+        return String.valueOf(value);
     }
 }

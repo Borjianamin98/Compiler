@@ -6,14 +6,11 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.Utility;
-import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.type.RecordTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
-
-import java.util.Optional;
 
 public class NewRecordInstruction extends Expression {
     private String type;
@@ -27,7 +24,7 @@ public class NewRecordInstruction extends Expression {
         if (typeDSCP == null) {
             TypeDSCP fetchedDSCP = Display.getType(type);
             if (!(fetchedDSCP instanceof RecordTypeDSCP))
-                throw new RuntimeException("Type " + type + " is not declared");
+                throw new RuntimeException("Type '" + fetchedDSCP.getConventionalName() + "' is not a record");
             typeDSCP = (RecordTypeDSCP) fetchedDSCP;
         }
         return typeDSCP;
@@ -49,4 +46,11 @@ public class NewRecordInstruction extends Expression {
         mv.visitInsn(Opcodes.DUP);
         mv.visitMethodInsn(Opcodes.INVOKESPECIAL, type, "<init>", "()V", false);
     }
+
+    @Override
+    public String getCodeRepresentation() {
+        return "new " + Utility.getConvectionalRepresent(type);
+    }
+
+
 }

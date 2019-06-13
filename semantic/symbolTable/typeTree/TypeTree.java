@@ -1,13 +1,13 @@
-package semantic.typeTree;
+package semantic.symbolTable.typeTree;
 
 
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import semantic.symbolTable.Display;
 import semantic.symbolTable.descriptor.type.SimpleTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TypeTree {
     /**
@@ -45,6 +45,11 @@ public class TypeTree {
     private static final int DOUBLE_SIZE = 2;
     private static final int CHAR_SIZE = 1;
     private static final int STRING_SIZE = 1;
+
+    public static final String SCANNER_FIELD_NAME = "field$scanner";
+    public static final String SCANNER_JAVA_TYPE = "Ljava/util/Scanner;";
+
+    public static final String DEFAULT_CLASS_NAME = "Compiled";
 
     public static void init() {
         wideningTree.put(DOUBLE_DSCP, new TypeNode(null, DOUBLE_DSCP, 0));
@@ -225,6 +230,4 @@ public class TypeTree {
             throwIncompatibleTypeException(type1, type2);
         throw new AssertionError("doesn't happen");
     }
-
-
 }

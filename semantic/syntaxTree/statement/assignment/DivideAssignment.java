@@ -11,7 +11,7 @@ import semantic.syntaxTree.program.ClassDCL;
 
 public class DivideAssignment extends Assignment {
     public DivideAssignment(Variable variable, Expression value) {
-        super(variable, value);
+        super("/=", variable, value);
     }
 
     @Override

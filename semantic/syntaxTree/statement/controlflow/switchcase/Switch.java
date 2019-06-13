@@ -4,15 +4,11 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import semantic.syntaxTree.BlockCode;
-import semantic.syntaxTree.block.Block;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
 import semantic.syntaxTree.statement.Statement;
-import semantic.syntaxTree.statement.controlflow.BreakStatement;
-import semantic.syntaxTree.statement.controlflow.ContinueStatement;
-import semantic.syntaxTree.statement.controlflow.ReturnStatement;
+import semantic.symbolTable.typeTree.TypeTree;
 
 import java.util.Comparator;
 import java.util.List;
@@ -20,46 +16,51 @@ import java.util.List;
 public class Switch extends Statement {
     private Expression expression;
     private List<Case> cases;
-    private Block defaultCase;
+    private DefaultCase defaultCase;
 
-    public Switch(Expression expression, List<Case> cases, Block defaultCase) {
+    public Switch(Expression expression, List<Case> cases, DefaultCase defaultCase) {
         this.expression = expression;
         this.cases = cases;
         this.defaultCase = defaultCase;
     }
 
-    private void generateCaseCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv,
-                                  Label outLabel, Label continueLabel, Block caseBlock) {
-        for (BlockCode blockCode : caseBlock.getBlockCodes()) {
-            blockCode.generateCode(currentClass, currentMethod, cv, mv, outLabel, continueLabel);
-            if (blockCode instanceof ReturnStatement ||
-                    blockCode instanceof BreakStatement)
-                break; // other code in this block are unnecessary
-        }
-    }
-
     @Override
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv,
                              Label breakLabel, Label continueLabel) {
+        // generate switch expression
         expression.generateCode(currentClass, currentMethod, cv, mv, null, null);
+        // switch case can only work for integer type (not even long type)
+        TypeTree.widen(mv, expression.getResultType(), TypeTree.INTEGER_DSCP);
+
         Label defaultLabel = new Label();
         Label outLabel = new Label();
+
+        // generate label for cases
         Label[] caseLabels = new Label[cases.size()];
         for (int i = 0; i < cases.size(); i++)
             caseLabels[i] = new Label();
         cases.sort((Comparator.comparing(Case::getNumber)));
         int[] keys = cases.stream().mapToInt(Case::getNumber).toArray();
+
+        // generate case table lookup
         mv.visitLookupSwitchInsn(defaultLabel, keys, caseLabels);
+
+        // generate case code
         for (int i = 0; i < cases.size(); i++) {
             Case aCase = cases.get(i);
-            Label caseLable = caseLabels[i];
-            mv.visitLabel(caseLable);
-            generateCaseCode(currentClass, currentMethod, cv, mv, outLabel, continueLabel, aCase.getBlock());
+            Label caseLabel = caseLabels[i];
+            mv.visitLabel(caseLabel);
+            aCase.generateCode(currentClass, currentMethod, cv, mv, outLabel, continueLabel);
             mv.visitJumpInsn(Opcodes.GOTO, outLabel);
         }
         mv.visitLabel(defaultLabel);
         if (defaultCase != null)
-            generateCaseCode(currentClass, currentMethod, cv, mv, outLabel, continueLabel, defaultCase);
+            defaultCase.generateCode(currentClass, currentMethod, cv, mv, outLabel, continueLabel);
         mv.visitLabel(outLabel);
+    }
+
+    @Override
+    public String getCodeRepresentation() {
+        return "switch (" + expression.getCodeRepresentation() + ") begin ... end";
     }
 }

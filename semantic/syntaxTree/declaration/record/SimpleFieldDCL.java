@@ -8,15 +8,11 @@ import org.objectweb.asm.Opcodes;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
 import semantic.symbolTable.Utility;
-import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.hastype.FieldDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
-import semantic.syntaxTree.ClassCode;
 import semantic.syntaxTree.declaration.Declaration;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.program.ClassDCL;
-
-import java.util.Optional;
 
 public class SimpleFieldDCL extends Declaration {
     private String owner;
@@ -62,5 +58,15 @@ public class SimpleFieldDCL extends Declaration {
         cv.visitField(access, getName(), getDescriptor(), null, null).visitEnd();
         FieldDSCP fieldDSCP = new FieldDSCP(owner, getName(), getTypeDSCP(), isConstant(), initialized);
         top.addSymbol(getName(), fieldDSCP);
+    }
+
+    @Override
+    public String getCodeRepresentation() {
+        StringBuilder represent = new StringBuilder();
+        if (isConstant())
+            represent.append("const ");
+        represent.append(Utility.getConvectionalRepresent(type)).append(" ");
+        represent.append(getName());
+        return represent.toString();
     }
 }

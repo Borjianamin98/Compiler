@@ -8,7 +8,7 @@ import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 public class BooleanConst extends Expression {
     public boolean value;
@@ -32,5 +32,10 @@ public class BooleanConst extends Expression {
             mv.visitInsn(Opcodes.ICONST_1);
         else
             mv.visitInsn(Opcodes.ICONST_0);
+    }
+
+    @Override
+    public String getCodeRepresentation() {
+        return String.valueOf(value);
     }
 }

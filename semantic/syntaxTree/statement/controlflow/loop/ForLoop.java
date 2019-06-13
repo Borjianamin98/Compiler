@@ -88,4 +88,19 @@ public class ForLoop extends Statement {
         mv.visitJumpInsn(Opcodes.GOTO, conditionLabel);
         mv.visitLabel(outLabel);
     }
+
+    public String getCodeRepresentation() {
+        StringBuilder represent = new StringBuilder();
+        represent.append("for (");
+        if (initialAssignment != null)
+            represent.append(initialAssignment.getCodeRepresentation());
+        represent.append("; ");
+        represent.append(condition.getCodeRepresentation()).append("; ");
+        if (stepAssignment != null)
+            represent.append(stepAssignment.getCodeRepresentation());
+        if (stepExpression != null)
+            represent.append(stepExpression.getCodeRepresentation());
+        represent.append(") begin .. end");
+        return represent.toString();
+    }
 }

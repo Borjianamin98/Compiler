@@ -8,12 +8,12 @@ import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 public class Equal extends Relational {
 
     public Equal(Expression firstOperand, Expression secondOperand) {
-        super(firstOperand, secondOperand);
+        super("==", firstOperand, secondOperand);
     }
 
     @Override

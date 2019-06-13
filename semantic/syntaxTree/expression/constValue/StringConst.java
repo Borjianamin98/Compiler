@@ -7,7 +7,7 @@ import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 public class StringConst extends Expression {
     public String value;
@@ -24,5 +24,10 @@ public class StringConst extends Expression {
     @Override
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         mv.visitLdcInsn(value);
+    }
+
+    @Override
+    public String getCodeRepresentation() {
+        return value;
     }
 }

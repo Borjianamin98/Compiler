@@ -8,7 +8,7 @@ import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 public class DoubleConst extends Expression {
     public double value;
@@ -28,5 +28,10 @@ public class DoubleConst extends Expression {
             mv.visitInsn(Utility.getOpcode("D", "CONST", "_" + (int)value));
         else
             mv.visitLdcInsn(value);
+    }
+
+    @Override
+    public String getCodeRepresentation() {
+        return String.valueOf(value);
     }
 }

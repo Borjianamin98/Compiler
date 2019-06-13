@@ -8,7 +8,7 @@ import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 public class BitwiseNot extends Expression {
     private Expression operand;
@@ -35,5 +35,10 @@ public class BitwiseNot extends Expression {
         operand.generateCode(currentClass, currentMethod, cv, mv, null, null);
         Utility.getSimpleConstant(getResultType(), -1).generateCode(currentClass, currentMethod, cv, mv, null, null);
         mv.visitInsn(Utility.getOpcode(getResultType(), "XOR", false));
+    }
+
+    @Override
+    public String getCodeRepresentation() {
+        return "~(" + operand.getCodeRepresentation() + ")";
     }
 }

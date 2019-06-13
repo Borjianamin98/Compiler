@@ -4,7 +4,7 @@ import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.hastype.HasTypeDSCP;
 import semantic.symbolTable.descriptor.hastype.VariableDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 import java.util.*;
 

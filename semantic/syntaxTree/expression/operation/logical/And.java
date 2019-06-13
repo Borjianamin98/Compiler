@@ -11,7 +11,7 @@ import semantic.syntaxTree.program.ClassDCL;
 
 public class And extends Logical {
     public And(Expression firstOperand, Expression secondOperand) {
-        super(firstOperand, secondOperand);
+        super("and", firstOperand, secondOperand);
     }
 
     @Override

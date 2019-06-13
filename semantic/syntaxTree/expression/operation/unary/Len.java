@@ -10,7 +10,7 @@ import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.expression.Ignorable;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 public class Len extends Expression implements Ignorable {
     private Expression operand;
@@ -23,7 +23,7 @@ public class Len extends Expression implements Ignorable {
     @Override
     public SimpleTypeDSCP getResultType() {
         if (!(operand.getResultType() instanceof ArrayTypeDSCP) && !TypeTree.isString(operand.getResultType()))
-            throw new RuntimeException("len function can call only on string and array");
+            throw new RuntimeException("len function can call only on string and array: " + operand.getResultType().getConventionalName());
         return TypeTree.INTEGER_DSCP;
     }
 
@@ -44,5 +44,10 @@ public class Len extends Expression implements Ignorable {
     @Override
     public void setIgnoreResult(boolean ignoreResult) {
         this.ignoreResult = ignoreResult;
+    }
+
+    @Override
+    public String getCodeRepresentation() {
+        return "len(" + operand.getCodeRepresentation() + ")";
     }
 }

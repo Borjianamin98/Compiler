@@ -1,13 +1,9 @@
 package semantic.syntaxTree.expression.operation.unary.prefix_postfix;
 
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.MethodVisitor;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
-import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.expression.identifier.Variable;
-import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 public abstract class OneIncrementAndDecrement extends Expression {
     private String operatorName;
@@ -30,4 +26,5 @@ public abstract class OneIncrementAndDecrement extends Expression {
     public Variable getVariable() {
         return variable;
     }
+
 }

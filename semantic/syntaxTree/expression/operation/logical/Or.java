@@ -11,7 +11,7 @@ import semantic.syntaxTree.program.ClassDCL;
 
 public class Or extends Logical {
     public Or(Expression firstOperand, Expression secondOperand) {
-        super(firstOperand, secondOperand);
+        super("or", firstOperand, secondOperand);
     }
 
     @Override

@@ -2,7 +2,7 @@ package semantic.symbolTable.descriptor.type;
 
 import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 import java.util.Objects;
 

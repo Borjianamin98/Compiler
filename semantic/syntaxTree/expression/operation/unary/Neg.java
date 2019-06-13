@@ -8,7 +8,7 @@ import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 public class Neg extends Expression {
     private Expression operand;
@@ -35,5 +35,10 @@ public class Neg extends Expression {
     public void generateCode(ClassDCL currentClass, MethodDCL currentMethod, ClassVisitor cv, MethodVisitor mv, Label breakLabel, Label continueLabel) {
         operand.generateCode(currentClass, currentMethod, cv, mv, null, null);
         mv.visitInsn(Utility.getOpcode(getResultType(), "NEG", false));
+    }
+
+    @Override
+    public String getCodeRepresentation() {
+        return "-(" + operand.getCodeRepresentation() + ")";
     }
 }

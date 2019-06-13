@@ -6,5 +6,6 @@ package semantic.syntaxTree;
  * instead, each of them implement this interface so they can treated same
  * (Field, MethodDCL, RecordTypeDCL implements ClassCode)
  */
-public interface ClassCode extends HasRepresentation {
+public interface HasRepresentation {
+    public abstract String getCodeRepresentation();
 }

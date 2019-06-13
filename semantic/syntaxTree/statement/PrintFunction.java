@@ -8,7 +8,7 @@ import semantic.symbolTable.Utility;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 public class PrintFunction extends Statement {
     private Expression value;
@@ -42,5 +42,9 @@ public class PrintFunction extends Statement {
                         "(" + Utility.getPrimitiveTypeName(value.getResultType()) + ")V", false);
         } else
             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "()V", false);
+    }
+
+    public String getCodeRepresentation() {
+        return "println(" + value.getCodeRepresentation() + ")";
     }
 }

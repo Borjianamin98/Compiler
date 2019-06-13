@@ -16,4 +16,11 @@ public class ContinueStatement extends Statement {
         else
             throw new RuntimeException("Continue outside of loop");
     }
+
+    @Override
+    public String getCodeRepresentation() {
+        return "continue";
+    }
+
+
 }

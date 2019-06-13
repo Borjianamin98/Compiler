@@ -24,4 +24,9 @@ public class PlusPlusPostfix extends OneIncrementAndDecrement {
         Expression oneConst = Utility.getSimpleConstant(resultType, 1);
         new DirectAssignment(getVariable(), new Plus(getVariable(), oneConst)).generateCode(currentClass, currentMethod, cv, mv, null, null);
     }
+
+    @Override
+    public String getCodeRepresentation() {
+        return "( " + getVariable().getCodeRepresentation() + " )++";
+    }
 }

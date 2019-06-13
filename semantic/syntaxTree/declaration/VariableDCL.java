@@ -10,6 +10,7 @@ import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.hastype.VariableDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
+import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
 
 import java.util.Optional;
@@ -43,5 +44,15 @@ public class VariableDCL extends Declaration {
         VariableDSCP variableDSCP = new VariableDSCP(getName(), getTypeDSCP(), getTypeDSCP().getSize(),
                 top.getFreeAddress(), isConstant(), initialized);
         top.addSymbol(getName(), variableDSCP);
+    }
+
+    @Override
+    public String getCodeRepresentation() {
+        StringBuilder represent = new StringBuilder();
+        if (isConstant())
+            represent.append("const ");
+        represent.append(type).append(" ");
+        represent.append(getName());
+        return represent.toString();
     }
 }

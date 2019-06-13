@@ -11,7 +11,7 @@ import semantic.syntaxTree.program.ClassDCL;
 
 public class ReminderAssignment extends Assignment {
     public ReminderAssignment(Variable variable, Expression value) {
-        super(variable, value);
+        super("-=", variable, value);
     }
 
     @Override

@@ -9,7 +9,7 @@ import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
+import semantic.symbolTable.typeTree.TypeTree;
 
 public class Not extends Expression {
     private Expression operand;
@@ -37,5 +37,10 @@ public class Not extends Expression {
         mv.visitInsn(Opcodes.ICONST_0);
 
         mv.visitLabel(outLabel);
+    }
+
+    @Override
+    public String getCodeRepresentation() {
+        return "not(" + operand.getCodeRepresentation() + ")";
     }
 }

@@ -52,4 +52,14 @@ public class AutoVariableDCL extends Declaration {
         variable.generateCode(currentClass, currentMethod, cv, mv, null, null);
         new DirectAssignment(new SimpleLocalVariable(getName()), defaultValue).generateCode(currentClass, currentMethod, cv, mv, null, null);
     }
+
+    @Override
+    public String getCodeRepresentation() {
+        StringBuilder represent = new StringBuilder();
+        if (isConstant())
+            represent.append("const ");
+        represent.append("auto ");
+        represent.append(getName());
+        return represent.toString();
+    }
 }

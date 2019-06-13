@@ -1031,12 +1031,12 @@ public class LexicalAnalyzer implements java_cup.runtime.Scanner {
             // fall through
           case 33: break;
           case 14: 
-            { return symbol("Long", Token.getWithRepresentation("long_const").getSym(), Long.valueOf(yytext()));
+            { return symbol("Long", Token.getWithRepresentation("long_const").getSym(), Long.valueOf(yytext().substring(0, yytext().length() - 1)));
             } 
             // fall through
           case 34: break;
           case 15: 
-            { return symbol("Float", Token.getWithRepresentation("float_const").getSym(), Float.valueOf(yytext()));
+            { return symbol("Float", Token.getWithRepresentation("float_const").getSym(), Float.valueOf(yytext().substring(0, yytext().length() - 1)));
             } 
             // fall through
           case 35: break;

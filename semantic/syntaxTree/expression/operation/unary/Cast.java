@@ -4,15 +4,11 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import semantic.symbolTable.Display;
-import semantic.symbolTable.descriptor.DSCP;
-import semantic.symbolTable.descriptor.type.SimpleTypeDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.expression.Expression;
 import semantic.syntaxTree.program.ClassDCL;
-import semantic.typeTree.TypeTree;
-
-import java.util.Optional;
+import semantic.symbolTable.typeTree.TypeTree;
 
 public class Cast extends Expression {
     private String castType;
@@ -43,5 +39,10 @@ public class Cast extends Expression {
             // otherwise do explicit (narrow) cast
             TypeTree.narrow(mv, operand.getResultType(), getResultType());
         }
+    }
+
+    @Override
+    public String getCodeRepresentation() {
+        return "(" + getResultType().getConventionalName() + ")(" + operand.getCodeRepresentation() + ")";
     }
 }
