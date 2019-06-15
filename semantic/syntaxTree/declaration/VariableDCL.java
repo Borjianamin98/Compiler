@@ -6,7 +6,6 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import semantic.symbolTable.Display;
 import semantic.symbolTable.SymbolTable;
-import semantic.symbolTable.Utility;
 import semantic.symbolTable.descriptor.DSCP;
 import semantic.symbolTable.descriptor.hastype.VariableDSCP;
 import semantic.symbolTable.descriptor.type.TypeDSCP;
@@ -52,7 +51,7 @@ public class VariableDCL extends Declaration {
         StringBuilder represent = new StringBuilder();
         if (isConstant())
             represent.append("const ");
-        represent.append(Utility.getConvectionalRepresent(type)).append(" ");
+        represent.append(type).append(" ");
         represent.append(getName());
         return represent.toString();
     }
