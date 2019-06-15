@@ -16,7 +16,16 @@ public class CompilerAspect {
     @Pointcut("execution(void semantic.syntaxTree.declaration.record.*.generateCode(..))")
     private void pointRecordDCL() {}
 
-    @Pointcut("pointMethodDCL() || pointRecordDCL()")
+    @Pointcut("execution(void semantic.syntaxTree.declaration.VariableDCL.generateCode(..))")
+    private void pointVariableDCL() {}
+
+    @Pointcut("execution(void semantic.syntaxTree.declaration.ArrayDCL.generateCode(..))")
+    private void poinyArrayDCL() {}
+
+    @Pointcut("execution(void semantic.syntaxTree.program.ClassDCL.generateCode(..))")
+    private void pointClassDCL() {}
+
+    @Pointcut("pointMethodDCL() || pointRecordDCL() || pointVariableDCL() || pointClassDCL() || poinyArrayDCL()")
     private void pointDeclaration() {}
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -57,13 +66,8 @@ public class CompilerAspect {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-    @Pointcut("execution(void semantic.syntaxTree.program.ClassDCL.generateCode(..))")
-    private void pointClassDCL() {}
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////
-
     @AfterThrowing("pointDirectAssignment() || pointDeclaration() || pointControlFlow() || pointMethodCall()" +
-            " || pointExpression() || pointClassDCL()")
+            " || pointExpression() || pointDeclaration()")
     public void beforeAddAccount(JoinPoint joinPoint) {
         HasRepresentation node = (HasRepresentation) joinPoint.getTarget();
         System.out.println("\t\tat: " + node.getCodeRepresentation());
