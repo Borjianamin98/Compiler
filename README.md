@@ -14,10 +14,10 @@ In order to compile project, you need some extra libraries for parser, AOP (Aspe
 Required libraries are included in folder `lib` in root of project. 
 This folder contain below folders:   
 `ASM` : It contain library for generating bytecode. It must be included in java classpath.  
-`AspectJ` : It contain library for compiling AOP files. It must be included in java classpath.
+`AspectJ` : It contain library for compiling AOP files. It must be included in java classpath.  
 `Java-Cup`: It contain library for compiling cup parser. It must be included in java classpath.
 
-Note: Enabling AOP for Intellij is not necessary however `AspectJ` libraries are required. IF you enable it, you can see
+Note: Enabling AOP for Intellij is not necessary however `AspectJ` libraries are required. If you enable it, you can see
 output like below when you have runtime error:
 ```
 Runtime error:
@@ -26,7 +26,7 @@ Runtime error:
     at: function void main(string[] args)
 Print a non-primitive value is not possible: int[]
 ```
-If you need, you must use `aspectjtools` library and enable `Ajc` compiler in Intellij.
+If you need it, you must use `aspectjtools` library and enable `Ajc` compiler in Intellij.
 
 ### Documentation
 
