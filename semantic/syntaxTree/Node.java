@@ -5,7 +5,6 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import semantic.syntaxTree.declaration.method.MethodDCL;
 import semantic.syntaxTree.program.ClassDCL;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -15,8 +14,9 @@ public abstract class Node implements HasRepresentation {
 
     public static void init() {
         try {
-            if (!Files.exists(Paths.get(outputPath)))
+            if (!Files.exists(Paths.get(outputPath))) {
                 Files.createDirectory(Paths.get(outputPath));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

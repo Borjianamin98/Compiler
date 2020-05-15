@@ -148,11 +148,7 @@ class_code             ::= var_dcl:fieldsFactory
                         ClassDCL classDCL = (ClassDCL) Parser.semanticStack.getLast();
                         classDCL.addClassCode(structDCL);
                         :}
-//                      |
-//                      extern_dcl
                         ;
-
-//extern_dcl          ::= EXTERN typeName IDENTIFIER SEMICOLON;
 
 function_dcl        ::= FUNCTION typeName:returnType func_signature:signature
                         {: RESULT = new MethodDCL(signature, returnType, true); :}

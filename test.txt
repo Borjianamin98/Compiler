@@ -1,0 +1,17 @@
+function void start() begin
+	int[][] a = new int[3][3];
+	int i, j;
+	for (i = 0; i < 3; i++) begin
+	    for (j = 0; j < 3; j++) begin
+            a[i][j] = i + j;
+        end
+	end
+
+	foreach (x in a) begin
+        foreach (y in x) begin
+            println(y);
+        end
+    end
+
+	return;
+end

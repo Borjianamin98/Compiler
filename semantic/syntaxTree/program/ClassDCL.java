@@ -95,7 +95,6 @@ public class ClassDCL extends Node {
         methodVisitor.visitMaxs(0, 0);
         methodVisitor.visitEnd();
 
-
         // Generate class file
         try (FileOutputStream fos = new FileOutputStream(Node.outputPath + name + ".class")) {
             fos.write(classWriter.toByteArray());

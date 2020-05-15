@@ -7,5 +7,5 @@ package semantic.syntaxTree;
  * (Field, MethodDCL, RecordTypeDCL implements ClassCode)
  */
 public interface HasRepresentation {
-    public abstract String getCodeRepresentation();
+    String getCodeRepresentation();
 }
